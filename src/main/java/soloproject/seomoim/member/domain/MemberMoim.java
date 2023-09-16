@@ -1,8 +1,9 @@
-package soloproject.seomoim;
+package soloproject.seomoim.member.domain;
 
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.moim.entitiy.Moim;
 
 import javax.persistence.*;
 

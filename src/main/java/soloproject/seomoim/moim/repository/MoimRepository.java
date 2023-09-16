@@ -1,8 +1,7 @@
-package soloproject.seomoim;
+package soloproject.seomoim.moim.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import soloproject.seomoim.moim.entitiy.Moim;
 
-@Repository
 public interface MoimRepository extends JpaRepository<Moim,Long> {
 }
