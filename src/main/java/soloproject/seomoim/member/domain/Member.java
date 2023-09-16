@@ -2,7 +2,7 @@ package soloproject.seomoim.member.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import soloproject.seomoim.Moim;
+import soloproject.seomoim.moim.entitiy.Moim;
 
 import javax.persistence.*;
 import java.util.ArrayList;
