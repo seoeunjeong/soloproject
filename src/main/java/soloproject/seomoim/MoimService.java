@@ -1,9 +1,7 @@
-package soloproject.seomoim.service;
+package soloproject.seomoim;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import soloproject.seomoim.domain.Moim;
-import soloproject.seomoim.repository.MoimRepository;
 
 import java.util.List;
 

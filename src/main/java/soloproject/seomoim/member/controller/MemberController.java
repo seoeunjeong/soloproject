@@ -1,14 +1,14 @@
-package soloproject.seomoim.controller;
+package soloproject.seomoim.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import soloproject.seomoim.domain.Member;
-import soloproject.seomoim.dto.MemberDto;
-import soloproject.seomoim.mapper.MemberMapper;
-import soloproject.seomoim.service.MemberService;
+import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.dto.MemberDto;
+import soloproject.seomoim.member.mapper.MemberMapper;
+import soloproject.seomoim.member.service.MemberService;
 
 import javax.validation.Valid;
 import java.net.URI;

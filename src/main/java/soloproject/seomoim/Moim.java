@@ -1,4 +1,4 @@
-package soloproject.seomoim.domain;
+package soloproject.seomoim;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,12 +1,10 @@
-package soloproject.seomoim.service;
+package soloproject.seomoim.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
-import soloproject.seomoim.domain.Member;
-import soloproject.seomoim.dto.MemberDto;
-import soloproject.seomoim.repository.MemberRepository;
+import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.repository.MemberRepository;
 
 import java.util.Optional;
 

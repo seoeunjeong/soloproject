@@ -1,8 +1,8 @@
-package soloproject.seomoim.mapper;
+package soloproject.seomoim.member.mapper;
 
 import org.mapstruct.Mapper;
-import soloproject.seomoim.domain.Member;
-import soloproject.seomoim.dto.MemberDto;
+import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.dto.MemberDto;
 
 @Mapper(componentModel = "spring")
 public interface MemberMapper {

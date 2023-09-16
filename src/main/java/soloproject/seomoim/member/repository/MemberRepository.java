@@ -1,7 +1,7 @@
-package soloproject.seomoim.repository;
+package soloproject.seomoim.member.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import soloproject.seomoim.domain.Member;
+import soloproject.seomoim.member.domain.Member;
 
 import java.util.Optional;
 

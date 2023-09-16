@@ -1,4 +1,4 @@
-package soloproject.seomoim.dto;
+package soloproject.seomoim.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

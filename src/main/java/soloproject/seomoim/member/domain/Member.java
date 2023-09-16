@@ -1,7 +1,10 @@
-package soloproject.seomoim.domain;
+package soloproject.seomoim.member.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.MemberMoim;
+import soloproject.seomoim.Moim;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,9 @@ public class Member {
     private String gender;
 
     private String region;
+
+    @OneToMany(mappedBy = "member")
+    private List<Moim> moims = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<MemberMoim> moimList = new ArrayList<>();
