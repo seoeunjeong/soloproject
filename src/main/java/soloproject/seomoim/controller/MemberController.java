@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import soloproject.seomoim.domain.Member;
 import soloproject.seomoim.dto.MemberDto;
+import soloproject.seomoim.mapper.MemberMapper;
 import soloproject.seomoim.service.MemberService;
 
 import javax.validation.Valid;
@@ -20,10 +21,11 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    private final MemberMapper mapper;
+
     @PostMapping("/sign-up")
     public ResponseEntity signUp(@RequestBody @Valid MemberDto.Post signupRequest){
-        Member member = new Member(signupRequest.getEmail(), signupRequest.getPassword());
-        Long signupId = memberService.signup(member);
+        Long signupId = memberService.signup(mapper.memberPostDtoToMember(signupRequest));
         URI location = UriComponentsBuilder.newInstance()
                 .path(MEMBER_DEFAULT_URL +signupId)
                 .build()
@@ -34,29 +36,15 @@ public class MemberController {
     @GetMapping("/{member-id}")
     public ResponseEntity getMembers(@PathVariable("member-id") Long memberId){
         Member findMember = memberService.findMember(memberId);
-        MemberDto.ResponseDto responseDto =
-                new MemberDto.ResponseDto(
-                        findMember.getEmail(),
-                        findMember.getName(),
-                        findMember.getAge(),
-                        findMember.getGender(),
-                        findMember.getRegion());
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(mapper.memberToMemberResponseDto(findMember), HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{member-id}")
     public void updateMember(@PathVariable("member-id")Long memberId,
                              @RequestBody MemberDto.Update updateRequest){
-
-        Member member = new Member();
-        member.setAge(updateRequest.getAge());
-        member.setName(updateRequest.getName());
-        //데이터 없는데 널포인트 익셉션 안나는 이유 뭐예영? null을 사용할수있다. null데이터에 또 . 을찍으면발생함!
-        member.setGender(updateRequest.getGender());
-        member.setRegion(updateRequest.getRegion());
+        Member member = mapper.memberUpdateDtoToMember(updateRequest);
         memberService.update(memberId,member);
-
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
