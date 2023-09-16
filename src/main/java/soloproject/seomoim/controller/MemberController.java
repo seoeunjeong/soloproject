@@ -1,27 +1,34 @@
 package soloproject.seomoim.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Fetch;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import soloproject.seomoim.domain.Member;
 import soloproject.seomoim.dto.MemberDto;
 import soloproject.seomoim.service.MemberService;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
+    private final static String MEMBER_DEFAULT_URL = "/member/";
 
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    public Long signUp(@RequestBody @Valid MemberDto.Post signupRequest){
+    public ResponseEntity signUp(@RequestBody @Valid MemberDto.Post signupRequest){
         Member member = new Member(signupRequest.getEmail(), signupRequest.getPassword());
-        return memberService.signup(member);
+        Long signupId = memberService.signup(member);
+        URI location = UriComponentsBuilder.newInstance()
+                .path(MEMBER_DEFAULT_URL +signupId)
+                .build()
+                .toUri();
+        return  ResponseEntity.created(location).build();
     }
 
     @GetMapping("/{member-id}")

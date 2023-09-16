@@ -12,15 +12,19 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
     
 
+    @Transactional
     public Long signup(Member member){
         //아이디 중복 확인
         confirmIdDuplication(member);
+
         Member savedMember = memberRepository.save(member);
+
         return savedMember.getId();
     }
 
