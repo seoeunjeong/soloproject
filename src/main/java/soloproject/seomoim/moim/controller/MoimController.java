@@ -30,4 +30,6 @@ public class MoimController {
         return new ResponseEntity<>(mapper.MoimToResponseDto(updateMoim),HttpStatus.OK);
     }
 
+    //모임 삭제 api
+
 }
