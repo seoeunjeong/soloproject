@@ -12,7 +12,7 @@ public class MoimDto {
         private Long memberId;
         private String title;
         private String content;
-        private int participantCount;
+        private int totalParticipantCount;
         private String region;
         private MoimCategory moimCategory;
     }
@@ -22,7 +22,7 @@ public class MoimDto {
     public static class Update{
         private String title;
         private String content;
-        private int participantCount;
+        private int totalParticipantCount;
         private String region;
         private MoimCategory moimCategory;
 
@@ -34,6 +34,7 @@ public class MoimDto {
         private Long memberId;
         private String title;
         private String content;
+        private int totalParticipantCount;
         private int participantCount;
         private String region;
         private MoimCategory moimCategory;

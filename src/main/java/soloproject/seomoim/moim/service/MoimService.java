@@ -9,6 +9,7 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
+import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.moim.repository.MoimRepository;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class MoimService {
                 .ifPresent(title->findMoim.setTitle(title));
         Optional.ofNullable(moim.getContent())
                 .ifPresent(content -> findMoim.setContent(content));
-         Optional.ofNullable(moim.getParticipantCount())
-                .ifPresent(participantCount -> findMoim.setParticipantCount(participantCount));
+         Optional.ofNullable(moim.getTotalParticipantCount())
+                .ifPresent(totalParticipantCount -> findMoim.setTotalParticipantCount(totalParticipantCount));
          Optional.ofNullable(moim.getRegion())
                 .ifPresent(region -> findMoim.setRegion(region));
          Optional.ofNullable(moim.getMoimCategory())
@@ -49,5 +50,20 @@ public class MoimService {
     public Moim findMoim(Long moimId){
         Optional<Moim> findMoin = moimRepository.findById(moimId);
         return findMoin.orElseThrow(()->new IllegalStateException("존재하지않는 모임입니다"));
+    }
+
+    public void deleteMoim(Long moimId){
+        Moim moim = findMoim(moimId);
+        moimRepository.delete(moim);
+    }
+
+    //회원이 모임에 가입하는 로직
+
+    @Transactional
+    public Moim joinMoim(Long moimId,Long memberId){
+        Moim moim = findMoim(moimId);
+        Member member = memberService.findMember(memberId);
+        moim.addParticipant(moim,member);
+        return moim;
     }
 }
