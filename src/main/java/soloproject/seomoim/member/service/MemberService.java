@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.member.domain.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
+import soloproject.seomoim.moim.entitiy.Moim;
+import soloproject.seomoim.moim.entitiy.MoimMember;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,5 +56,13 @@ public class MemberService {
         if(findMember.isPresent()){
             throw new IllegalStateException("이미 존재하는 아이디 입니다");
         }
+    }
+
+    //회원이 참여한 모임 조회
+    public List<MoimMember> findParticipationMoim(Long memberId){
+        List<MoimMember> participationMoims = memberRepository.findByParticipationMoims(memberId);
+
+        return participationMoims;
+
     }
 }

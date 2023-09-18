@@ -1,4 +1,4 @@
-package soloproject.seomoim;
+package soloproject.seomoim.moim.entitiy;
 
 public enum MoimCategory {
     STUDY,EXERCISE,TRAVEL,EAT,DRINK

@@ -9,9 +9,14 @@ import soloproject.seomoim.member.domain.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.moim.dto.MoimMemberDto;
+import soloproject.seomoim.moim.entitiy.Moim;
+import soloproject.seomoim.moim.entitiy.MoimMember;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +56,20 @@ public class MemberController {
     @DeleteMapping("/{member-id}")
     public void deleteMember(@PathVariable("member-id")Long memberId){
         memberService.delete(memberId);
+    }
+
+    //회원은 참여한 모임을 조회할수있다.
+
+    @GetMapping("/moims/{member-id}")
+    public ResponseEntity findMoims(@PathVariable("member-id")Long memberId){
+        List<MoimMember> moimList = memberService.findParticipationMoim(memberId);
+        List<MoimMemberDto.Response> response = moimList.stream()
+                .map(moimMember -> new MoimMemberDto.Response(
+                        moimMember.getMember().getId(),
+                        moimMember.getMoim().getId(),
+                        moimMember.getMoim().getTitle()))
+                .collect(Collectors.toList());
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
 
