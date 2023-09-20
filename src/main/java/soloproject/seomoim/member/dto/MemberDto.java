@@ -3,9 +3,11 @@ package soloproject.seomoim.member.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.moim.dto.MoimMemberDto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class MemberDto {
     @Getter

@@ -2,7 +2,8 @@ package soloproject.seomoim.moim.entitiy;
 
 import lombok.Getter;
 import lombok.Setter;
-import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.moim.BaseEntitiy;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-public class Moim {
+public class Moim extends BaseEntitiy{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +36,20 @@ public class Moim {
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 
-    public void addParticipant(Moim moim,Member member){
+    public Moim() {
+    }
+
+   /*모임참여 메소드*/
+    public void joinMoim(Moim moim,Member member){
         MoimMember moimMember = new MoimMember();
-        moimMember.setMoim(moim);
+        moimMember.
+                setMoim(moim);
         moimMember.setMember(member);
         participant.add(moimMember);
         this.participantCount += 1;
     }
-
+    /*참여인원줄이기*/
+    public void reduceCount(){
+        this.participantCount -=1;
+    }
 }
