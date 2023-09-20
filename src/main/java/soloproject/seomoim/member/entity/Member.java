@@ -1,7 +1,8 @@
-package soloproject.seomoim.member.domain;
+package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.moim.BaseEntitiy;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-public class Member {
+public class Member extends BaseEntitiy {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
@@ -31,10 +32,10 @@ public class Member {
     private String region;
 
     //멤버는 여러 모임을 만들수있다
-    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<Moim> moims = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<MoimMember> participationMoims= new ArrayList<>();
 
 

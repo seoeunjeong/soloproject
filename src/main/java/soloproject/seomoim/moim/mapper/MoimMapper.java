@@ -5,6 +5,8 @@ import org.mapstruct.Mapping;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface MoimMapper {
 
@@ -14,4 +16,6 @@ public interface MoimMapper {
 
     @Mapping(source ="member.id",target ="memberId")
     MoimDto.Response MoimToResponseDto(Moim moim);
+
+    List<MoimDto.Response> moimsToResponseDtos(List<Moim> answers);
 }

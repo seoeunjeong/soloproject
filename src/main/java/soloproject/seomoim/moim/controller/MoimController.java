@@ -1,16 +1,24 @@
 package soloproject.seomoim.moim.controller;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import soloproject.seomoim.PageResponseDto;
+import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 
+import javax.validation.constraints.Positive;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,15 +49,58 @@ public class MoimController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/delete/{moim-id}")
-    public void delete(@PathVariable("moim-id")Long moimId){
+    public void deleteMoim(@PathVariable("moim-id")Long moimId){
         moimService.deleteMoim(moimId);
     }
 
-    //모임 가입 로직
+
+    @GetMapping("/{moim-id}")
+    public ResponseEntity findMoim(@PathVariable("moim-id")Long moimId){
+        Moim moim = moimService.findMoim(moimId);
+        return new ResponseEntity(mapper.MoimToResponseDto(moim), HttpStatus.OK);
+    }
+
+
+    /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
+    @GetMapping("/all")
+    public ResponseEntity findAll(@RequestParam int page,@RequestParam int size){
+        Page<Moim> pageMoims = moimService.fillAll(page - 1, size);
+        List<Moim> moims = pageMoims.getContent();
+        return new ResponseEntity<>(new PageResponseDto(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
+    }
+
+
+    /*
+     * 위치조회/카테고리조회/키워드-동적 쿼리 작성 쿼리DSL)
+     * 위치(String,카테고리 enum,String keyword)
+     */
+    @GetMapping("/search")
+    public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto,
+                                          @RequestParam int page,@RequestParam int size){
+        Page<Moim> pageMoims = moimService.findAllSearch(moimSearchDto, page - 1, size);
+        List<Moim> moims = pageMoims.getContent();
+        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims),pageMoims), HttpStatus.OK);
+    }
+
+
+
+    /*모임참여로직작성*/
     @PostMapping("/join/{moim-id}/{member-id}")
     public ResponseEntity joinMoim(@PathVariable("moim-id")Long moimId,
                                    @PathVariable("member-id")Long memberId){
         Moim moim = moimService.joinMoim(moimId, memberId);
         return new ResponseEntity<>(mapper.MoimToResponseDto(moim), HttpStatus.OK);
     }
+
+
+    /*모임참여취소로직작성*/
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/delete/{moim-id}/{member-id}")
+    public void notJoinMoim(@PathVariable("moim-id") Long moimId,
+                            @PathVariable("member-id") Long memberId) {
+        moimService.notJoinMoim(moimId, memberId);
+    }
+
+
+
 }

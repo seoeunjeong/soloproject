@@ -1,12 +1,10 @@
 package soloproject.seomoim.member.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 
 import static org.assertj.core.api.Assertions.*;

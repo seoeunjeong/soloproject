@@ -3,9 +3,8 @@ package soloproject.seomoim.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
-import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 
 import java.util.List;
@@ -63,6 +62,12 @@ public class MemberService {
         List<MoimMember> participationMoims = memberRepository.findByParticipationMoims(memberId);
 
         return participationMoims;
+    }
 
+    //회원 정보와 함께 참여한 모임 조회
+
+    public Member findMemberAndfindParticipationMoim(Long memberId){
+        Member findMember = memberRepository.findByIdAndParticipationMoims(memberId);
+        return findMember;
     }
 }

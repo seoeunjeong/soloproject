@@ -5,18 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import soloproject.seomoim.member.domain.Member;
+import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
-import soloproject.seomoim.moim.dto.MoimMemberDto;
-import soloproject.seomoim.moim.entitiy.Moim;
-import soloproject.seomoim.moim.entitiy.MoimMember;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,14 +33,8 @@ public class MemberController {
         return  ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/{member-id}")
-    public ResponseEntity getMembers(@PathVariable("member-id") Long memberId){
-        Member findMember = memberService.findMember(memberId);
-        return new ResponseEntity<>(mapper.memberToMemberResponseDto(findMember), HttpStatus.OK);
-    }
-
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/{member-id}")
+    @PatchMapping("/update/{member-id}")
     public void updateMember(@PathVariable("member-id")Long memberId,
                              @RequestBody MemberDto.Update updateRequest){
         Member member = mapper.memberUpdateDtoToMember(updateRequest);
@@ -53,24 +42,40 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{member-id}")
+    @DeleteMapping("/delete/{member-id}")
     public void deleteMember(@PathVariable("member-id")Long memberId){
         memberService.delete(memberId);
     }
 
-    //회원은 참여한 모임을 조회할수있다.
 
-    @GetMapping("/moims/{member-id}")
-    public ResponseEntity findMoims(@PathVariable("member-id")Long memberId){
-        List<MoimMember> moimList = memberService.findParticipationMoim(memberId);
-        List<MoimMemberDto.Response> response = moimList.stream()
-                .map(moimMember -> new MoimMemberDto.Response(
-                        moimMember.getMember().getId(),
-                        moimMember.getMoim().getId(),
-                        moimMember.getMoim().getTitle()))
-                .collect(Collectors.toList());
-        return new ResponseEntity(response, HttpStatus.OK);
+    @GetMapping("/{member-id}")
+    public ResponseEntity getMembers(@PathVariable("member-id") Long memberId){
+        Member findMember = memberService.findMember(memberId);
+        return new ResponseEntity<>(mapper.memberToMemberResponseDto(findMember), HttpStatus.OK);
     }
+
+    //회원은 참여한 모임을 조회할수있다.
+//    @GetMapping("/moims/{member-id}")
+//    public ResponseEntity findMoims(@PathVariable("member-id")Long memberId){
+//        List<MoimMember> moimList = memberService.findParticipationMoim(memberId);
+//        List<MoimMemberDto.Response> response = moimList.stream()
+//                .map(moimMember -> new MoimMemberDto.Response(
+//                        moimMember.getMember().getId(),
+//                        moimMember.getMoim().getId(),
+//                        moimMember.getMoim().getTitle()))
+//                .collect(Collectors.toList());
+//        return new ResponseEntity(response, HttpStatus.OK);
+//    }
+
+//    //모임조회
+
+//    @GetMapping("/moims/{member-id}")
+//    public ResponseEntity findMemberWithParticipationMoims(@PathVariable("member-id")Long memberId){
+//        Member member = memberService.findMemberAndfindParticipationMoim(memberId);
+//
+//        MemberDto.ResponseDto responseDto =
+//        return new ResponseEntity(responseDto, HttpStatus.OK);
+//    }
 
 
 }
