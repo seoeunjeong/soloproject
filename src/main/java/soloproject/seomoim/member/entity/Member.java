@@ -2,6 +2,7 @@ package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.comment.Comment;
 import soloproject.seomoim.moim.BaseEntitiy;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
