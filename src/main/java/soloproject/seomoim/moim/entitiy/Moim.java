@@ -42,8 +42,7 @@ public class Moim extends BaseEntitiy{
    /*모임참여 메소드*/
     public void joinMoim(Moim moim,Member member){
         MoimMember moimMember = new MoimMember();
-        moimMember.
-                setMoim(moim);
+        moimMember.setMoim(moim);
         moimMember.setMember(member);
         participant.add(moimMember);
         this.participantCount += 1;
