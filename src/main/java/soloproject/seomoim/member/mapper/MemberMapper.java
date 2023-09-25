@@ -9,6 +9,5 @@ public interface MemberMapper {
     Member memberPostDtoToMember(MemberDto.Post signupRequest);
     Member memberUpdateDtoToMember(MemberDto.Update updateRequest);
 
-    MemberDto.ResponseDto
-    memberToMemberResponseDto(Member member);
+    MemberDto.ResponseDto  memberToMemberResponseDto(Member member);
 }

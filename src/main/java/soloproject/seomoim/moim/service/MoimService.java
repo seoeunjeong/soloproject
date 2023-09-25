@@ -8,6 +8,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.PageResponseDto;
+import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
@@ -55,7 +57,7 @@ public class MoimService {
 
     public Moim findMoim(Long moimId){
         Optional<Moim> findMoin = moimRepository.findById(moimId);
-        return findMoin.orElseThrow(()->new IllegalStateException("존재하지않는 모임입니다"));
+        return findMoin.orElseThrow(()->new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
     }
 
     public void deleteMoim(Long moimId){

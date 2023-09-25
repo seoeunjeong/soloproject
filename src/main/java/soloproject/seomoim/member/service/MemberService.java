@@ -3,6 +3,8 @@ package soloproject.seomoim.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -47,13 +49,13 @@ public class MemberService {
 
     public Member findMember(Long memberId) {
         Optional<Member> findMember = memberRepository.findById(memberId);
-        return findMember.orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다"));
+        return findMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
     private void confirmIdDuplication(Member member) {
         Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
         if(findMember.isPresent()){
-            throw new IllegalStateException("이미 존재하는 아이디 입니다");
+            throw new BusinessLogicException(ExceptionCode.ALREADY_EXISTS_ID);
         }
     }
 
