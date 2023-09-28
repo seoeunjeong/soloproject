@@ -3,6 +3,7 @@ package soloproject.seomoim.member.entity;
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.comment.Comment;
+import soloproject.seomoim.like.LikeMoim;
 import soloproject.seomoim.moim.BaseEntitiy;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -34,10 +35,13 @@ public class Member extends BaseEntitiy {
 
     //멤버는 여러 모임을 만들수있다
     @OneToMany(mappedBy = "member")
-    private List<Moim> moims = new ArrayList<>();
+    private List<Moim> createMoims = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<MoimMember> participationMoims= new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<LikeMoim> likeMoims = new ArrayList<>();
 
 
     //연관관계 편의 메소드

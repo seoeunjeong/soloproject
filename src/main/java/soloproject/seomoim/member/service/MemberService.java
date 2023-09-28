@@ -3,8 +3,9 @@ package soloproject.seomoim.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ExceptionCode;
+
+
+import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -18,12 +19,15 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    
 
     @Transactional
     public Long signup(Member member){
         //아이디 중복 확인
         confirmIdDuplication(member);
+        //패스워드 일치 확인
+
+        //패스워드 암호화
+
         Member savedMember = memberRepository.save(member);
         return savedMember.getId();
     }

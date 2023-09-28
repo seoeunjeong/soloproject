@@ -15,7 +15,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-
     @PostMapping("/create")
     public ResponseEntity createComment(@RequestBody CommentDto.Post createRequest){
         Long save = commentService.save(createRequest);
