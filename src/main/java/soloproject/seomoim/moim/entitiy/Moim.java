@@ -36,6 +36,8 @@ public class Moim extends BaseEntitiy{
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 
+    private int likeCount;
+
     public Moim() {
     }
 
@@ -50,5 +52,13 @@ public class Moim extends BaseEntitiy{
     /*참여인원줄이기*/
     public void reduceCount(){
         this.participantCount -=1;
+    }
+
+    public void likeCountUp(){
+        likeCount +=1;
+    }
+
+    public void likeCountDown(){
+        this.likeCount= likeCount-1;
     }
 }

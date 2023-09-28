@@ -15,7 +15,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-
     @PostMapping("/create")
     public ResponseEntity createComment(@RequestBody CommentDto.Post createRequest){
         Long save = commentService.save(createRequest);
@@ -27,7 +26,7 @@ public class CommentController {
         Comment update = commentService.update(commentId, updateRequest);
     }
 
-    @DeleteMapping("/delete/{comment-id")
+    @DeleteMapping("/delete/{comment-id}")
     public void deleteComment(@PathVariable("comment-id") Long commentId){
        commentService.delete(commentId);
 

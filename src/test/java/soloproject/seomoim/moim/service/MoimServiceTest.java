@@ -2,17 +2,13 @@ package soloproject.seomoim.moim.service;
 
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
-import soloproject.seomoim.moim.dto.MoimMemberDto;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimCategory;

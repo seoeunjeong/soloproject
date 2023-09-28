@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 
+import javax.validation.constraints.NotBlank;
+
 public class MoimDto {
 
     @Getter
@@ -38,6 +40,7 @@ public class MoimDto {
         private int participantCount;
         private String region;
         private MoimCategory moimCategory;
+        private int likeCount;
 
     }
 }
