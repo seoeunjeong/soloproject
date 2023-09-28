@@ -36,6 +36,7 @@ public class MemberDto {
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$",
                 message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
         private String password;
+
         @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{3,4}$", message = "이름은 특수문자를 제외한 3~4자리여야 합니다.")
         private String name;
 

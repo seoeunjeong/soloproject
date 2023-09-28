@@ -18,7 +18,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
-    private final static String MEMBER_DEFAULT_URL = "/members/";
+    private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService memberService;
     private final MemberMapper mapper;
 
@@ -30,10 +30,10 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/update/{member-id}")
-    public void updateProfile(@PathVariable("member-id")Long memberId,
-                             @RequestBody MemberDto.Update updateRequest){
-        Member member = mapper.memberUpdateDtoToMember(updateRequest);
-        memberService.update(memberId,member);
+    public void updateProfile(@PathVariable("member-id") Long memberId,
+                              @RequestBody MemberDto.Update request) {
+        Member member = mapper.memberUpdateDtoToMember(request);
+        memberService.update(memberId, member);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

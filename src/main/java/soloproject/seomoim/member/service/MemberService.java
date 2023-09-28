@@ -37,17 +37,19 @@ public class MemberService {
     }
 
     @Transactional
-    public void update(Long memberId, Member member){
+    public void update(Long memberId, Member member) {
         //변경감지 사용
         Member findmember = findMember(memberId);
-        Optional.ofNullable(member.getAge())
-                .ifPresent(age-> findmember.setAge(age));
+        Optional.ofNullable(member.getPassword())
+                .ifPresent(password -> findmember.getPassword());
         Optional.ofNullable(member.getName())
-                .ifPresent(name-> findmember.setName(name));
+                .ifPresent(name -> findmember.setName(name));
+        Optional.ofNullable(member.getAge())
+                .ifPresent(age -> findmember.setAge(age));
         Optional.ofNullable(member.getGender())
-                .ifPresent(gender-> findmember.setGender(gender));
+                .ifPresent(gender -> findmember.setGender(gender));
         Optional.ofNullable(member.getRegion())
-                .ifPresent(region-> findmember.setRegion(region));
+                .ifPresent(region -> findmember.setRegion(region));
     }
 
     public void delete(Long memberId){
