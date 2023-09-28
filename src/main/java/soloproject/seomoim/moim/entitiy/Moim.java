@@ -57,4 +57,8 @@ public class Moim extends BaseEntitiy{
     public void likeCountUp(){
         likeCount +=1;
     }
+
+    public void likeCountDown(){
+        this.likeCount= likeCount-1;
+    }
 }

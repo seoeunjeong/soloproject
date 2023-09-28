@@ -30,6 +30,16 @@ public class LikeMoimService {
         return saveLike.getId();
     }
 
+
+    public void cancelLike(long memberId,long moimId){
+        Member member = memberService.findMember(memberId);
+        Moim moim = moimService.findMoim(moimId);
+        Optional<LikeMoim> findLike = likeRepository.findLikeMoimByMemberAndMoim(member, moim);
+        LikeMoim likeMoim = findLike.orElseThrow(() -> new IllegalStateException("좋아요 정보가 없습니다"));
+        moim.likeCountDown();
+        likeRepository.delete(likeMoim);
+    }
+
     private void alreadyLike(Member member,Moim moim){
         Optional<LikeMoim> likeMoimByMember = likeRepository.findLikeMoimByMemberAndMoim(member,moim);
         if(likeMoimByMember.isPresent()){
