@@ -29,7 +29,7 @@ public class Member extends BaseEntitiy {
 
     private int age;
 
-    private String gender;
+    private char gender;
 
     private String region;
 

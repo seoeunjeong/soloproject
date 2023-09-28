@@ -8,10 +8,12 @@ import lombok.Setter;
 import javax.validation.constraints.*;
 import java.util.List;
 
+
 public class MemberDto {
     @Getter @Setter
     @AllArgsConstructor
     public static class Post {
+
 
         @Email(message = "이메일의 형식이 올바르지 않습니다.")
         @NotBlank(message = "아이디는 필수 입력 값 입니다.")
@@ -29,6 +31,7 @@ public class MemberDto {
     @Getter @Setter
     @AllArgsConstructor
     public static class Update{
+
 
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$",
                 message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
@@ -49,7 +52,7 @@ public class MemberDto {
     public static class ResponseDto{
         private String email;
         private String name;
-        private int age;
+        private Integer age;
         private String gender;
         private String region;
         private List<CreateMoimsDto> createMoims;
