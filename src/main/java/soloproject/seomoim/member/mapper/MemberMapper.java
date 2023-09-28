@@ -13,9 +13,16 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
-    Member memberPostDtoToMember(MemberDto.Post signupRequest);
+    Member memberSignUpDtoToMember(MemberDto.Signup request);
+
+    @Mapping(source = "city",target = "region.city")
+    @Mapping(source = "gu",target = "region.gu")
+    @Mapping(source = "dong",target = "region.dong")
     Member memberUpdateDtoToMember(MemberDto.Update updateRequest);
 
+    @Mapping(source = "region.city",target = "city")
+    @Mapping(source = "region.gu",target = "gu")
+    @Mapping(source = "region.dong",target = "dong")
     MemberDto.ResponseDto memberToMemberResponseDto(Member member);
 
 //    @Mapping(source = "moim.id", target = "moimId")

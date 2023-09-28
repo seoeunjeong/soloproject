@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
@@ -25,7 +27,9 @@ public class MemberService {
         //아이디 중복 확인
         confirmIdDuplication(member);
         //패스워드 일치 확인
-
+        if(!member.getPassword().equals(member.getConfirmPassword())){
+            throw new BusinessLogicException(ExceptionCode.PASSWORD_MISMATCH);
+        }
         //패스워드 암호화
 
         Member savedMember = memberRepository.save(member);

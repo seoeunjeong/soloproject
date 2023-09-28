@@ -11,8 +11,7 @@ import java.util.List;
 
 public class MemberDto {
     @Getter @Setter
-    @AllArgsConstructor
-    public static class Post {
+    public static class Signup {
 
 
         @Email(message = "이메일의 형식이 올바르지 않습니다.")
@@ -24,12 +23,13 @@ public class MemberDto {
         @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
         private String password;
 
-        //패스워드 입려확인필드 추가로존재하는게 좋다 두 패스워드가 일치하는지 검증하는 로직까지/
-        private String password2;
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$",
+                message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
+        @NotBlank(message = "비밀번호 확인은 필수 입력값입니다.")
+        private String confirmPassword;
     }
 
     @Getter @Setter
-    @AllArgsConstructor
     public static class Update{
 
 
@@ -44,17 +44,20 @@ public class MemberDto {
 
         private String gender;
 
-        private String region;
+        private String city;
+        private String gu;
+        private String dong;
     }
 
     @Getter @Setter
-    @AllArgsConstructor
     public static class ResponseDto{
         private String email;
         private String name;
         private Integer age;
         private String gender;
-        private String region;
+        private String city;
+        private String gu;
+        private String dong;
         private List<CreateMoimsDto> createMoims;
         private List<MoimMemberDto> participationMoims;
         private List<LikeMoimDto> likeMoims;

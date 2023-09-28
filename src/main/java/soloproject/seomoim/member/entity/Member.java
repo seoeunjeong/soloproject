@@ -2,7 +2,7 @@ package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import soloproject.seomoim.comment.Comment;
+import soloproject.seomoim.Region;
 import soloproject.seomoim.like.LikeMoim;
 import soloproject.seomoim.moim.BaseEntitiy;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -25,13 +25,17 @@ public class Member extends BaseEntitiy {
 
     private String password;
 
+    @Transient
+    private String confirmPassword;
+
     private String name;
 
     private int age;
 
     private char gender;
 
-    private String region;
+    @Embedded
+    private Region region;
 
     //멤버는 여러 모임을 만들수있다
     @OneToMany(mappedBy = "member")

@@ -9,33 +9,28 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.utils.UriCreator;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("/members")
 public class MemberController {
-    private final static String MEMBER_DEFAULT_URL = "/member/";
-
+    private final static String MEMBER_DEFAULT_URL = "/members/";
     private final MemberService memberService;
-
     private final MemberMapper mapper;
 
     @PostMapping("/sign-up")
-    public ResponseEntity signUp(@RequestBody @Valid MemberDto.Post signupRequest){
-        Long signupId = memberService.signup(mapper.memberPostDtoToMember(signupRequest));
-        URI location = UriComponentsBuilder.newInstance()
-                .path(MEMBER_DEFAULT_URL +signupId)
-                .build()
-                .toUri();
-        return  ResponseEntity.created(location).build();
+    public ResponseEntity signUp(@Valid @RequestBody MemberDto.Signup request) {
+        Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(request));
+        return ResponseEntity.created(UriCreator.createUri(MEMBER_DEFAULT_URL, signupId)).build();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/update/{member-id}")
-    public void updateMember(@PathVariable("member-id")Long memberId,
+    public void updateProfile(@PathVariable("member-id")Long memberId,
                              @RequestBody MemberDto.Update updateRequest){
         Member member = mapper.memberUpdateDtoToMember(updateRequest);
         memberService.update(memberId,member);
