@@ -6,7 +6,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 
 @Getter @Setter
-public class loginDto {
+public class LoginDto {
 
     @NotEmpty
     public String loginId;

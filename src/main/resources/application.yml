@@ -17,6 +17,12 @@ spring:
 logging level:
   org.hibernate.sql: debug
 
+#  기본 1800초 30분ㅂㅂ
+server:
+  servlet:
+    session:
+      timeout: 1800
+
 
 
 
