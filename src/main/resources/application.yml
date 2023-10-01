@@ -17,11 +17,16 @@ spring:
 logging level:
   org.hibernate.sql: debug
 
+
+
 #  기본 1800초 30분ㅂㅂ
 server:
   servlet:
     session:
       timeout: 1800
+#      개발시 사용하고 노출하지말자
+  error:
+    include-exception: true
 
 
 

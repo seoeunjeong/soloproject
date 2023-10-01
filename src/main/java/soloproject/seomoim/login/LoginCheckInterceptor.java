@@ -2,6 +2,8 @@ package soloproject.seomoim.login;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
+import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.utils.SessionConst;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,8 +22,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER)
                 == null) {
             log.info("미인증 사용자 요청");
-            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return false;
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+//            return false;
+            throw new BusinessLogicException(ExceptionCode.NOT_ACCESS);
         }
         return true;
     }

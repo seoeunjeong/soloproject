@@ -29,6 +29,10 @@ public class ErrorResponse{
         return new ErrorResponse(exceptionCode.getStatus(), exceptionCode.getMessage());
     }
 
+    public static ErrorResponse of(int status,String message){
+        return new ErrorResponse(status, message);
+    }
+
     private ErrorResponse(List<FieldError> fieldErrors){
         this.fieldErrors=fieldErrors;
     }

@@ -1,10 +1,15 @@
 package soloproject.seomoim.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ExceptionCode;
+import soloproject.seomoim.login.argumentResolver.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
@@ -17,6 +22,7 @@ import java.net.URI;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
+@Slf4j
 public class MemberController {
     private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService memberService;
@@ -28,20 +34,33 @@ public class MemberController {
         return ResponseEntity.created(UriCreator.createUri(MEMBER_DEFAULT_URL, signupId)).build();
     }
 
+    /*본인 프로필이 아니면 수정 불가능*/
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/update/{member-id}")
     public void updateProfile(@PathVariable("member-id") Long memberId,
-                              @RequestBody MemberDto.Update request) {
+                              @Login Member loginMember,
+                              @Valid @RequestBody MemberDto.Update request) {
+        Member findMember = memberService.findMember(loginMember.getId());
+        if(findMember.getId()!=memberId){
+            throw new BusinessLogicException(ExceptionCode.INVALID_REQUEST);
+        }
         Member member = mapper.memberUpdateDtoToMember(request);
-        memberService.update(memberId, member);
+        memberService.update(memberId,member);
     }
 
+
+    /* 본인이 아닌 회원 데이터 삭제불가능*/
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/delete/{member-id}")
-    public void deleteMember(@PathVariable("member-id")Long memberId){
+    public void deleteMember(@PathVariable("member-id")Long memberId,
+                             @Login Member loginMember){
+        Member findMember = memberService.findMember(loginMember.getId());
+
+        if(findMember.getId() !=memberId){
+            throw new BusinessLogicException(ExceptionCode.INVALID_REQUEST);
+        }
         memberService.delete(memberId);
     }
-
 
     @GetMapping("/{member-id}")
     public ResponseEntity getMembers(@PathVariable("member-id") Long memberId){
