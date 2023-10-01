@@ -7,15 +7,18 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 public class Region {
-    private String city;
-    private String gu;
-    private String dong;
+
+    /*주소는 지번주소로 받아 읍면동으로 필터링 한다.*/
+    private String zipCode;
+    private String address;
+    private String DetailAddress;
 
     protected Region(){
     }
-    public Region(String city, String gu, String dong) {
-        this.city = city;
-        this.gu = gu;
-        this.dong = dong;
+
+    public Region(String zipCode, String address, String detailAddress) {
+        this.zipCode = zipCode;
+        this.address = address;
+        DetailAddress = detailAddress;
     }
 }

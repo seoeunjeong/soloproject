@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.PageResponseDto;
+import soloproject.seomoim.Region;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
@@ -54,6 +55,7 @@ public class MoimService {
                 .ifPresent(moimCategory -> findMoim.setMoimCategory(moimCategory));
          return findMoim;
     }
+
 
     public Moim findMoim(Long moimId){
         Optional<Moim> findMoin = moimRepository.findById(moimId);

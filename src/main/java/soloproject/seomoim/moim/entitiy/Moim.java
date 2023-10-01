@@ -2,6 +2,7 @@ package soloproject.seomoim.moim.entitiy;
 
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.Region;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.moim.BaseEntitiy;
 
@@ -31,12 +32,18 @@ public class Moim extends BaseEntitiy{
     private int totalParticipantCount;
 
     private int participantCount;
+
     private String region;
+
+    private double latitude;
+
+    private double longitude;
 
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 
     private int likeCount;
+
 
     public Moim() {
     }

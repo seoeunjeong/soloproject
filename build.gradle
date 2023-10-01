@@ -39,16 +39,16 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 	testImplementation 'junit:junit:4.13.1'
-
 
 	compileOnly 'org.projectlombok:lombok'
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 	runtimeOnly 'com.h2database:h2'
+//	이메일 인증 발송을 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 //	test에서 lombok사용
 	testCompileOnly 'org.projectlombok:lombok'

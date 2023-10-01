@@ -13,7 +13,6 @@ public class MemberDto {
     @Getter @Setter
     public static class Signup {
 
-
         @Email(message = "이메일의 형식이 올바르지 않습니다.")
         @NotBlank(message = "아이디는 필수 입력 값 입니다.")
         private String email;
@@ -27,6 +26,7 @@ public class MemberDto {
                 message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
         @NotBlank(message = "비밀번호 확인은 필수 입력값입니다.")
         private String confirmPassword;
+
     }
 
     @Getter @Setter
@@ -43,11 +43,13 @@ public class MemberDto {
         @Min(12) @Max(100)
         private int age;
 
-        private String gender;
+        private char gender;
 
-        private String city;
-        private String gu;
-        private String dong;
+        private String zipCode;
+
+        private String address;
+
+        private String detailAddress;
     }
 
     @Getter @Setter
@@ -55,10 +57,10 @@ public class MemberDto {
         private String email;
         private String name;
         private Integer age;
-        private String gender;
-        private String city;
-        private String gu;
-        private String dong;
+        private char gender;
+        private String zipCode;
+        private String address;
+        private String detailAddress;
         private List<CreateMoimsDto> createMoims;
         private List<MoimMemberDto> participationMoims;
         private List<LikeMoimDto> likeMoims;

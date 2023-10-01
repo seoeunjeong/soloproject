@@ -37,13 +37,15 @@ public class Member extends BaseEntitiy {
     @Embedded
     private Region region;
 
-    //멤버는 여러 모임을 만들수있다
+    //멤버는 여러 모임을 만들 수 있다.
     @OneToMany(mappedBy = "member")
     private List<Moim> createMoims = new ArrayList<>();
 
+    //멤버는 여러 모임에 참여 할수있다.
     @OneToMany(mappedBy = "member")
     private List<MoimMember> participationMoims= new ArrayList<>();
 
+    //멤버는 여러 모임을 좋아요 추가할수있다.
     @OneToMany(mappedBy = "member")
     private List<LikeMoim> likeMoims = new ArrayList<>();
 

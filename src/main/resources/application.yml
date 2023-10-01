@@ -14,6 +14,20 @@ spring:
         default_batch_fetch_size: 1000
         show_sql: true
 
+  #javaMailSenderBean
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: seocoding1@gmail.com
+    password: hzhebhfkjyvxwzqv
+    properties:
+      mail:
+        smtp:
+          auth: true
+#          timeout: 5000
+          starttls:
+            enable: true
+
 logging level:
   org.hibernate.sql: debug
 
@@ -27,7 +41,6 @@ server:
 #      개발시 사용하고 노출하지말자
   error:
     include-exception: true
-
 
 
 

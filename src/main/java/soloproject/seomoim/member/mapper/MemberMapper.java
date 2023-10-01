@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 public interface MemberMapper {
     Member memberSignUpDtoToMember(MemberDto.Signup request);
 
-    @Mapping(source = "city",target = "region.city")
-    @Mapping(source = "gu",target = "region.gu")
-    @Mapping(source = "dong",target = "region.dong")
+    @Mapping(source = "zipCode",target = "region.zipCode")
+    @Mapping(source = "address",target = "region.address")
+    @Mapping(source = "detailAddress",target = "region.detailAddress")
     Member memberUpdateDtoToMember(MemberDto.Update updateRequest);
 
-    @Mapping(source = "region.city",target = "city")
-    @Mapping(source = "region.gu",target = "gu")
-    @Mapping(source = "region.dong",target = "dong")
+    @Mapping(source = "region.zipCode",target = "zipCode")
+    @Mapping(source = "region.address",target = "address")
+    @Mapping(source = "region.detailAddress",target = "detailAddress")
     MemberDto.ResponseDto memberToMemberResponseDto(Member member);
 
 //    @Mapping(source = "moim.id", target = "moimId")
