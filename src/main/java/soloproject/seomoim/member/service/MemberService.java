@@ -85,4 +85,6 @@ public class MemberService {
         Member findMember = memberRepository.findByIdAndParticipationMoims(memberId);
         return findMember;
     }
+
+
 }

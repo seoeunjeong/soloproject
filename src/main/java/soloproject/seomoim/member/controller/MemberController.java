@@ -4,22 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.login.argumentResolver.Login;
+import soloproject.seomoim.member.emailCertification.MailService;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.utils.RedisUtil;
 import soloproject.seomoim.utils.UriCreator;
 
 import javax.validation.Valid;
-import java.net.URI;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/members")
 @Slf4j
@@ -27,13 +27,38 @@ public class MemberController {
     private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService memberService;
     private final MemberMapper mapper;
+    private final MailService mailService;
+    private final RedisUtil redisUtil;
 
-    @PostMapping("/sign-up")
-    public ResponseEntity signUp(@Valid @RequestBody MemberDto.Signup request) {
+
+    @GetMapping
+    public String signUp(){
+        return "/members/postMember";
+    }
+    @PostMapping
+    public String signUp(@Valid @ModelAttribute MemberDto.Signup request){
         Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(request));
-        return ResponseEntity.created(UriCreator.createUri(MEMBER_DEFAULT_URL, signupId)).build();
+        return "redirect:/";
     }
 
+
+//    @PostMapping("/sign-up")
+//    public ResponseEntity signUp(@Valid @RequestBody MemberDto.Signup request){
+//        Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(request));
+//        return ResponseEntity.created(UriCreator.createUri(MEMBER_DEFAULT_URL, signupId)).build();
+//    }
+
+
+
+    public void emailCertification(String email,String code){
+        String certificationCode = (String) redisUtil.get(email);
+        if(!code.equals(certificationCode)){
+            throw new IllegalStateException("인증코드가 틀렸습니다");
+        }
+    }
+
+    
+    
     /*본인 프로필이 아니면 수정 불가능*/
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/update/{member-id}")

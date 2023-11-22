@@ -1,4 +1,4 @@
-package soloproject.seomoim;
+package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
 

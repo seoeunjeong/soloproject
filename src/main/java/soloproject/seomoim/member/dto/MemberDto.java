@@ -27,6 +27,7 @@ public class MemberDto {
         @NotBlank(message = "비밀번호 확인은 필수 입력값입니다.")
         private String confirmPassword;
 
+
     }
 
     @Getter @Setter
@@ -61,6 +62,7 @@ public class MemberDto {
         private String zipCode;
         private String address;
         private String detailAddress;
+        private boolean certification;
         private List<CreateMoimsDto> createMoims;
         private List<MoimMemberDto> participationMoims;
         private List<LikeMoimDto> likeMoims;

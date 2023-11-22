@@ -7,15 +7,15 @@ import soloproject.seomoim.moim.entitiy.Moim;
 
 import java.util.List;
 
-@Getter
-@Setter
-public class PageResponseDto<T>{
+@Getter @Setter
+public class PageResponseDto<T> {
+
     private List<T> data;
+
     private PageInfo pageInfo;
 
     public PageResponseDto(List<T> data, Page page) {
         this.data = data;
         this.pageInfo = new PageInfo(page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages());
     }
-
 }

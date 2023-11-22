@@ -18,9 +18,8 @@ public class MoimDto {
         private Long memberId;
         @NotBlank(message = "모임 title은 필수값입니다.")
         private String title;
-        @NotBlank(message = "모임 content는 필수값입니다.")
-        private String content;
 
+        private String content;
         @Min(value = 2, message = "모임참여자수는 2명이상만 가능합니다.")
         @Max(value = 10, message = "모임참여자수는 10명 이하만 가능합니다.")
         private int totalParticipantCount;

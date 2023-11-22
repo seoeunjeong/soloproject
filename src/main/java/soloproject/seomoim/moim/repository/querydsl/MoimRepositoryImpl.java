@@ -32,8 +32,8 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
         QueryResults<Moim> results = queryFactory
                 .selectFrom(moim)
                 .where(moimRegion(searchDto.getRegion()),
-                        moimCategory(searchDto.getMoimCategory()),
-                        moimKeyword(searchDto.getKeyword())
+                        moimCategory(searchDto.getMoimCategory())
+//                        moimKeyword(searchDto.getKeyword())
                 )
                 .offset(pageable.getOffset())
 //        페이지 요청 을 1페이지의 size 10개를 보고싶다고 하는것은 데이터 0부터 10까지 보고싶다는 말이다
@@ -47,10 +47,10 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
     }
 
 
-    /* or 조합*/
-    private BooleanExpression moimKeyword(String keyword){
-        return keyword != null ? moimTitleKeyword(keyword).or(moimContentKeyword(keyword)) : null;
-    }
+//    /* or 조합*/
+//    private BooleanExpression moimKeyword(String keyword){
+//        return keyword != null ? moimTitleKeyword(keyword).or(moimContentKeyword(keyword)) : null;
+//    }
 
     private BooleanExpression moimRegion(String region) {
         return region != null ? moim.region.eq(region) : null;
@@ -62,8 +62,8 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
     private BooleanExpression moimTitleKeyword(String keyword) {
         return keyword != null ? moim.title.like("%"+keyword+"%"): null;
     }
-    private BooleanExpression moimContentKeyword(String keyword) {
-        return keyword != null ? moim.content.contains(keyword): null;
-    }
+//    private BooleanExpression moimContentKeyword(String keyword) {
+//        return keyword != null ? moim.content.contains(keyword): null;
+//    }
 
 }

@@ -3,12 +3,9 @@ package soloproject.seomoim.moim.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import soloproject.seomoim.PageResponseDto;
-import soloproject.seomoim.Region;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
@@ -45,8 +42,8 @@ public class MoimService {
         Moim findMoim = findMoim(moimId);
         Optional.ofNullable(moim.getTitle())
                 .ifPresent(title->findMoim.setTitle(title));
-        Optional.ofNullable(moim.getContent())
-                .ifPresent(content -> findMoim.setContent(content));
+//        Optional.ofNullable(moim.getContent())
+//                .ifPresent(content -> findMoim.setContent(content));
          Optional.ofNullable(moim.getTotalParticipantCount())
                 .ifPresent(totalParticipantCount -> findMoim.setTotalParticipantCount(totalParticipantCount));
          Optional.ofNullable(moim.getRegion())
@@ -69,8 +66,13 @@ public class MoimService {
 
     /*
      * 전체모임 페이지 네이션 구현*/
-    public Page<Moim> fillAll(int page,int size){
-        return moimRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+    public Page<Moim> findAllbyPage(int page,int size){
+        Page<Moim> moims = moimRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return moims;
+    }
+
+    public List<Moim> findAll(){
+        return moimRepository.findAll();
     }
 
     /*모임 검색,페이지네이션*/

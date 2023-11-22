@@ -27,8 +27,8 @@ class MoimServiceTest {
 
 
     @Test
-    public void 모임등록테스트() throws Exception{
-    //given
+    public void 모임등록테스트() throws Exception {
+        //given
         Member member = new Member();
         member.setEmail("dmswjd4015@naver.com");
 

@@ -1,11 +1,11 @@
-package soloproject.seomoim.member.email;
+package soloproject.seomoim.member.emailCertification;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
+import soloproject.seomoim.utils.RedisUtil;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -13,11 +13,12 @@ import javax.mail.internet.MimeMessage;
 @Service
 @RequiredArgsConstructor
 public class MailService {
-
-    private final JavaMailSender javaMailSender;
     private final static String SENDER_EMAIL="seocoding1@gmail.com";
+    private final JavaMailSender javaMailSender;
+    private final RedisUtil redisUtil;
 
-    public void createMail(String email) {
+
+    public int createMail(String email) {
         int number = createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
@@ -36,9 +37,16 @@ public class MailService {
             throw new BusinessLogicException(ExceptionCode.MESSAGE_FAIL);
         }
         javaMailSender.send(message);
+        String s = String.valueOf(number);
+        redisUtil.set(s,email,5);
+
+        return number;
     }
 
     private int createNumber(){
+
         return  (int) (Math.random() * (90000)) + 100000;
     }
+
+
 }

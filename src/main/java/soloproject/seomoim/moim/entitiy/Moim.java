@@ -2,7 +2,6 @@ package soloproject.seomoim.moim.entitiy;
 
 import lombok.Getter;
 import lombok.Setter;
-import soloproject.seomoim.Region;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.moim.BaseEntitiy;
 
@@ -24,6 +23,7 @@ public class Moim extends BaseEntitiy{
     private Member member;
 
     private String title;
+
     private String content;
 
     @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
@@ -34,10 +34,6 @@ public class Moim extends BaseEntitiy{
     private int participantCount;
 
     private String region;
-
-    private double latitude;
-
-    private double longitude;
 
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import soloproject.seomoim.PageResponseDto;
@@ -15,31 +16,44 @@ import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 
-import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/moim")
+@RequestMapping("/moims")
 public class MoimController {
     private final static String MOIM_DEFAULT_URL = "/moim/";
 
     private final MoimService moimService;
     private final MoimMapper mapper;
 
-    @PostMapping("/create")
-    public ResponseEntity createMoim(@RequestBody MoimDto.Post createRequest) {
+    @GetMapping("/post")
+    public String postMoim(){
+        return "moims/postMoim";
+    }
+
+    @PostMapping
+    public String createMoim(@ModelAttribute MoimDto.Post createRequest) {
         Moim moim = mapper.moimPostDtoToMoim(createRequest);
         Long moimId = moimService.createMoim(createRequest.getMemberId(), moim);
         URI location = UriComponentsBuilder.newInstance()
                 .path(MOIM_DEFAULT_URL +moimId)
                 .build()
                 .toUri();
-        return ResponseEntity.created(location).build();
+        return "redirect:/home";
     }
-    @PatchMapping("/update/{moim-id}")
+//    @PostMapping
+//    public ResponseEntity createMoim(@RequestBody MoimDto.Post createRequest) {
+//        Moim moim = mapper.moimPostDtoToMoim(createRequest);
+//        Long moimId = moimService.createMoim(createRequest.getMemberId(), moim);
+//        URI location = UriComponentsBuilder.newInstance()
+//                .path(MOIM_DEFAULT_URL +moimId)
+//                .build()
+//                .toUri();
+//        return ResponseEntity.created(location).build();
+//    }
+    @PatchMapping("/{moim-id}")
     public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
                                      @RequestBody MoimDto.Update updateRequest){
         Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
@@ -64,7 +78,7 @@ public class MoimController {
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")
     public ResponseEntity findAll(@RequestParam int page,@RequestParam int size){
-        Page<Moim> pageMoims = moimService.fillAll(page - 1, size);
+        Page<Moim> pageMoims = moimService.findAllbyPage(page - 1, size);
         List<Moim> moims = pageMoims.getContent();
         return new ResponseEntity<>(new PageResponseDto(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
     }

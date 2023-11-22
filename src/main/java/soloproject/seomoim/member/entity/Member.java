@@ -2,7 +2,6 @@ package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import soloproject.seomoim.Region;
 import soloproject.seomoim.like.LikeMoim;
 import soloproject.seomoim.moim.BaseEntitiy;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -33,6 +32,9 @@ public class Member extends BaseEntitiy {
     private int age;
 
     private char gender;
+
+    @Enumerated(EnumType.STRING)
+    private ROLE role = ROLE.UNVERIFIED_MEMBER;
 
     @Embedded
     private Region region;

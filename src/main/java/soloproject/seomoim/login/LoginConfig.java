@@ -16,8 +16,7 @@ public class LoginConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new LoginCheckInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/members/sign-up",
-                        "/members/login","members/logout","/email","/error");
+                .excludePathPatterns("/**","/moims","/moims/post","/favicon.ico","/home","/members/sign-up","/members/login","members/logout","/email","/error","/members/certification");
     }
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @AllArgsConstructor
-@Getter
-@Setter
+@Getter @Setter
 public class PageInfo {
     private int page;
     private int size;
