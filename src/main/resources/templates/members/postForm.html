@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .post-container {
+            width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .post-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        ::placeholder {
+            font-size: 12px;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="post-container">
+    <h2>회원가입</h2>
+    <form th:action="@{/members}" method="post">
+        <div class="form-group">
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="name" name="name" placeholder="이름을 입력해주세요" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="email" id="email" name="email" placeholder="이메일 아이디를 입력해주세요(ID@xxxx.com)" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" name="password" placeholder="비밀번호입력(영문,특수문자,숫자를 포함하여 8자리 이상)" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="위의 비밀번호를 다시 한번 입력해주세요" required>
+        </div>
+        <button type="submit" class="post-btn">가입완료</button>
+    </form>
+</div>
+</body>
+</html>

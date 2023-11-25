@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
-import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -25,16 +24,20 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long signup(Member member){
+    public Long signup(Member member) {
         //아이디 중복 확인
         confirmIdDuplication(member);
         //패스워드 일치 확인
-        if(!member.getPassword().equals(member.getConfirmPassword())){
+        if (!member.getPassword().equals(member.getConfirmPassword())) {
             throw new BusinessLogicException(ExceptionCode.PASSWORD_MISMATCH);
         }
-        //패스워드 암호화
+//        //패스워드 암호화
+//        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+
+//        member.setPassword(encryptedPassword);
 
         Member savedMember = memberRepository.save(member);
+
         return savedMember.getId();
     }
 
@@ -50,8 +53,8 @@ public class MemberService {
                 .ifPresent(age -> findmember.setAge(age));
         Optional.ofNullable(member.getGender())
                 .ifPresent(gender -> findmember.setGender(gender));
-        Optional.ofNullable(member.getRegion())
-                .ifPresent(region -> findmember.setRegion(region));
+        Optional.ofNullable(member.getAddress())
+                .ifPresent(address -> findmember.setAddress(address));
     }
 
     @Transactional

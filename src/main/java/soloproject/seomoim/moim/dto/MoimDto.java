@@ -2,12 +2,14 @@ package soloproject.seomoim.moim.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import java.time.LocalDateTime;
 
 public class MoimDto {
 
@@ -23,6 +25,9 @@ public class MoimDto {
         @Min(value = 2, message = "모임참여자수는 2명이상만 가능합니다.")
         @Max(value = 10, message = "모임참여자수는 10명 이하만 가능합니다.")
         private int totalParticipantCount;
+
+        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+        private LocalDateTime startedAt;
 
         private String region;
 

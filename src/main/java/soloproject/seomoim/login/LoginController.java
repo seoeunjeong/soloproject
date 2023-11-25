@@ -17,9 +17,25 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @GetMapping("/login")
+/*    *//*뷰 랜더링 오류 loginForm 스트링 Long 타입 Convert 실패*//*
+    @GetMapping("/loginForm")
+    public String loginForm() {
+        return "/members/loginFrom";
+    }*/
+////
+//    @GetMapping("/access-denied")
+//    public String accessDenied() {
+//        return "access-denied";
+//    }
+//    @PostMapping("/login")
+//    public String login() {
+//        System.out.println("Login successfully!");
+//        return "/";
+//    }
+
+    @GetMapping("/loginFrom")
     public String loginForm(){
-        return "/members/loginMember";
+        return "/members/loginFrom";
     }
 
     @PostMapping("/login")
@@ -35,7 +51,6 @@ public class LoginController {
 
         return "redirect:/";
     }
-
 //    @PostMapping("/login")
 //    public ResponseEntity LoginMember(@ResquestBody LoginDto loginDto, HttpServletRequest request) {
 //

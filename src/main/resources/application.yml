@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -30,6 +30,7 @@ spring:
 #          timeout: 5000
           starttls:
             enable: true
+    default-encoding:
 
 logging level:
   org.hibernate.sql: debug
@@ -44,6 +45,11 @@ server:
 #      개발시 사용하고 노출하지말자
   error:
     include-exception: true
+
+mail:
+  address:
+    admin: admin@gmail.com
+
 
 
 

@@ -42,8 +42,8 @@ public class MoimService {
         Moim findMoim = findMoim(moimId);
         Optional.ofNullable(moim.getTitle())
                 .ifPresent(title->findMoim.setTitle(title));
-//        Optional.ofNullable(moim.getContent())
-//                .ifPresent(content -> findMoim.setContent(content));
+        Optional.ofNullable(moim.getContent())
+                .ifPresent(content -> findMoim.setContent(content));
          Optional.ofNullable(moim.getTotalParticipantCount())
                 .ifPresent(totalParticipantCount -> findMoim.setTotalParticipantCount(totalParticipantCount));
          Optional.ofNullable(moim.getRegion())
@@ -75,11 +75,12 @@ public class MoimService {
         return moimRepository.findAll();
     }
 
-    /*모임 검색,페이지네이션*/
-    public Page<Moim> findAllSearch(MoimSearchDto moimSearchDto,int page,int size) {
-        Page<Moim> moims = moimRepository.searchAll(moimSearchDto, PageRequest.of(page,size));
-        return moims;
-    }
+
+//    모임 검색,페이지네이션
+//    public Page<Moim> findAllSearch(MoimSearchDto moimSearchDto, int page, int size) {
+//        Page<Moim> moims = moimRepository.searchAll(moimSearchDto, PageRequest.of(page, size));
+//        return moims;
+//    }
 
     //회원이 모임에 가입하는 로직
     @Transactional
@@ -97,4 +98,7 @@ public class MoimService {
         moimMemberRepository.delete(findMoimMember);
     }
 
+    public Page<Moim> findAllSearch(MoimSearchDto moimSearchDto, int i, int i1) {
+        return null;
+    }
 }

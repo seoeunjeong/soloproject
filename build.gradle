@@ -58,10 +58,11 @@ dependencies {
 	//redis 사용을 위해 추가
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-//	test에서 lombok사용
+	//test에서 lombok사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 tasks.named('test') {

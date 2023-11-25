@@ -10,4 +10,6 @@ import java.util.List;
 public interface MoimRepositoryCustom {
 
     Page<Moim> searchAll(MoimSearchDto searchDto,Pageable pageable);
+
+    List<Moim> keywordSearch(MoimSearchDto searchDto);
 }

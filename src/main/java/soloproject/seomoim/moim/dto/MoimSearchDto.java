@@ -12,7 +12,6 @@ public class MoimSearchDto {
     private MoimCategory moimCategory;
     private String keyword;
 
-
     public MoimSearchDto() {
     }
 }

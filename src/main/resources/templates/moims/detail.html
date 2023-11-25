@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Moim 상세 페이지</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <style>
+        .navbar-brand {
+            color: #41464b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
+        <a class="navbar-brand" href="/">SEOMOIM</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <form class="form-inline my-2 my-md-0">
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-dark">검색</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="collapse navbar-collapse" id="navbarExample09">
+            <ul class="navbar-nav ml-auto order-md-last">
+                <li class="nav-login">
+                    <p class="nav-link" th:text="|${member.name}님 환영합니다|">회원님</p>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{'/members/'+${member.getId()}}">마이페이지</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/members/logout">로그아웃</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+<div class="container mt-5">
+    <!-- Thymeleaf를 사용하여 모임 정보 표시 -->
+    <div class="card" data-toggle="modal" th:data-target="'#moimModal' + ${moim.id}">
+        <div class="card-body">
+            <!-- 모임 카테고리 -->
+            <h5 class="card-title" th:text="${moim.moimCategory}">카테고리명</h5>
+
+            <!-- 모임 제목 -->
+            <h2 th:text="${moim.title}">모임 제목</h2>
+
+            <!-- 모임 시작 시간 -->
+            <p class="card-text">
+                <strong>시간:</strong> <span th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span>
+            </p>
+
+            <!-- 모임 위치 -->
+            <p class="card-text">
+                <strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span>
+            </p>
+
+            <!-- 참여자 정보 -->
+            <p class="card-text">
+                <strong>참여자 수:</strong> <span th:text="${moim.participantCount}">0명</span>
+            </p>
+
+            <!-- 전체 참여자 수 -->
+            <p class="card-text">
+                <strong>전체 참여자 수:</strong> <span th:text="${moim.totalParticipantCount}">전체참여자수</span>
+            </p>
+    </div>
+</div>
+
+    <!-- 모달 컨테이너 -->
+    <div th:each="moim:${moims}">
+        <div class="modal fade" th:id="'moimModal' + ${moim.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" th:text="${moim.title}">모임 상세 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 여기에 모임 상세 정보 표시 -->
+                        <p><strong>시간:</strong> <span th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span></p>
+                        <p><strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span></p>
+                        <!-- 기타 정보 추가 -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 모임 상세 모달 -->
+    <div th:each="moim:${moims}">
+        <div class="modal fade" th:id="'moimModal' + ${moim.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" th:text="${moim.title}">모임 상세 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 여기에 모임 상세 정보 표시 -->
+                        <h6><strong>시간:</strong> <span th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span></h6>
+                        <h6><strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span></h6>
+                        <p><strong>모집자:</strong><span th:text="${moim.member.getName()}">모집자</span> </p>
+                        <p><strong>참여자수/모집인원:</strong><span th:text="${moim.participantCount}">참여자수</span><span>/</span>
+                            <span th:text="${moim.totalParticipantCount}">모집인원</span> </p>
+                        <p><strong>내용:</strong><span th:text="${moim.content}">내용</span> </p>
+                        <!-- 기타 정보 추가 -->
+                        <button type="button" class="btn btn-outline-danger"  data-dismiss="modal">좋아요</button>
+                        <button type="button" class="btn btn-outline-secondary" id="joinButton" data-dismiss="modal">참여</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info mb-2" data-dismiss="modal">닫기</button>
+                    </div>
+
+                    <script th:inline="javascript">
+                        document.getElementById('joinButton').addEventListener('click', function() {
+                            // 멤버 ID와 모임 ID 설정
+                            const memberId =1
+                            const moimId =1;   // 실제로 사용할 모임 ID로 대체
+
+                            // POST 요청을 보낼 엔드포인트 URL
+                            const url = `/moims/${memberId}/${moimId}`;
+                            // POST 요청 설정
+                            fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! Status: ${response.status}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log('좋아요 요청 성공:', data);
+                                    // 여기에서 추가적인 처리를 수행할 수 있습니다.
+                                })
+                                .catch(error => {
+                                    console.error('좋아요 요청 실패:', error);
+                                });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a th:href="@{'/moims/' + ${moim.id}}">수정</a>
+    <!-- 부트스트랩 및 jQuery 스크립트 추가 (옵션) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>

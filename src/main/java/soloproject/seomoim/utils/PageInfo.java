@@ -1,4 +1,4 @@
-package soloproject.seomoim;
+package soloproject.seomoim.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.*;
 import java.util.List;
@@ -27,12 +28,14 @@ public class MemberDto {
         @NotBlank(message = "비밀번호 확인은 필수 입력값입니다.")
         private String confirmPassword;
 
+        @NotBlank
+        private String name;
+
 
     }
 
     @Getter @Setter
     public static class Update{
-
 
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$",
                 message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
@@ -41,16 +44,14 @@ public class MemberDto {
         @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{3,4}$", message = "이름은 특수문자를 제외한 3~4자리여야 합니다.")
         private String name;
 
+        @Nullable
         @Min(12) @Max(100)
         private int age;
 
+        @Nullable
         private char gender;
 
-        private String zipCode;
-
         private String address;
-
-        private String detailAddress;
     }
 
     @Getter @Setter

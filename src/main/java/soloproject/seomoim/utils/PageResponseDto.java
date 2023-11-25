@@ -1,9 +1,8 @@
-package soloproject.seomoim;
+package soloproject.seomoim.utils;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
-import soloproject.seomoim.moim.entitiy.Moim;
 
 import java.util.List;
 

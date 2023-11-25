@@ -1,7 +1,5 @@
 package soloproject.seomoim.member.service;
 
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,30 +22,30 @@ class MemberServiceTest {
     public void 회원가입테스트() throws Exception{
         //given
         Member member = new Member();
-        member.setEmail("dmswjd4015@naver.com");
-        member.setPassword("1111");
-        member.setConfirmPassword("1111");
+        member.setEmail("dmswjd@naver.com");
+        member.setPassword("dkssud1!");
+        member.setConfirmPassword("dkssud1!");
 
         //when
         Long signupId = memberService.signup(member);
+
         //then
+        Member findMember = memberRepository.findById(signupId).get();
 
-        memberRepository.findById(signupId);
-
-        assertThat(member.getId()).isEqualTo(signupId);
+        assertThat(findMember.getId()).isEqualTo(signupId);
     }
 
     @Test
     public void 아이디중복검사테스트() throws Exception {
         //given
         Member member1 = new Member();
-        member1.setEmail("dmswjd4015@naver.com");
+        member1.setEmail("dmswjd@naver.com");
         member1.setPassword("1111");
         member1.setConfirmPassword("1111");
 
 
         Member member2 = new Member();
-        member2.setEmail("dmswjd4015@naver.com");
+        member2.setEmail("dmswjd@naver.com");
         member2.setPassword("1111");
         member2.setConfirmPassword("1111");
         //when
@@ -61,7 +59,7 @@ class MemberServiceTest {
     public void 회원정보업데이트테스트() throws Exception{
     //given
         Member member = new Member();
-        member.setEmail("dmswjd4015@naver.com");
+        member.setEmail("dmswjd@naver.com");
         member.setPassword("1111");
         member.setConfirmPassword("1111");
         Long signupId = memberService.signup(member);
@@ -73,16 +71,16 @@ class MemberServiceTest {
 
         //then
         assertThat(member.getName()).isEqualTo("서은정");
-        assertThat(member.getRegion()).isNull();
+        assertThat(member.getAddress()).isNull();
         assertThat(member.getGender()).isEqualTo('여');
         assertThat(member.getAge()).isEqualTo(33);
     }
 
     @Test
     public void 회원삭제테스트() throws Exception{
-    //given
+        //given
         Member member = new Member();
-        member.setEmail("dmswjd4015@naver.com");
+        member.setEmail("dmswjd@naver.com");
         member.setPassword("1111");
         member.setConfirmPassword("1111");
         Long signupId = memberService.signup(member);

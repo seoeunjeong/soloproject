@@ -1,13 +1,12 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <title>seomoim</title>
+    <title>seomoim :: 1회성 모임커뮤니티</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <style>
-        /* 추가한 CSS 스타일 */
         .card {
             transition: transform 0.2s;
             border-radius: 30px;
@@ -22,12 +21,16 @@
             font-size: 30px;
         }
         .category-btn {
-            margin-bottom: 0.5rem; /* 카테고리 버튼과 모임 타이틀 간 간격 조정 */
+            margin-bottom: 0.5rem;
         }
 
         .card-text {
             margin-top:0.5rem;
             color: #555;
+        }
+        .navbar-brand {
+            color: #41464b;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -44,13 +47,20 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">카테고리</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown09">
-                        <a class="dropdown-item" href="#">STUDY</a>
+                        <a href="#" class="dropdown-item" onclick="sendSearchRequest(event)">STUDY</a>
                         <a class="dropdown-item" href="#">EXERCISE</a>
                         <a class="dropdown-item" href="#">TRAVEL</a>
                         <a class="dropdown-item" href="#">EAT</a>
                         <a class="dropdown-item" href="#">DRINK</a>
                         <a class="dropdown-item" href="#">COFFEE</a>
 
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">관심지역</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown09">
+                        <a class="dropdown-item" href="#">등록</a>
+                        <a class="dropdown-item" href="#">검색</a>
                     </div>
                 </li>
             </ul>
@@ -64,21 +74,13 @@
             </form>
             <ul class="navbar-nav ml-auto order-md-last">
                 <li class="nav-item">
-                    <a class="nav-link" href="/members/{member-id}" th:text="|마이페이지: ${member.email}|">회원정보</a>
+                    <a class="nav-link" href="/members/loginFrom">로그인</a>
                 </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/members/logout">로그아웃<span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/members">회원가입</a>
                 </li>
             </ul>
         </div>
-    </nav>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <button type="button" class="btn btn-outline-secondary"><strong>+</strong>모임등록하기</button>
-                <button type="button" class="btn btn-outline-danger">관심모임보기</button>
-            </li>
-        </ul>
     </nav>
 
     <main role="main">
@@ -86,7 +88,7 @@
             <div class="col-sm-8 mx-auto">
                 <h1>SEOMOIM</h1>
                 <p>지속적인 모임활동은 부담스럽지만 1회성 모임을 참여하고 싶은 사람들을 위한</br>
-                    카테고리 와 위치 기반으로 모임을 만들고 참여할 수 있는 커뮤니티</p>
+                카테고리 와 위치 기반으로 모임을 만들고 참여할 수 있는 커뮤니티</p>
                 <p>지금 시작해보세요</p>
                 <p>
                     <a class="btn btn-primary" href="/docs/4.3/components/navbar/" role="button">추천모임 보러가기 »</a>
@@ -99,13 +101,13 @@
         <div class="row">
             <!-- Thymeleaf를 사용하여 리스트 출력 -->
             <div class="col-md-4 mb-3" th:each="moim:${moims}">
-                <div class="card">
+                <div class="card" data-toggle="modal" th:data-target="'#moimModal' + ${moim.id}">
                     <div class="card-body d-flex flex-column align-items-start">
                         <!-- 카테고리 버튼 -->
                         <button type="button" class="btn btn-info mb-2 category-btn" th:text="${moim.moimCategory}">카테고리명</button>
 
                         <!-- 모임 제목 -->
-                        <h5 class="card-title mb-0" th:text="${moim.title}">모임 제목 1</h5>
+                        <h3 class="card-title mb-0" th:text="${moim.title}">모임 제목 1</h3>
 
                         <!-- 시간 및 위치 정보 -->
                         <p class="card-text">
@@ -123,3 +125,83 @@
             <!-- 여러 모임을 동적으로 출력할 수 있도록 Thymeleaf를 사용하여 리스트를 반복합니다. -->
         </div>
     </div>
+
+
+    <script>
+        function sendSearchRequest(event){
+            event.preventDefault();
+
+            var url = "/moims/search";
+            var page = 5; // 예시 값, 필요에 따라 동적으로 설정하세요.
+            var size = 6; // 예시 값, 필요에 따라 동적으로 설정하세요.
+            var moimCategory = 'STUDY'; // 예시 값, 필요에 따라 동적으로 설정하세요.
+
+            // 데이터를 객체로 생성
+            var requestData = {
+                moimCategory: moimCategory,
+                page: page,
+                size: size
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 받아온 데이터로 카드 업데이트
+                    updateMoimCard(data);
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+
+        function updateMoimCard(data) {
+            // 만약 데이터가 비어있으면 카드 삭제
+            if (data.isEmpty) {
+                // 삭제할 카드의 부모 엘리먼트를 찾아서 삭제
+                var cardToRemove = document.querySelector('.card');
+                if (cardToRemove) {
+                    cardToRemove.parentNode.removeChild(cardToRemove);
+                }
+                return;
+            }
+
+
+            // 카테고리 버튼
+            document.querySelector('.category-btn').innerText = data.moimCategory;
+
+            // 모임 제목
+            document.querySelector('.card-title').innerText = data.title;
+
+            // 시간 및 위치 정보
+            document.querySelector('.card-text').innerHTML = '<strong>시간:</strong> ' + data.createdAt + '<br/><strong>위치:</strong> ' + data.region;
+
+            // 참여자 수
+            document.querySelector('.participant-count').innerHTML = '<strong>참여자 수:</strong> ' + data.participantCount + '<span>/</span>' + data.totalParticipantCount;
+        }
+
+        // 페이지 로딩 시 실행
+        window.addEventListener('DOMContentLoaded', function () {
+            // 서버에서 데이터 받아오기
+            sendSearchRequest();
+        });
+    </script>
+
+
+    <!-- 부트스트랩 및 jQuery 스크립트 추가 (옵션) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</div>
+</body>
+</html>

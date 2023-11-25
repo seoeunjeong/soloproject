@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import soloproject.seomoim.utils.Hello;
+import soloproject.seomoim.utils.QHello;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 
 @SpringBootTest

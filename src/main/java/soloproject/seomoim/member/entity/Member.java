@@ -29,15 +29,15 @@ public class Member extends BaseEntitiy {
 
     private String name;
 
-    private int age;
-
-    private char gender;
+    // 기본값으로 null을 가진 Integer 필드
+    private Integer age;
+    // 기본값으로 null을 가진 Character 필드
+    private Character gender;
 
     @Enumerated(EnumType.STRING)
     private ROLE role = ROLE.UNVERIFIED_MEMBER;
 
-    @Embedded
-    private Region region;
+    private String address;
 
     //멤버는 여러 모임을 만들 수 있다.
     @OneToMany(mappedBy = "member")
@@ -53,10 +53,8 @@ public class Member extends BaseEntitiy {
 
 
     //연관관계 편의 메소드
-
     public Member() {
     }
-
     public Member(String email, String password) {
         this.email = email;
         this.password = password;

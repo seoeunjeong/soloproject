@@ -6,6 +6,7 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.moim.BaseEntitiy;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class Moim extends BaseEntitiy{
     private String title;
 
     private String content;
+
+    private LocalDateTime startedAt;
 
     @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
     private List<MoimMember> participant= new ArrayList<>();

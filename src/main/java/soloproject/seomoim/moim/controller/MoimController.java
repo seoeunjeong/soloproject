@@ -1,15 +1,13 @@
 package soloproject.seomoim.moim.controller;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import soloproject.seomoim.PageResponseDto;
+import soloproject.seomoim.utils.PageResponseDto;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.dto.MoimDto;
@@ -28,20 +26,24 @@ public class MoimController {
     private final MoimService moimService;
     private final MoimMapper mapper;
 
-    @GetMapping("/post")
-    public String postMoim(){
-        return "moims/postMoim";
-    }
+//    @GetMapping("/post")
+//    public String postMoim(@Login Member loginMember, Model model){
+//
+//        model.addAttribute("loginMember", loginMember);
+//
+//        return "moims/postMoim";
+//    }
 
-    @PostMapping
-    public String createMoim(@ModelAttribute MoimDto.Post createRequest) {
+    @PostMapping("/{member-id}")
+    public String createMoim(@PathVariable("member-id") Long memberId,
+                             @ModelAttribute MoimDto.Post createRequest) {
         Moim moim = mapper.moimPostDtoToMoim(createRequest);
-        Long moimId = moimService.createMoim(createRequest.getMemberId(), moim);
+        Long moimId = moimService.createMoim(memberId, moim);
         URI location = UriComponentsBuilder.newInstance()
-                .path(MOIM_DEFAULT_URL +moimId)
+                .path(MOIM_DEFAULT_URL + moimId)
                 .build()
                 .toUri();
-        return "redirect:/home";
+        return "redirect:/";
     }
 //    @PostMapping
 //    public ResponseEntity createMoim(@RequestBody MoimDto.Post createRequest) {
@@ -84,22 +86,33 @@ public class MoimController {
     }
 
 
+    /* 키워드로 검색 */
+    @GetMapping("/search")
+    @ResponseBody
+    public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto) {
+//                                          @RequestParam int page,@RequestParam int size){
+        Page<Moim> pageMoims = moimService.findAllbyPage(10,10);
+        List<Moim> moims = pageMoims.getContent();
+        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
+    }
+
     /*
      * 위치조회/카테고리조회/키워드-동적 쿼리 작성 쿼리DSL)
      * 위치(String,카테고리 enum,String keyword)
      */
-    @GetMapping("/search")
-    public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto,
-                                          @RequestParam int page,@RequestParam int size){
-        Page<Moim> pageMoims = moimService.findAllSearch(moimSearchDto, page - 1, size);
-        List<Moim> moims = pageMoims.getContent();
-        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims),pageMoims), HttpStatus.OK);
-    }
+//    @GetMapping("/search")
+//    @ResponseBody
+//    public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto) {
+////                                          @RequestParam int page,@RequestParam int size){
+//        Page<Moim> pageMoims = moimService.findAllSearch(moimSearchDto, moimSearchDto.getPage() - 1, moimSearchDto.getSize());
+//        List<Moim> moims = pageMoims.getContent();
+//        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
+//    }
 
 
 
     /*모임참여로직작성*/
-    @PostMapping("/join/{moim-id}/{member-id}")
+    @PostMapping("/{moim-id}/{member-id}")
     public ResponseEntity joinMoim(@PathVariable("moim-id")Long moimId,
                                    @PathVariable("member-id")Long memberId){
         Moim moim = moimService.joinMoim(moimId, memberId);
@@ -114,6 +127,7 @@ public class MoimController {
                             @PathVariable("member-id") Long memberId) {
         moimService.notJoinMoim(moimId, memberId);
     }
+
 
 
 
