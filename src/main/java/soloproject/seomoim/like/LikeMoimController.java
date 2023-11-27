@@ -1,6 +1,7 @@
 package soloproject.seomoim.like;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -8,20 +9,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LikeMoimController {
 
-    public final LikeMoimService likeService;
+    public final LikeMoimService likeMoimService;
 
     @PostMapping("/{member-Id}/{moim-Id}")
-    public Long postLike(@PathVariable("member-Id")Long memberId,
-                         @PathVariable("moim-Id")Long moimId){
-           return likeService.save(memberId,moimId);
+    public String postLike(@PathVariable("member-Id") Long memberId,
+                           @PathVariable("moim-Id") Long moimId) {
+        likeMoimService.like(memberId, moimId);
+        return "ok";
     }
 
-
-    @DeleteMapping("/cancel/{member-Id}/{moim-Id}")
+    @DeleteMapping("/{member-Id}/{moim-Id}")
     public void deleteLike(@PathVariable("member-Id") Long memberId,
-                           @PathVariable("moim-Id") Long moimId){
-
-        likeService.cancelLike(memberId,moimId);
+                           @PathVariable("moim-Id") Long moimId) {
+        likeMoimService.cancelLike(memberId, moimId);
     }
 
 }

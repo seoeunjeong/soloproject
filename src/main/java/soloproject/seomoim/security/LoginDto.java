@@ -1,4 +1,4 @@
-package soloproject.seomoim.login;
+package soloproject.seomoim.security;
 
 import lombok.Getter;
 import lombok.Setter;

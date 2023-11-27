@@ -73,6 +73,25 @@ public class MoimController {
         return "moims/detail";
     }
 
+
+
+    /*모임참여로직작성*/
+    @PostMapping("/{moim-id}/{member-id}")
+    public ResponseEntity joinMoim(@PathVariable("moim-id")Long moimId,
+                                   @PathVariable("member-id")Long memberId){
+        Moim moim = moimService.joinMoim(moimId, memberId);
+        return new ResponseEntity<>(mapper.MoimToResponseDto(moim), HttpStatus.OK);
+    }
+
+    /*모임참여취소로직작성*/
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{moim-id}/{member-id}")
+    public void notJoinMoim(@PathVariable("moim-id") Long moimId,
+                            @PathVariable("member-id") Long memberId) {
+        moimService.notJoinMoim(moimId, memberId);
+    }
+
+
     @PatchMapping("/{moim-id}")
     public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
                                      @RequestBody MoimDto.Update updateRequest){
@@ -121,27 +140,5 @@ public class MoimController {
 //        List<Moim> moims = pageMoims.getContent();
 //        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
 //    }
-
-
-
-    /*모임참여로직작성*/
-    @PostMapping("/{moim-id}/{member-id}")
-    public ResponseEntity joinMoim(@PathVariable("moim-id")Long moimId,
-                                   @PathVariable("member-id")Long memberId){
-        Moim moim = moimService.joinMoim(moimId, memberId);
-        return new ResponseEntity<>(mapper.MoimToResponseDto(moim), HttpStatus.OK);
-    }
-
-
-    /*모임참여취소로직작성*/
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/delete/{moim-id}/{member-id}")
-    public void notJoinMoim(@PathVariable("moim-id") Long moimId,
-                            @PathVariable("member-id") Long memberId) {
-        moimService.notJoinMoim(moimId, memberId);
-    }
-
-
-
 
 }

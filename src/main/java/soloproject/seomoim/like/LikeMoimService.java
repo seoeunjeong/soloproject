@@ -15,36 +15,32 @@ import java.util.Optional;
 @Transactional
 public class LikeMoimService {
 
-    private final LikeMoimRepository likeRepository;
+    private final LikeMoimRepository likeMoimRepository;
     private final MemberService memberService;
     private final MoimService moimService;
-    public Long save(Long memberId,Long moimId){
+
+    public void like(Long memberId, Long moimId) {
         Member member = memberService.findMember(memberId);
         Moim moim = moimService.findMoim(moimId);
-        alreadyLike(member,moim);
-        LikeMoim like = new LikeMoim();
-        like.setMoim(moim);
-        like.setMember(member);
-        LikeMoim saveLike = likeRepository.save(like);
+        checkLike(member,moim);
+        LikeMoim likeMoim = new LikeMoim();
+        likeMoim.setMoim(moim);
+        likeMoim.setMember(member);
+        LikeMoim saveLike = likeMoimRepository.save(likeMoim);
         moim.likeCountUp();
-        return saveLike.getId();
     }
-
-
-    public void cancelLike(long memberId,long moimId){
+    public void cancelLike(long memberId, long moimId) {
         Member member = memberService.findMember(memberId);
         Moim moim = moimService.findMoim(moimId);
-        Optional<LikeMoim> findLike = likeRepository.findLikeMoimByMemberAndMoim(member, moim);
-        LikeMoim likeMoim = findLike.orElseThrow(() -> new IllegalStateException("좋아요 정보가 없습니다"));
+        LikeMoim likeMoim = likeMoimRepository.findLikeMoimByMemberAndMoim(member, moim)
+                .orElseThrow(() -> new IllegalStateException("This moim not like"));
         moim.likeCountDown();
-        likeRepository.delete(likeMoim);
+        likeMoimRepository.delete(likeMoim);
     }
 
-    private void alreadyLike(Member member,Moim moim){
-        Optional<LikeMoim> likeMoimByMember = likeRepository.findLikeMoimByMemberAndMoim(member,moim);
-        if(likeMoimByMember.isPresent()){
-            throw new IllegalStateException("이미 좋아요한 모임입니다.");
+    private void checkLike(Member member, Moim moim) {
+        if (likeMoimRepository.findLikeMoimByMemberAndMoim(member, moim) != null) {
+            throw new IllegalStateException("This moim is already liked.");
         }
     }
-
 }

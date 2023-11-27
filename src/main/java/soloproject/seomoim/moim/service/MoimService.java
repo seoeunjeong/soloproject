@@ -9,11 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.KakaoApi.dto.DocumentDto;
 import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
 import soloproject.seomoim.KakaoApi.service.KakaoAddressSearchService;
-import soloproject.seomoim.KakaoApi.service.KakaoUriBuilderService;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -94,12 +92,16 @@ public class MoimService {
 //        return moims;
 //    }
 
-    //회원이 모임에 가입하는 로직
+    /*회원이 모임에 가입하는 로직 moimMember table에 저장*/
     @Transactional
     public Moim joinMoim(Long moimId, Long memberId) {
+        MoimMember byMoimAndMember = moimMemberRepository.findByMoimAndMember(moimId, memberId);
+        if (byMoimAndMember!=null) {
+            throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
+        }
         Moim moim = findMoim(moimId);
         Member member = memberService.findMember(memberId);
-        moim.joinMoim(moim, member);//여기서 메소드가 동작해서 조회한 모임의 정보가 변경된다.
+        moim.joinMoim(moim, member);
         return moim;
     }
 

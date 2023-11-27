@@ -29,9 +29,6 @@ public class Moim extends BaseEntitiy{
 
     private LocalDateTime startedAt;
 
-    @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
-    private List<MoimMember> participant= new ArrayList<>();
-
     private int totalParticipantCount;
 
     private int participantCount;
@@ -47,6 +44,8 @@ public class Moim extends BaseEntitiy{
 
     private int likeCount;
 
+    @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
+    private List<MoimMember> participant= new ArrayList<>();
 
     public Moim() {
     }
@@ -59,6 +58,7 @@ public class Moim extends BaseEntitiy{
         participant.add(moimMember);
         this.participantCount += 1;
     }
+
     /*참여인원줄이기*/
     public void reduceCount(){
         this.participantCount -=1;
@@ -69,6 +69,7 @@ public class Moim extends BaseEntitiy{
     }
 
     public void likeCountDown(){
+
         this.likeCount= likeCount-1;
     }
 }
