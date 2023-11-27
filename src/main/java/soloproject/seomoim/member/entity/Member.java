@@ -1,5 +1,7 @@
 package soloproject.seomoim.member.entity;
 
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.like.LikeMoim;
@@ -12,11 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Member extends BaseEntitiy {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="member_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(unique = true)
@@ -29,15 +33,18 @@ public class Member extends BaseEntitiy {
 
     private String name;
 
-    // 기본값으로 null을 가진 Integer 필드
     private Integer age;
-    // 기본값으로 null을 가진 Character 필드
+
     private Character gender;
 
-    @Enumerated(EnumType.STRING)
-    private ROLE role = ROLE.UNVERIFIED_MEMBER;
-
     private String address;
+
+    private double latitude;
+    private double longitude;
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     //멤버는 여러 모임을 만들 수 있다.
     @OneToMany(mappedBy = "member")
@@ -45,7 +52,7 @@ public class Member extends BaseEntitiy {
 
     //멤버는 여러 모임에 참여 할수있다.
     @OneToMany(mappedBy = "member")
-    private List<MoimMember> participationMoims= new ArrayList<>();
+    private List<MoimMember> participationMoims = new ArrayList<>();
 
     //멤버는 여러 모임을 좋아요 추가할수있다.
     @OneToMany(mappedBy = "member")
@@ -55,8 +62,10 @@ public class Member extends BaseEntitiy {
     //연관관계 편의 메소드
     public Member() {
     }
-    public Member(String email, String password) {
+
+    public Member(String email, String name, List<String> roles) {
         this.email = email;
-        this.password = password;
+        this.name = name;
+        this.roles = roles;
     }
 }

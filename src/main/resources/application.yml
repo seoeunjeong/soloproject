@@ -32,16 +32,30 @@ spring:
             enable: true
     default-encoding:
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 632441069319-u6u42uka12fqgeaprt574sq438shg4qn.apps.googleusercontent.com
+            clientSecret: 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
+            scope:
+              - email
+              - profile
+
+
+
+
 logging level:
   org.hibernate.sql: debug
 
 
-
-#  기본 1800초 30분ㅂㅂ
+#  기본 1800초 30분
 server:
   servlet:
     session:
       timeout: 1800
+
 #      개발시 사용하고 노출하지말자
   error:
     include-exception: true
@@ -49,6 +63,11 @@ server:
 mail:
   address:
     admin: admin@gmail.com
+
+kakao:
+  api:
+    key: ${KAKAO_REST_API_KEY}
+
 
 
 

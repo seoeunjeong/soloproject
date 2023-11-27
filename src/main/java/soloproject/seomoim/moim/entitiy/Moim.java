@@ -38,6 +38,10 @@ public class Moim extends BaseEntitiy{
 
     private String region;
 
+    private double latitude;
+
+    private double longitude;
+
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 

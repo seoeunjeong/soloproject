@@ -1,12 +1,28 @@
 package soloproject.seomoim.moim.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ExceptionCode;
+import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.member.repository.MemberRepository;
+import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.security.CustomUserDetailsService;
 import soloproject.seomoim.utils.PageResponseDto;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.mapper.MoimMapper;
@@ -14,47 +30,49 @@ import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/moims")
+@Slf4j
 public class MoimController {
-    private final static String MOIM_DEFAULT_URL = "/moim/";
-
+    private final static String MOIM_DEFAULT_URL = "/moims/";
     private final MoimService moimService;
     private final MoimMapper mapper;
-
-//    @GetMapping("/post")
-//    public String postMoim(@Login Member loginMember, Model model){
-//
-//        model.addAttribute("loginMember", loginMember);
-//
-//        return "moims/postMoim";
-//    }
+    private final MemberRepository memberRepository;
 
     @PostMapping("/{member-id}")
     public String createMoim(@PathVariable("member-id") Long memberId,
-                             @ModelAttribute MoimDto.Post createRequest) {
-        Moim moim = mapper.moimPostDtoToMoim(createRequest);
+                             @Valid @ModelAttribute MoimDto.Post PostRequest) {
+        Moim moim = mapper.moimPostDtoToMoim(PostRequest);
         Long moimId = moimService.createMoim(memberId, moim);
         URI location = UriComponentsBuilder.newInstance()
                 .path(MOIM_DEFAULT_URL + moimId)
                 .build()
                 .toUri();
-        return "redirect:/";
+        return "redirect:/loginHome";
     }
-//    @PostMapping
-//    public ResponseEntity createMoim(@RequestBody MoimDto.Post createRequest) {
-//        Moim moim = mapper.moimPostDtoToMoim(createRequest);
-//        Long moimId = moimService.createMoim(createRequest.getMemberId(), moim);
-//        URI location = UriComponentsBuilder.newInstance()
-//                .path(MOIM_DEFAULT_URL +moimId)
-//                .build()
-//                .toUri();
-//        return ResponseEntity.created(location).build();
-//    }
+
+    //모임 상세페이지 조회
+    @GetMapping("/{moim-id}")
+    public String findMoim(@PathVariable("moim-id")Long moimId,
+                           Model model, Authentication authentication){
+        Object principal = authentication.getPrincipal();
+        Optional<Member> optionalMember = memberRepository.findByEmail(principal.toString());
+        Member member = optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        model.addAttribute("member", member);
+        Moim moim = moimService.findMoim(moimId);
+        model.addAttribute("moim",moim);
+        return "moims/detail";
+    }
+
     @PatchMapping("/{moim-id}")
     public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
                                      @RequestBody MoimDto.Update updateRequest){
@@ -70,11 +88,6 @@ public class MoimController {
     }
 
 
-    @GetMapping("/{moim-id}")
-    public ResponseEntity findMoim(@PathVariable("moim-id")Long moimId){
-        Moim moim = moimService.findMoim(moimId);
-        return new ResponseEntity(mapper.MoimToResponseDto(moim), HttpStatus.OK);
-    }
 
 
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/

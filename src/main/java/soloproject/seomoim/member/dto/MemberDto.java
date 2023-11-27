@@ -11,7 +11,8 @@ import java.util.List;
 
 
 public class MemberDto {
-    @Getter @Setter
+    @Getter
+    @Setter
     public static class Signup {
 
         @Email(message = "이메일의 형식이 올바르지 않습니다.")
@@ -30,12 +31,11 @@ public class MemberDto {
 
         @NotBlank
         private String name;
-
-
     }
 
-    @Getter @Setter
-    public static class Update{
+    @Getter
+    @Setter
+    public static class Update {
 
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$",
                 message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
@@ -44,18 +44,17 @@ public class MemberDto {
         @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{3,4}$", message = "이름은 특수문자를 제외한 3~4자리여야 합니다.")
         private String name;
 
-        @Nullable
-        @Min(12) @Max(100)
-        private int age;
+        private Integer age;
 
-        @Nullable
-        private char gender;
+        private Character
+                gender;
 
         private String address;
     }
 
-    @Getter @Setter
-    public static class ResponseDto{
+    @Getter
+    @Setter
+    public static class ResponseDto {
         private String email;
         private String name;
         private Integer age;
@@ -71,25 +70,29 @@ public class MemberDto {
 
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @AllArgsConstructor
     @Builder
-    public static class LikeMoimDto{
+    public static class LikeMoimDto {
         private Long moimId;
         private String moimTitle;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @AllArgsConstructor
     @Builder
-    public static class MoimMemberDto{
+    public static class MoimMemberDto {
         private Long moimId;
         private String moimTitle;
     }
-    @Getter @Setter
+
+    @Getter
+    @Setter
     @AllArgsConstructor
     @Builder
-    public static class CreateMoimsDto{
+    public static class CreateMoimsDto {
         private Long moimId;
         private String moimTitle;
     }

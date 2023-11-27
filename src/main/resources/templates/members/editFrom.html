@@ -37,20 +37,18 @@
   </style>
 </head>
 <body>
+<!--  <div th:replace="fragments/bodyHeader :: bodyHeader" />-->
   <div class="container">
     <img src="profile.jpg" alt="프로필 사진">
     <hr>
-    <form th:action="@{'/members/'+ ${member.id} + '/edit'}" method="post">
+    <form th:action="@{'/members/edit/'+ ${member.id}}" method="post">
       <label>
         <strong>이름</strong>
         <input type="text" name="name" th:value="${member.name}" placeholder="이름을 입력해주세요">
       </label>
       <hr>
       <div class="profile-info">
-        <label>
-          <strong>이메일</strong>
-          <input type="email" name="email" th:value="${member.email}" placeholder="이메일을 입력해주세요">
-        </label>
+        <strong>이메일</strong><p th:text="${member.email}">이메일주소</p>
       </div>
       <div class="profile-info">
         <label>

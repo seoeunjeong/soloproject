@@ -6,9 +6,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import soloproject.seomoim.KakaoApi.dto.DocumentDto;
+import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
+import soloproject.seomoim.KakaoApi.service.KakaoAddressSearchService;
+import soloproject.seomoim.KakaoApi.service.KakaoUriBuilderService;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -25,14 +30,17 @@ import java.util.Optional;
 public class MoimService {
 
     private final MoimRepository moimRepository;
-
     private final MemberService memberService;
-
     private final MoimMemberRepository moimMemberRepository;
+    private final KakaoAddressSearchService kakaoAddressSearchService;
 
     public Long createMoim(Long memberId,Moim moim){
         Member member = memberService.findMember(memberId);
         moim.setMember(member);
+        KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(moim.getRegion());
+        DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
+        moim.setLatitude(documentDto.getLatitude());
+        moim.setLongitude(documentDto.getLongitude());
         Moim saveMoim = moimRepository.save(moim);
         joinMoim(saveMoim.getId(), memberId);
         return saveMoim.getId();
@@ -59,6 +67,10 @@ public class MoimService {
         return findMoin.orElseThrow(()->new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
     }
 
+
+    public List<Moim> findCreatedMoim(Member member){
+        return moimRepository.findMoimsByMember(member);
+    }
     public void deleteMoim(Long moimId){
         Moim moim = findMoim(moimId);
         moimRepository.delete(moim);

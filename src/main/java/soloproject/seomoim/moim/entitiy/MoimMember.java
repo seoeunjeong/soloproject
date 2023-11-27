@@ -20,6 +20,7 @@ public class MoimMember extends BaseEntitiy {
     @Column(name="moim_member_id")
     private Long id;
 
+    /*외래키를 가지고있는곳이 주인! 반대쪽에서 데이터 주입시 주의하자*/
     @ManyToOne
     @JoinColumn(name = "moim_id")
     private Moim moim;
