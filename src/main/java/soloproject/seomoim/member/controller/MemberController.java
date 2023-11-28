@@ -2,7 +2,6 @@ package soloproject.seomoim.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +11,7 @@ import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.entitiy.Moim;
-import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.moim.service.MoimService;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -57,6 +54,8 @@ public class MemberController {
                             Model model){
         Member member = memberService.findMember(memberId);
         model.addAttribute("member",member);
+        List<Moim> createdMoim = moimService.findCreatedMoim(memberId);
+        model.addAttribute("moimList",createdMoim);
         return "members/myPage";
 
     }
@@ -88,9 +87,8 @@ public class MemberController {
     public String findCreatedMoimList(@PathVariable("member-id")Long memberId,
                                       Model model){
         Member member = memberService.findMember(memberId);
-        List<Moim> createdMoimList = moimService.findCreatedMoim(member);
+        List<Moim> createdMoimList = moimService.findCreatedMoim(memberId);
         model.addAttribute("MoimList", createdMoimList);
-
         return null;
     }
     /* 회원이 참여한 모암 List 조회 */
@@ -99,19 +97,9 @@ public class MemberController {
     public String findJoinedMoimList(@PathVariable("member-id")Long memberId,Model model){
         List<Moim> participationMoims = memberService.findParticipationMoims(memberId);
         model.addAttribute("moimlist",participationMoims);;
+
         return "moims/participationMoims";
     }
-
-//    //모임조회
-
-//    @GetMapping("/moims/{member-id}")
-//    public ResponseEntity findMemberWithParticipationMoims(@PathVariable("member-id")Long memberId){
-//        Member member = memberService.findMemberAndfindParticipationMoim(memberId);
-//
-//        MemberDto.ResponseDto responseDto =
-//        return new ResponseEntity(responseDto, HttpStatus.OK);
-//    }
-
 
     /*로그아웃확인*/
     @GetMapping("/logout")
@@ -119,11 +107,6 @@ public class MemberController {
         HttpSession session = request.getSession(false);
         if(session!=null)
             session.invalidate();
-//        어떻게 로그아웃할수있냐고요ㅠㅠ
-//        SecurityContext context = SecurityContextHolder.getContext();
-//        Authentication authentication = context.getAuthentication();
-//        new SecurityContextLogoutHandler().logout(request, response, authentication);
-
         return "redirect:/";
     }
 

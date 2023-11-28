@@ -9,9 +9,8 @@ import java.util.List;
 
 public interface MoimRepository extends JpaRepository<Moim,Long> , MoimRepositoryCustom{
 
-    /* memberId 로 자신이 만들 모임 list 조회*/
+    /* memberId 로 회원이 만든 모임 list 조회*/
     List<Moim> findMoimsByMember(Member member);
-
 
 }
 

@@ -65,35 +65,23 @@ public class MoimService {
         return findMoin.orElseThrow(()->new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
     }
 
-
-    public List<Moim> findCreatedMoim(Member member){
+    //회원이 만든 moim 을 조회할수있다.
+    public List<Moim> findCreatedMoim(Long memberId){
+        Member member = memberService.findMember(memberId);
         return moimRepository.findMoimsByMember(member);
     }
+
+    //모임삭제
     public void deleteMoim(Long moimId){
         Moim moim = findMoim(moimId);
         moimRepository.delete(moim);
-    }
-
-    /*
-     * 전체모임 페이지 네이션 구현*/
-    public Page<Moim> findAllbyPage(int page,int size){
-        Page<Moim> moims = moimRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        return moims;
     }
 
     public List<Moim> findAll(){
         return moimRepository.findAll();
     }
 
-
-//    모임 검색,페이지네이션
-//    public Page<Moim> findAllSearch(MoimSearchDto moimSearchDto, int page, int size) {
-//        Page<Moim> moims = moimRepository.searchAll(moimSearchDto, PageRequest.of(page, size));
-//        return moims;
-//    }
-
-    /*회원이 모임에 가입하는 로직 moimMember table에 저장*/
-    @Transactional
+    /*회원이 모임에 참여하는 로직 moimMember table에 저장*/
     public Moim joinMoim(Long moimId, Long memberId) {
         MoimMember byMoimAndMember = moimMemberRepository.findByMoimAndMember(moimId, memberId);
         if (byMoimAndMember!=null) {
@@ -104,7 +92,7 @@ public class MoimService {
         moim.joinMoim(moim, member);
         return moim;
     }
-
+    /*회원이 모임에 참여취소 로직 moimMember table에 삭제*/
     public void notJoinMoim(Long moimId,Long memberId){
         Moim moim = findMoim(moimId);
         moim.reduceCount();
@@ -112,7 +100,10 @@ public class MoimService {
         moimMemberRepository.delete(findMoimMember);
     }
 
-    public Page<Moim> findAllSearch(MoimSearchDto moimSearchDto, int i, int i1) {
-        return null;
+    /*모임 전체조회 페이지네이션 */
+    public Page<Moim> findAllbyPage(int page,int size){
+        Page<Moim> moims = moimRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return moims;
     }
+
 }

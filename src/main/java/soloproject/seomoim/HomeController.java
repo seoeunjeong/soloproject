@@ -7,6 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +19,11 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
+import soloproject.seomoim.security.CustomUserDetails;
+import soloproject.seomoim.security.CustomUserDetailsService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,27 +37,32 @@ public class HomeController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/")
-    public String home() {
-        return  "home/home";
-    }
-    @GetMapping("/loginHome")
-    public String loginHome(Model model){
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        String principal = (String) authentication.getPrincipal();
-        log.info("userDetails="+principal);
-        Optional<Member> optionalMember = memberRepository.findByEmail(principal);
-        Member findMember = optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        model.addAttribute("member",findMember);
+    public String home(@AuthenticationPrincipal CustomUserDetails userDetails,
+                       Model model) {
+        log.info("member" + userDetails);
         List<Moim> moims = moimService.findAll();
-        model.addAttribute("moims",moims);
+
+        List<Moim> flashedMoims = (List<Moim>) model.getAttribute("moims");
+
+        if (userDetails == null) {
+            model.addAttribute("moims", moims);
+            return "home/home";
+        }
+
+        if (flashedMoims != null) {
+            moims = flashedMoims;
+        }
+
+        model.addAttribute("member", userDetails);
+        model.addAttribute("moims", moims);
         return "home/loginhome";
     }
 
 
 
+    /*Todo oauth 인증처리 폼로그인과 통합*/
     @GetMapping("/oauth/loginHome")
-    public String oauthLoginHome(@AuthenticationPrincipal() OAuth2User oAuth2User ,
+    public String oauthLoginHome(@AuthenticationPrincipal OAuth2User oAuth2User ,
                                  HttpServletRequest request,
                                  Model model) {
         Optional<Member> optionalMember = memberRepository.findByEmail(oAuth2User.getAttribute("email"));

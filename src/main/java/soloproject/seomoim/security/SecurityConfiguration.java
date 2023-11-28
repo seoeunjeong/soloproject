@@ -39,11 +39,12 @@ public class SecurityConfiguration {
                 .loginPage("/members/loginFrom")
                 .loginProcessingUrl("/process_login")
                 .failureUrl("/members/loginFrom?error")
-                .defaultSuccessUrl("/loginHome",true)
+                .defaultSuccessUrl("/",true)
                 .and()
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
+                .invalidateHttpSession(true).deleteCookies("JSESSIONID")
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/members/loginFrom").permitAll()

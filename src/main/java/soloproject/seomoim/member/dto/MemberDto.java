@@ -29,7 +29,8 @@ public class MemberDto {
         @NotBlank(message = "비밀번호 확인은 필수 입력값입니다.")
         private String confirmPassword;
 
-        @NotBlank
+        @NotBlank(message = "이름은 필수입력 값 입니다.")
+        @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,4}$", message = "이름은 특수문자를 제외한 2~4자리여야 합니다.")
         private String name;
     }
 
@@ -41,61 +42,55 @@ public class MemberDto {
                 message = "비밀번호는 영문,특수문자,숫자를 포함하여 8자리 이상이여야합니다.")
         private String password;
 
-        @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{3,4}$", message = "이름은 특수문자를 제외한 3~4자리여야 합니다.")
+        @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,4}$", message = "이름은 특수문자를 제외한 2~4자리여야 합니다.")
         private String name;
 
         private Integer age;
 
-        private Character
-                gender;
+        private Character gender;
 
         private String address;
     }
 
     @Getter
     @Setter
-    public static class ResponseDto {
+    public static class Dto {
+        private Long id;
         private String email;
         private String name;
         private Integer age;
         private char gender;
-        private String zipCode;
         private String address;
-        private String detailAddress;
-        private boolean certification;
-        private List<CreateMoimsDto> createMoims;
-        private List<MoimMemberDto> participationMoims;
-        private List<LikeMoimDto> likeMoims;
-
-
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class LikeMoimDto {
-        private Long moimId;
-        private String moimTitle;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class MoimMemberDto {
-        private Long moimId;
-        private String moimTitle;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class CreateMoimsDto {
-        private Long moimId;
-        private String moimTitle;
     }
 }
+
+
+
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@Builder
+//public static class LikeMoimDto {
+//    private Long moimId;
+//    private String moimTitle;
+//}
+//
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@Builder
+//public static class MoimMemberDto {
+//    private Long moimId;
+//    private String moimTitle;
+//}
+//
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@Builder
+//public static class CreateMoimsDto {
+//    private Long moimId;
+//    private String moimTitle;
+//}
 
 

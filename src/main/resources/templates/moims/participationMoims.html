@@ -11,12 +11,12 @@
     <table class="table table-striped">
       <thead>
       <tr>
-        <th>모임id</th> <th>만든사람</th> <th>모임날짜</th> <th>모임위치</th> <th>참여자</th>
+        <th>모임제목</th> <th>모집자</th> <th>모임날짜</th> <th>모임위치</th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="moim : ${moimlist}">
-        <td th:text="${moim.id}"></td>
+        <td th:text="${moim.title}"></td>
         <td th:text="${moim.member.name}"></td>
         <td th:text="${moim.startedAt}"></td>
         <td th:text="${moim.region}"></td>

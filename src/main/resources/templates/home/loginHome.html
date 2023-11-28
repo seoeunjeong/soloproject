@@ -117,7 +117,7 @@
 
         editButton.addEventListener('click', function () {
             // 수정 버튼이 클릭되면 지정된 URL로 이동
-            window.location.href = './members/moims/' + memberId;
+            window.location.href = '/members/moims/' + memberId;
         });
     </script>
 
@@ -130,7 +130,7 @@
                     카테고리 와 위치 기반으로 모임을 만들고 참여할 수 있는 커뮤니티</p>
                 <p>지금 시작해보세요</p>
                 <p>
-                    <a class="btn btn-primary" href="/docs/4.3/components/navbar/" role="button">추천모임 보러가기 »</a>
+                    <a class="btn btn-primary" th:href="@{/moims/nearby/{memberId}(memberId=${member.id})}">가까운 모임 보기»</a>
                 </p>
             </div>
         </div>

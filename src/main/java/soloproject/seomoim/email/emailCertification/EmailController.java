@@ -1,8 +1,7 @@
-package soloproject.seomoim.member.emailCertification;
+package soloproject.seomoim.email.emailCertification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import soloproject.seomoim.utils.SessionConst;
 

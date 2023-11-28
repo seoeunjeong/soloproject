@@ -75,10 +75,28 @@
     });
   </script>
 
-
-
   <div class="container">
-    <p>내가만든모임관리</p>
+    <h3>모임관리</h3>
+    <table>
+      <thead>
+      <th>제목</th>
+      <th>전체인원수</th>
+      <th>참여인원수</th>
+      <th>모임일</th>
+      <th>모임장소</th>
+      </thead>
+      <tbody>
+      <tr th:each=" moim :${moimList}">
+      <td th:text="${moim.title}"></td>
+      <td th:text="${moim.totalParticipantCount}"></td>
+      <td th:text="${moim.participantCount}"></td>
+      <td th:text="${moim.startedAt}"></td>
+      <td th:text="${moim.region}"></td>
+
+      </tr>
+  </tbody>
+    </table>
   </div>
+
 </body>
 </html>

@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import soloproject.seomoim.KakaoApi.dto.DocumentDto;
 import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
 import soloproject.seomoim.KakaoApi.service.KakaoAddressSearchService;
@@ -20,8 +19,8 @@ import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.moim.repository.MoimRepository;
 import soloproject.seomoim.security.CustomAuthorityUtils;
 
-import javax.persistence.Id;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,15 +39,13 @@ public class MemberService {
 
     @Transactional
     public Long signup(Member member) {
-        //아이디 중복 확인
-        confirmIdDuplication(member);
-        //패스워드 일치 확인
+        checkIdDuplication(member);
+
         if (!member.getPassword().equals(member.getConfirmPassword())) {
             throw new BusinessLogicException(ExceptionCode.PASSWORD_MISMATCH);
         }
-        //패스워드 암호화
-        String encryptedPassword = passwordEncoder.encode(member.getPassword());
 
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encryptedPassword);
 
         List<String> roles = authorityUtils.createRoles(member.getEmail());
@@ -88,16 +85,10 @@ public class MemberService {
     }
 
     public Member findMember(Long memberId) {
-        Optional<Member> findMember = memberRepository.findById(memberId);
-        return findMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
-    private void confirmIdDuplication(Member member) {
-        Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
-        if(findMember.isPresent()){
-            throw new BusinessLogicException(ExceptionCode.ALREADY_EXISTS_ID);
-        }
-    }
 
     /*회원이 자신이 참여한 모임 조회*/
     public List<Moim> findParticipationMoims(Long memberId){
@@ -109,12 +100,18 @@ public class MemberService {
         return moims;
     }
 
-    //회원 정보와 함께 참여한 모임 조회
+    private void checkIdDuplication(Member member) {
+        Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
+        if(findMember.isPresent()){
+            throw new BusinessLogicException(ExceptionCode.ALREADY_EXISTS_ID);
+        }
+    }
 
+    //회원 정보와 함께 참여한 모임 조회
 //    public Member findMemberAndfindParticipationMoim(Long memberId){
 //        Member findMember = memberRepository.findByIdAndParticipationMoims(memberId);
 //        return findMember;
-//    }
 
+//    }
 
 }

@@ -10,18 +10,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.moim.repository.MoimMemberRepository;
+import soloproject.seomoim.recommend.DistanceService;
+import soloproject.seomoim.security.CustomUserDetails;
 import soloproject.seomoim.security.CustomUserDetailsService;
 import soloproject.seomoim.utils.PageResponseDto;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
@@ -46,7 +51,9 @@ public class MoimController {
     private final static String MOIM_DEFAULT_URL = "/moims/";
     private final MoimService moimService;
     private final MoimMapper mapper;
-    private final MemberRepository memberRepository;
+    private final MoimMemberRepository moimMemberRepository;
+    private final MemberService memberService;
+    private final DistanceService distanceService;
 
     @PostMapping("/{member-id}")
     public String createMoim(@PathVariable("member-id") Long memberId,
@@ -57,19 +64,19 @@ public class MoimController {
                 .path(MOIM_DEFAULT_URL + moimId)
                 .build()
                 .toUri();
-        return "redirect:/loginHome";
+        return "redirect:/";
     }
 
     //모임 상세페이지 조회
     @GetMapping("/{moim-id}")
     public String findMoim(@PathVariable("moim-id")Long moimId,
-                           Model model, Authentication authentication){
-        Object principal = authentication.getPrincipal();
-        Optional<Member> optionalMember = memberRepository.findByEmail(principal.toString());
-        Member member = optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        model.addAttribute("member", member);
+                           Model model, @AuthenticationPrincipal CustomUserDetails userDetails){
+        model.addAttribute("member", userDetails);
         Moim moim = moimService.findMoim(moimId);
         model.addAttribute("moim",moim);
+        List<Member> joinMembers = moimMemberRepository.findJoinMembers(moimId);
+        model.addAttribute("joinMembers",joinMembers);
+
         return "moims/detail";
     }
 
@@ -108,6 +115,20 @@ public class MoimController {
 
 
 
+    //근방 km 내의 거리 모임 추천
+    @GetMapping("/nearby/{member-id}")
+    public String findNearbyMoims(@PathVariable("member-id")Long memberId,
+                                  Model model, RedirectAttributes redirectAttributes){
+        Member member = memberService.findMember(memberId);
+        if(member.getAddress()==null){
+            return "redirect:/";
+        }
+        List<Moim> nearbyMoims = distanceService.findNearbyMoims(member);
+
+        redirectAttributes.addFlashAttribute("moims", nearbyMoims);
+
+        return "redirect:/";
+    }
 
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")

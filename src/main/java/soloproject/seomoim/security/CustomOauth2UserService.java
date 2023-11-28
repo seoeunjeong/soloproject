@@ -12,9 +12,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
-import soloproject.seomoim.member.service.MemberService;
 
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -22,8 +20,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
+
     private final MemberRepository memberRepository;
-    private final HttpSession httpSession;
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest,OAuth2User>delegate=new DefaultOAuth2UserService();
