@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>seomoim</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/home.css" />
+</head>
+<body>
+<class class="main-container">
+    <p class="main-item">회원가입</p>
+    <p class="submain-item">정보를 입력해 주세요.</p>
+</class>
+
+<class class="container">
+    <form id="post-form" th:action="@{/members}" method="post">
+        <input type="text" id="name" name="name" placeholder="이름" required />
+        <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="이메일 아이디"
+                required
+        />
+        <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="비밀번호(영문,특수문자,숫자를 포함 8자리 이상)"
+                required
+        />
+        <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="비밀번호 확인"
+                required
+        />
+    </form>
+</class>
+<button id="redirect" type="submit" class="btn" form="post-form">완료</button>
+
+</body>
+</html>

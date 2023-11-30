@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>seomoim</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/home.css" />
+</head>
+<style>
+  section {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  .container section input[type='radio'] {
+    width: 20px;
+    height: 20px;
+  }
+
+  section > label {
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding-right: 10px;
+    border: 0;
+    font-weight: 500;
+    color: rgb(114, 111, 111);
+    box-sizing: border-box;
+  }
+  .next{
+    text-decoration: none;
+    color: inherit;
+    font-size: 12px;
+  }
+  a:hover {
+    text-decoration: underline; /* 마우스 호버 시 밑줄 추가 */
+  }
+</style>
+
+<body>
+<class class="main-container">
+  <p class="main-item">회원정보 입력</p>
+  <p class="submain-item">정확한 정보를 입력해주세요.</p>
+</class>
+
+<class class="container">
+  <form class="login-form" th:action="@{/members/}" method="post">
+    <section>
+      <label for="male">남자</label>
+      <input
+              class="radio"
+              type="radio"
+              id="male"
+              name="gender"
+              value="male"
+      />
+      <label for="female">여자</label>
+      <input
+              class="radio"
+              type="radio"
+              id="female"
+              name="gender"
+              value="female"
+      />
+    </section>
+
+    <input
+            type="number"
+            id="age"
+            placeholder="나이"
+            name="age"
+            min="0"
+            max="100"
+    />
+    <input
+            type="text"
+            id="address_kakao"
+            name="address"
+            placeholder="주소"
+            required
+            readonly
+    />
+    <a href="/edit/{member-id}" class="next">다음에 인증하기 ></a>
+  </form>
+</class>
+<button type="submit" class="btn">가입완료</button>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+  window.onload = function () {
+    document
+            .getElementById('address_kakao')
+            .addEventListener('click', function () {
+              new daum.Postcode({
+                oncomplete: function (data) {
+                  document.getElementById('address_kakao').value = data.address;
+                },
+              }).open();
+            });
+  };
+</script>
+</body>
+</html>

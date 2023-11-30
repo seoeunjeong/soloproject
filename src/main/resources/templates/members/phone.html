@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>seomoim</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/home.css" />
+</head>
+<style>
+    .btn-1 {
+        display: inline-block;
+        line-height: 10px;
+        margin: 20px auto;
+        padding: 11px;
+        height: 30px;
+        background-color: #d96a7e;
+        color: #fff;
+        font-size: 15px;
+        border: none;
+    }
+    .next{
+        text-decoration: none;
+        color: inherit;
+        font-size: 12px;
+    }
+
+    a:hover {
+        text-decoration: underline; /* 마우스 호버 시 밑줄 추가 */
+    }
+</style>
+<body>
+<class class="main-container">
+    <p class="main-item">휴대폰인증</p>
+    <p class="submain-item">
+        원활한 모임활동을 위해<br />인증을 진행해주세요.
+    </p>
+</class>
+
+<class class="container">
+    <form id="login-form" th:action="@{/members}" method="post">
+        <input
+                type="phone"
+                id="phone"
+                name="phone"
+                placeholder="핸드폰 번호"
+                required
+        />
+        <button type="submit" class="btn-1">인증번호 발송</button>
+    </form>
+    <form>
+        <input
+                type="number"
+                id="number"
+                name="number"
+                placeholder="인증번호 입력"
+                required
+        />
+        <button type="submit" class="btn-1">인증번호 확인</button>
+        <br />
+        <a th:href="@{/members/edit/{memberId}(memberId=${memberId})}" class="next">다음에 인증하기 ></a>
+
+    </form>
+</class>
+</body>
+</html>

@@ -40,16 +40,27 @@ public class MemberController {
 
     @GetMapping
     public String signUpForm() {
-        return "members/signupFrom";
+        return "members/signup";
     }
 
+//  todo!! 회원가입 로직구현하기 휴대폰 인증 회원정보//
     @PostMapping
-    public String signUp(@Valid @ModelAttribute MemberDto.Signup request) {
+    public String signUp(@Valid @ModelAttribute MemberDto.Signup request,
+                         RedirectAttributes redirectAttributes) {
         Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(request));
-        return "redirect:/";
+        redirectAttributes.addAttribute("memberId",signupId);
+        return "redirect:members/phone";
     }
 
-    @GetMapping("/{member-id}")
+
+    @GetMapping("/detail")
+    public String postDetail(){
+        return "members/detail";
+    }
+
+
+
+    @GetMapping("/mypage/{member-id}")
     public String myPageFrom(@PathVariable("member-id") Long memberId,
                             Model model){
         Member member = memberService.findMember(memberId);

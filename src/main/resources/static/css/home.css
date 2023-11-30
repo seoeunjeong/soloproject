@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Nanum Gothic', serif, sans-serif;
+  flex-direction: column;
+  position: fixed;
+}
+/* header{
+        position: fixed;
+        width: 100vw;
+        text-align: center;
+        display: block;
+        background-color: #000;
+        color: #fffffff8;
+        padding: 15px;
+      } */
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  padding: 50px 30px;
+}
+.main-container img {
+  width: 25%;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 30px;
+}
+
+.main-container .main-item {
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+}
+.main-container .submain-item {
+  margin-top: 40px;
+  font-size: 15px;
+  color: #948f8f;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 30px;
+  margin-top: -30px;
+}
+
+.container input {
+  border: none;
+  font-size: 16px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  padding: 20px 0px;
+}
+input:focus {
+  outline: none;
+  border-bottom: 2px solid #d96a7e;
+}
+
+.container p {
+  display: flex;
+  align-items: center;
+  display: inline-block;
+  margin-top: 30px;
+  color: #000;
+  font-size: 13px;
+  font-weight: 500;
+}
+.container p:not(:first-child) {
+  margin-left: 10px;
+}
+
+.btn {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  border: none;
+  height: 45px;
+  background-color: #d96a7e;
+  color: #fff;
+  font-size: 18px;
+}
+
+.alert {
+  color: #e20e0e;
+}
