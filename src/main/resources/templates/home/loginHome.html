@@ -7,42 +7,89 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <style>
-        /* 추가한 CSS 스타일 */
-        .card {
-            transition: transform 0.2s;
-            border-radius: 30px;
+        .navbar-brand {
+            color: #41464b;
+            font-weight: bold;
+        }
+
+        .nav-item {
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            text-decoration: underline;
+        }
+
+        .modal-dialog {
+            font-size: 14px;
         }
 
         .card:hover {
             transform: scale(1.05);
         }
 
+        .card {
+            border: 1px solid rgb(228, 229, 231);
+            border-radius: 20px;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .item {
+            margin-bottom: 10px;
+        }
+        .categry {
+            display: inline-block;
+            background-color: #5b93f5;
+            border: none;
+            font-size: 0.8em;
+            padding: 5px 4px;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .dday {
+            display: inline-block;
+              background-color: rgb(222, 228, 156);
+              border: none;
+              font-size: 0.8em;
+              padding: 5px 4px;
+              color: black;
+              border-radius: 5px;
+          }
+
         .card-title {
-            color: #007bff;
-            font-size: 30px;
-        }
-        .category-btn {
-            margin-bottom: 0.5rem; /* 카테고리 버튼과 모임 타이틀 간 간격 조정 */
+            font-weight:600;
+            color: rgb(46, 45, 45);
+            margin-bottom: 20px;
         }
 
-        .card-text {
-            margin-top:0.5rem;
-            color: #555;
+        .card-text strong {
+            color: #5a5757;
+            font-weight: 500;
+            font-size: 12px;
         }
 
-        .navbar-brand {
-            color: #41464b;
-            font-weight: bold;
+        .card-text span {
+            color: rgb(46, 45, 45);
+            font-size: 13px;
         }
 
-        .nav-item{
-            font-size: 14px;
+        .participant-profiles img {
+            width: 10%;
+            height: auto;
+            border-radius: 50%;
+            border: none;
+            margin-right: -0.5em;
         }
-        .nav-item:hover {
-            text-decoration: underline;
-        }
-        .modal-dialog {
-            font-size: 14px;
+
+        .participant-count {
+            color: rgb(46, 45, 45);
+            align-self: flex-end;
+            margin-top: auto; /* 남은 공간을 최대한 활용하여 하단에 정렬 */
+            font-weight: 400;
         }
     </style>
 </head>
@@ -102,10 +149,10 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#myModal">
-                    <strong>+</strong>모임등록하기
+                    <strong>+</strong>모임등록
                 </button>
-                <button id="getmoims"type="button" class="btn btn-outline-dark btn-sm">참여모임보기</button>
-                <button type="button" class="btn btn-outline-danger btn-sm">관심모임보기</button>
+                <button id="getmoims"type="button" class="btn btn-outline-dark btn-sm">참여모임</button>
+                <button type="button" class="btn btn-outline-danger btn-sm">관심모임</button>
             </li>
         </ul>
     </nav>
@@ -129,9 +176,7 @@
                 <p>지속적인 모임활동은 부담스럽지만 1회성 모임을 참여하고 싶은 사람들을 위한</br>
                     카테고리 와 위치 기반으로 모임을 만들고 참여할 수 있는 커뮤니티</p>
                 <p>지금 시작해보세요</p>
-                <p>
-                    <a class="btn btn-primary" th:href="@{/moims/nearby/{memberId}(memberId=${member.id})}">가까운 모임 보기»</a>
-                </p>
+                <a class="btn btn-primary" th:href="@{/moims/nearby/{memberId}(memberId=${member.id})}">가까운 모임 보기»</a>
             </div>
         </div>
     </main>
@@ -142,112 +187,120 @@
             <!-- Thymeleaf를 사용하여 리스트 출력 -->
             <div class="col-md-4 mb-3" th:each="moim:${moims}">
                 <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
-                <div class="card">
-                    <div class="card-body d-flex flex-column align-items-start">
-                        <!-- 카테고리 버튼 -->
-                        <button type="button" class="btn btn-info btn-sm mb-2 category-btn"
-                                th:text="${moim.moimCategory}">카테고리명
-                        </button>
+                    <div class="card">
+                        <div class="card-body d-flex flex-column align-items-start">
+                            <!-- 카테고리 버튼 -->
+                            <button type="button" class="categry item" th:text="${moim.moimCategory}">카테고리명
+                            </button>
+                            <button type="button" class="dday" >D-Day</button>
 
-                        <!-- 모임 제목 -->
-                        <h3 class="card-title mb-0" th:text="${moim.title}">모임 제목 1</h3>
+                            <!-- 모임 제목 -->
+                            <h3 class="mb-0 card-title item" th:text="${moim.title}">모임 제목 1</h3>
 
-                        <!-- 시간 및 위치 정보 -->
-                        <p class="card-text">
-                            <strong>시간:</strong> <span
-                                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span><br/>
-                            <strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span>
-                        </p>
-
-                        <!-- 참여자 수 -->
-                        <p class="participant-count">
-                            <strong>참여자 수:</strong><span th:text="${moim.participantCount}">0명</span><span>/</span><span
-                                th:text="${moim.totalParticipantCount}">전체참여자수</span>
-                        </p>
+                            <!-- 시간 및 위치 정보 -->
+                            <p class="card-text item">
+                                <strong>장소 |</strong> <span th:text="${moim.region}">위치 정보</span><br>
+                                <strong>일시 |</strong> <span
+                                    th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span><br/>
+                            </p>
+                            <!--참여자 프로필-->
+                            <div class="participant-profiles item">
+                                <!-- 참여자 프로필 -->
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                            </div>
+                            <!-- 참여자 수 -->
+                            <p class="participant-count item">
+                                <strong>참여자 </strong><span th:text="${moim.participantCount}">0명</span><span>/</span><span
+                                    th:text="${moim.totalParticipantCount}">전체참여자수</span>
+                            </p>
+                        </div>
                     </div>
-                </div>
                 </a>
             </div>
         </div>
     </div>
 
-            <!-- 모임등록 모달 -->
-            <div class="modal" id="myModal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
+    <!-- 모임등록 모달 -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
 
-                        <!-- 모달 헤더 -->
-                        <div class="modal-header">
-                            <h4 class="modal-title">모임 등록</h4>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <!-- 모달 헤더 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">모임 등록</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- 모달 본문 -->
+                <div class="container mt-5">
+                    <form th:action="@{/moims/{id}(id=${member.id})}" method="post">
+                        <div class="form-group">
+                            <label for="title">제목:</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
                         </div>
-                        <!-- 모달 본문 -->
-                        <div class="container mt-5">
-                            <form th:action="@{/moims/{id}(id=${member.id})}" method="post">
-                                <div class="form-group">
-                                    <label for="title">제목:</label>
-                                    <input type="text" class="form-control" id="title" name="title" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="content">내용:</label>
-                                    <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="startedAt">모임 날짜:</label>
-                                    <input type="datetime-local" class="form-control" id="startedAt" name="startedAt" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="totalParticipantCount">총 참여자 수:</label>
-                                    <input type="number" class="form-control" id="totalParticipantCount" name="totalParticipantCount" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="address_kakao">지역:</label>
-                                    <input type="text" class="form-control" id="address_kakao" name="region" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="moimCategory">카테고리:</label>
-                                    <select class="form-control" id="moimCategory" name="moimCategory" required>
-                                        <option value="STUDY">Study</option>
-                                        <option value="EXERCISE">Exercise</option>
-                                        <option value="TRAVEL">Travel</option>
-                                        <option value="EAT">Eat</option>
-                                        <option value="DRINK">Drink</option>
-                                        <option value="COFFEE">Coffee</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">등록</button>
-                            </form>
+                        <div class="form-group">
+                            <label for="content">내용:</label>
+                            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
                         </div>
-                        <!-- 모달 푸터 -->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                        <div class="form-group">
+                            <label for="startedAt">모임 날짜:</label>
+                            <input type="datetime-local" class="form-control" id="startedAt" name="startedAt" required>
                         </div>
-                    </div>
+                        <div class="form-group">
+                            <label for="totalParticipantCount">총 참여자 수:</label>
+                            <input type="number" class="form-control" id="totalParticipantCount" name="totalParticipantCount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address_kakao">지역:</label>
+                            <input type="text" class="form-control" id="address_kakao" name="region" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="moimCategory">카테고리:</label>
+                            <select class="form-control" id="moimCategory" name="moimCategory" required>
+                                <option value="STUDY">Study</option>
+                                <option value="EXERCISE">Exercise</option>
+                                <option value="TRAVEL">Travel</option>
+                                <option value="EAT">Eat</option>
+                                <option value="DRINK">Drink</option>
+                                <option value="COFFEE">Coffee</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </form>
+                </div>
+                <!-- 모달 푸터 -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                 </div>
             </div>
-
-            <!-- Kakao 우편번호 서비스 -->
-            <!-- https://postcode.map.daum.net/guide -->
-            <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-            <script>
-                window.onload = function() {
-                    document.getElementById("address_kakao").addEventListener("click", function(){
-
-                        new daum.Postcode({
-                            oncomplete: function(data) {
-                                document.getElementById("address_kakao").value = data.address;
-                            }
-                        }).open();
-                    });
-                }
-            </script>
-
-            <!-- 부트스트랩 및 jQuery 스크립트 추가 (옵션) -->
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         </div>
     </div>
+
+    <!-- Kakao 우편번호 서비스 -->
+    <!-- https://postcode.map.daum.net/guide -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById("address_kakao").addEventListener("click", function(){
+
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        document.getElementById("address_kakao").value = data.address;
+                    }
+                }).open();
+            });
+        }
+    </script>
+
+    <!-- 부트스트랩 및 jQuery 스크립트 추가 (옵션) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</div>
+</div>
 </div>
 </body>
 </html>

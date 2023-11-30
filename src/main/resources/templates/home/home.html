@@ -7,30 +7,72 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <style>
-        .card {
-            transition: transform 0.2s;
-            border-radius: 30px;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
-        }
-
-        .card-title {
-            color: #007bff;
-            font-size: 30px;
-        }
-        .category-btn {
-            margin-bottom: 0.5rem;
-        }
-
-        .card-text {
-            margin-top:0.5rem;
-            color: #555;
-        }
         .navbar-brand {
             color: #41464b;
             font-weight: bold;
+        }
+        .card {
+            border: 1px solid rgb(228, 229, 231);
+            border-radius: 20px;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .item {
+            margin-bottom: 10px;
+        }
+        .categry {
+            display: inline-block;
+            background-color: #5b93f5;
+            border: none;
+            font-size: 0.8em;
+            padding: 5px 4px;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .dday {
+            display: inline-block;
+            background-color: rgb(222, 228, 156);
+            border: none;
+            font-size: 0.8em;
+            padding: 5px 4px;
+            color: black;
+            border-radius: 5px;
+        }
+
+        .card-title {
+            font-weight:600;
+            color: rgb(46, 45, 45);
+            margin-bottom: 20px;
+        }
+
+        .card-text strong {
+            color: #5a5757;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .card-text span {
+            color: rgb(46, 45, 45);
+            font-size: 13px;
+        }
+
+        .participant-profiles img {
+            width: 10%;
+            height: auto;
+            border-radius: 50%;
+            border: none;
+            margin-right: -0.5em;
+        }
+
+        .participant-count {
+            color: rgb(46, 45, 45);
+            align-self: flex-end;
+            margin-top: auto; /* 남은 공간을 최대한 활용하여 하단에 정렬 */
+            font-weight: 400;
         }
     </style>
 </head>
@@ -83,6 +125,7 @@
         </div>
     </nav>
 
+
     <main role="main">
         <div class="jumbotron">
             <div class="col-sm-8 mx-auto">
@@ -97,41 +140,47 @@
         </div>
     </main>
 
-    <button type="button" class="btn btn-primary position-relative">
-        Inbox
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-    99+
-    <span class="visually-hidden">unread messages</span>
-  </span>
-    </button>
 
 
     <div class="container mt-5">
         <div class="row">
             <!-- Thymeleaf를 사용하여 리스트 출력 -->
             <div class="col-md-4 mb-3" th:each="moim:${moims}">
-                <div class="card" data-toggle="modal" th:data-target="'#moimModal' + ${moim.id}">
-                    <div class="card-body d-flex flex-column align-items-start">
-                        <!-- 카테고리 버튼 -->
-                        <button type="button" class="btn btn-info mb-2 category-btn" th:text="${moim.moimCategory}">카테고리명</button>
-                        <span class="badge bg-secondary">New/추천</span>
-                        <!-- 모임 제목 -->
-                        <h3 class="card-title mb-0" th:text="${moim.title}">모임 제목 1</h3>
+                <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
+                    <div class="card">
+                        <div class="card-body d-flex flex-column align-items-start">
+                            <!-- 카테고리 버튼 -->
+                            <button type="button" class="categry item" th:text="${moim.moimCategory}">카테고리명
+                            </button>
+                            <button type="button" class="dday" >D-Day</button>
 
-                        <!-- 시간 및 위치 정보 -->
-                        <p class="card-text">
-                            <strong>시간:</strong> <span th:text="${moim.createdAt}">일시 및 시간</span><br/>
-                            <strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span>
-                        </p>
+                            <!-- 모임 제목 -->
+                            <h3 class="mb-0 card-title item" th:text="${moim.title}">모임 제목 1</h3>
 
-                        <!-- 참여자 수 -->
-                        <p class="participant-count">
-                            <strong>참여자 수:</strong><span th:text="${moim.participantCount}">0명</span><span>/</span><span th:text="${moim.totalParticipantCount}">전체참여자수</span>
-                        </p>
+                            <!-- 시간 및 위치 정보 -->
+                            <p class="card-text item">
+                                <strong>장소 |</strong> <span th:text="${moim.region}">위치 정보</span><br>
+                                <strong>일시 |</strong> <span
+                                    th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span><br/>
+                            </p>
+                            <!--참여자 프로필-->
+                            <div class="participant-profiles item">
+                                <!-- 참여자 프로필 -->
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                                <img src="unnamed.png" alt="Image 3" />
+                            </div>
+                            <!-- 참여자 수 -->
+                            <p class="participant-count item">
+                                <strong>참여자 </strong><span th:text="${moim.participantCount}">0명</span><span>/</span><span
+                                    th:text="${moim.totalParticipantCount}">전체참여자수</span>
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
-            <!-- 여러 모임을 동적으로 출력할 수 있도록 Thymeleaf를 사용하여 리스트를 반복합니다. -->
         </div>
     </div>
 

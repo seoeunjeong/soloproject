@@ -48,8 +48,8 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/members/loginFrom").permitAll()
+                        .antMatchers("/logo.jpg").permitAll()
                         .antMatchers("/members").permitAll()
-                        .antMatchers("/").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login()

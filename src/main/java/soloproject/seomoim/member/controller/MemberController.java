@@ -30,7 +30,7 @@ public class MemberController {
 
     @GetMapping("/loginFrom")
     public String loginForm() {
-        return "members/loginForm";
+        return "members/login";
     }
 
     @GetMapping("auth/loginFrom")

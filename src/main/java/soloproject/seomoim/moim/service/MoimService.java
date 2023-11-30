@@ -13,7 +13,6 @@ import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
-import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
@@ -31,6 +30,7 @@ public class MoimService {
     private final MemberService memberService;
     private final MoimMemberRepository moimMemberRepository;
     private final KakaoAddressSearchService kakaoAddressSearchService;
+
 
     public Long createMoim(Long memberId,Moim moim){
         Member member = memberService.findMember(memberId);

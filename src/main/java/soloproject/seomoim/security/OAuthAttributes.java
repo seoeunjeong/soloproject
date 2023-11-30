@@ -37,6 +37,7 @@ public class OAuthAttributes {
         }
 
         public Member toEntity(){
-            return new Member(email, name, List.of("ROLE_USER"));
+
+        return new Member(email, name, List.of("ROLE_USER"));
         }
     }

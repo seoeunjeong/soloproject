@@ -2,13 +2,7 @@ package soloproject.seomoim;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.Banner;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +14,8 @@ import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 import soloproject.seomoim.security.CustomUserDetails;
-import soloproject.seomoim.security.CustomUserDetailsService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,11 +36,6 @@ public class HomeController {
 
         List<Moim> flashedMoims = (List<Moim>) model.getAttribute("moims");
 
-        if (userDetails == null) {
-            model.addAttribute("moims", moims);
-            return "home/home";
-        }
-
         if (flashedMoims != null) {
             moims = flashedMoims;
         }
@@ -60,7 +47,7 @@ public class HomeController {
 
 
 
-    /*Todo oauth 인증처리 폼로그인과 통합*/
+    /*Todo oauth 인증객체 폼로그인객체와 통합*/
     @GetMapping("/oauth/loginHome")
     public String oauthLoginHome(@AuthenticationPrincipal OAuth2User oAuth2User ,
                                  HttpServletRequest request,

@@ -36,7 +36,7 @@ public class CustomUserAuthenticationProvider implements AuthenticationProvider 
 
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
-       // @AuthenticationPrincipal 의 반환값//
+       // @AuthenticationPrincipal 의 반환값// 토큰에 어떤것을 담느냐
         // return UsernamePasswordAuthenticationToken.authenticated(username, password, authorities);
         return UsernamePasswordAuthenticationToken.authenticated(userDetails,password,authorities);
     }

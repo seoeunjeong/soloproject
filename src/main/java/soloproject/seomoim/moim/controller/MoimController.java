@@ -5,29 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.util.UriComponentsBuilder;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.recommend.DistanceService;
 import soloproject.seomoim.security.CustomUserDetails;
-import soloproject.seomoim.security.CustomUserDetailsService;
 import soloproject.seomoim.utils.PageResponseDto;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.mapper.MoimMapper;
@@ -35,41 +24,36 @@ import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.net.URI;
-import java.security.Principal;
+import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/moims")
 @Slf4j
+@Validated
 public class MoimController {
-    private final static String MOIM_DEFAULT_URL = "/moims/";
+
     private final MoimService moimService;
     private final MoimMapper mapper;
     private final MoimMemberRepository moimMemberRepository;
     private final MemberService memberService;
     private final DistanceService distanceService;
 
+    //모임 등록
     @PostMapping("/{member-id}")
-    public String createMoim(@PathVariable("member-id") Long memberId,
+    public String createMoim(@PathVariable("member-id") @Positive Long memberId,
                              @Valid @ModelAttribute MoimDto.Post PostRequest) {
         Moim moim = mapper.moimPostDtoToMoim(PostRequest);
-        Long moimId = moimService.createMoim(memberId, moim);
-        URI location = UriComponentsBuilder.newInstance()
-                .path(MOIM_DEFAULT_URL + moimId)
-                .build()
-                .toUri();
+        moimService.createMoim(memberId, moim);
         return "redirect:/";
     }
 
-    //모임 상세페이지 조회
+    //모임 상세페이지
+    //Todo 뷰에 Dto 전달로 분리할 것!
     @GetMapping("/{moim-id}")
-    public String findMoim(@PathVariable("moim-id")Long moimId,
+    public String MoimDetailPage(@PathVariable("moim-id")Long moimId,
                            Model model, @AuthenticationPrincipal CustomUserDetails userDetails){
         model.addAttribute("member", userDetails);
         Moim moim = moimService.findMoim(moimId);
@@ -77,12 +61,10 @@ public class MoimController {
         List<Member> joinMembers = moimMemberRepository.findJoinMembers(moimId);
         model.addAttribute("joinMembers",joinMembers);
 
-        return "moims/detail";
+        return "moims/detailPage";
     }
 
-
-
-    /*모임참여로직작성*/
+    //모임 참여
     @PostMapping("/{moim-id}/{member-id}")
     public ResponseEntity joinMoim(@PathVariable("moim-id")Long moimId,
                                    @PathVariable("member-id")Long memberId){
@@ -90,29 +72,13 @@ public class MoimController {
         return new ResponseEntity<>(mapper.MoimToResponseDto(moim), HttpStatus.OK);
     }
 
-    /*모임참여취소로직작성*/
+    //모임 참여 취소
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}/{member-id}")
     public void notJoinMoim(@PathVariable("moim-id") Long moimId,
                             @PathVariable("member-id") Long memberId) {
         moimService.notJoinMoim(moimId, memberId);
     }
-
-
-    @PatchMapping("/{moim-id}")
-    public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
-                                     @RequestBody MoimDto.Update updateRequest){
-        Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
-        Moim updateMoim = moimService.updateMoim(moimId, moim);
-        return new ResponseEntity<>(mapper.MoimToResponseDto(updateMoim),HttpStatus.OK);
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/delete/{moim-id}")
-    public void deleteMoim(@PathVariable("moim-id")Long moimId){
-        moimService.deleteMoim(moimId);
-    }
-
 
 
     //근방 km 내의 거리 모임 추천
@@ -130,6 +96,23 @@ public class MoimController {
         return "redirect:/";
     }
 
+
+
+    @PatchMapping("/{moim-id}")
+    public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
+                                     @RequestBody MoimDto.Update updateRequest){
+        Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
+        Moim updateMoim = moimService.updateMoim(moimId, moim);
+        return new ResponseEntity<>(mapper.MoimToResponseDto(updateMoim),HttpStatus.OK);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/delete/{moim-id}")
+    public void deleteMoim(@PathVariable("moim-id")Long moimId){
+        moimService.deleteMoim(moimId);
+    }
+
+
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")
     public ResponseEntity findAll(@RequestParam int page,@RequestParam int size){
@@ -140,7 +123,7 @@ public class MoimController {
 
 
     /* 키워드로 검색 */
-    @GetMapping("/search")
+    @GetMapping("/keyword")
     @ResponseBody
     public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto) {
 //                                          @RequestParam int page,@RequestParam int size){

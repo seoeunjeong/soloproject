@@ -9,6 +9,7 @@ import soloproject.seomoim.moim.entitiy.MoimCategory;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 public class MoimDto {
@@ -18,7 +19,7 @@ public class MoimDto {
     public static class Post{
 
         @NotBlank(message = "모임 title은 필수값입니다.")
-        @Length(min=10)
+        @Pattern(regexp = "^[가-힣a-zA-Z]{1,12}$")
         private String title;
 
         @Length(min=10)
