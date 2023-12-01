@@ -22,7 +22,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: seocoding1@gmail.com
-    password: hzhebhfkjyvxwzqv
+    password: ichx vzge dspr xash
     properties:
       mail:
         smtp:

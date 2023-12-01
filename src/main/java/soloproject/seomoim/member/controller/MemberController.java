@@ -30,6 +30,7 @@ public class MemberController {
 
     @GetMapping("/loginFrom")
     public String loginForm() {
+
         return "members/login";
     }
 
@@ -38,18 +39,19 @@ public class MemberController {
         return "members/loginForm";
     }
 
-    @GetMapping
+    @GetMapping("/signupForm")
     public String signUpForm() {
         return "members/signup";
     }
 
-//  todo!! 회원가입 로직구현하기 휴대폰 인증 회원정보//
+
     @PostMapping
     public String signUp(@Valid @ModelAttribute MemberDto.Signup request,
                          RedirectAttributes redirectAttributes) {
         Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(request));
         redirectAttributes.addAttribute("memberId",signupId);
-        return "redirect:members/phone";
+        redirectAttributes.addAttribute("email",request.getEmail());
+        return "redirect:/members/authFrom";
     }
 
 

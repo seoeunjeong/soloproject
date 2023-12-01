@@ -12,8 +12,8 @@ public class RedisUtil {
 
     private final RedisTemplate redisTemplate;
 
-    public void set(Object key,Object value,int minutes){
-        redisTemplate.opsForValue().set(key, value, minutes, TimeUnit.MINUTES);
+    public void set(String email, String authNumber, int minutes) {
+        redisTemplate.opsForValue().set(email, authNumber, minutes, TimeUnit.MINUTES);
     }
 
     public Object get(String key){

@@ -70,6 +70,8 @@ public class MemberService {
                 .ifPresent(gender -> findmember.setGender(gender));
         Optional.ofNullable(member.getAddress())
                 .ifPresent(address -> findmember.setAddress(address));
+        Optional.ofNullable(member.getRoles())
+                .ifPresent(roles->findmember.setRoles(roles));
         if(member.getAddress()!=null){
             KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(member.getAddress());
             DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
@@ -100,12 +102,19 @@ public class MemberService {
         return moims;
     }
 
+    public Member findByEmail(String email){
+         return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    }
+
     private void checkIdDuplication(Member member) {
         Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
         if(findMember.isPresent()){
             throw new BusinessLogicException(ExceptionCode.ALREADY_EXISTS_ID);
         }
     }
+
+
 
     //회원 정보와 함께 참여한 모임 조회
 //    public Member findMemberAndfindParticipationMoim(Long memberId){

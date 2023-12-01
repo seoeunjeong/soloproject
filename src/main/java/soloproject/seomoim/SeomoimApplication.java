@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManager;
 
@@ -20,5 +21,9 @@ public class SeomoimApplication {
 		return new JPAQueryFactory(em);
 	}
 
+	@Bean
+	RestTemplate restTemplate(){
+		return new RestTemplate();
+	}
 
 }

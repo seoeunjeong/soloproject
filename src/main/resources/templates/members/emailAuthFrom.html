@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>seomoim</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Nanum Gothic', serif, sans-serif;
+        flex-direction: column;
+        position: fixed;
+    }
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        padding: 50px 30px;
+    }
+
+    .main-container .main-item {
+        font-size: 25px;
+        font-weight: 500;
+        letter-spacing: -0.5px;
+    }
+    .main-container .submain-item {
+        margin-top: 40px;
+        font-size: 15px;
+        color: #948f8f;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        padding: 30px;
+        margin-top: -30px;
+    }
+
+    .container input {
+        border: none;
+        font-size: 16px;
+        border-bottom: 1px solid #ccc;
+        width: 100%;
+        padding: 20px 0px;
+    }
+    input:focus {
+        outline: none;
+        border-bottom: 2px solid #d96a7e;
+    }
+
+    .container a {
+        display: inline-block;
+        margin-top: 30px;
+        color: #000;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .btn-1 {
+        border: none;
+        height: 30px;
+        background-color: #d96a7e;
+        color: #fff;
+        font-size: 15px;
+    }
+    .container form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .container form div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+</style>
+<body>
+<class class="main-container">
+    <p class="main-item">Email 인증</p>
+    <p class="submain-item">
+        원활한 모임 활동을 위해<br />인증을 진행해주세요.
+    </p>
+</class>
+
+<class class="container">
+    <form id="login-form" th:action="@{/email}" method="get">
+        <div>
+            <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    th:value="${email}"
+                    placeholder="이메일"
+                    required readonly
+            />
+            <button type="submit" class="btn-1" form="login-form">인증번호 발송</button>
+        </div>
+    </form>
+    <form id="auth-form" th:action="@{/email/auth}" method="post">
+        <div>
+            <!-- 모델 데이터에 있는 email을 숨김 필드로 추가 -->
+            <input type="hidden" id="hiddenemail" name="email" th:value="${email}" />
+            <input
+                    type="number"
+                    id="number"
+                    name="number"
+                    placeholder="인증번호 입력"
+                    required
+            />
+            <button type="submit" class="btn-1" form="auth-form">인증번호 확인</button>
+        </div>
+        <br />
+        <a
+                th:href="@{/members/edit/{memberId}(memberId=${memberId})}"
+                class="next"
+        >다음에 인증하기 ></a
+        >
+    </form>
+</class>
+</body>
+</html>

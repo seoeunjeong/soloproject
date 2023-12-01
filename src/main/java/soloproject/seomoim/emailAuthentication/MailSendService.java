@@ -1,4 +1,4 @@
-package soloproject.seomoim.email.emailCertification;
+package soloproject.seomoim.emailAuthentication;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,13 +12,12 @@ import javax.mail.internet.MimeMessage;
 
 @Service
 @RequiredArgsConstructor
-public class MailService {
-    private final static String SENDER_EMAIL="seocoding1@gmail.com";
+public class MailSendService {
+    private final static String SENDER_EMAIL = "seocoding1@gmail.com";
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
 
-
-    public int createMail(String email) {
+    public int sendMail(String email) {
         int number = createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
@@ -37,15 +36,16 @@ public class MailService {
             throw new BusinessLogicException(ExceptionCode.MESSAGE_FAIL);
         }
         javaMailSender.send(message);
-        String s = String.valueOf(number);
-        redisUtil.set(s,email,5);
-
+        String sendNumber = String.valueOf(number);
+        redisUtil.set(email,sendNumber,5);
+//        email을 키로 저장 ㅎㅎㅎㅎㅎ
         return number;
     }
 
-    private int createNumber(){
+    /*todo! 랜덤번호 안전하게 생성*/
+    private int createNumber() {
 
-        return  (int) (Math.random() * (90000)) + 100000;
+        return (int) (Math.random() * (90000)) + 100000;
     }
 
 
