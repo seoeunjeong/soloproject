@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .main {
+            display: flex;
+            font-weight: 200;
+            align-items: center;
+            margin-top: 150px;
+        }
+
+        .main p {
+            margin: 20px 40px;
+            font-size: 20px;
+        }
+
+        img {
+            width: 100px;
+        }
+
+        .sub {
+            display: flex;
+            flex-direction: column;
+            margin: 20px 40px;
+        }
+
+        .sub p {
+            font-size: 14px;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        .sub a {
+            font-size: 14px;
+            font-weight: 400;
+            text-decoration: none;
+            align-self: start;
+            margin-top: 100px;
+            border: none;
+            background-color: #d96a7e;
+            color: #fff;
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="main">
+    <p>
+        이메일 인증 후<br/>
+        사용하실 수 있습니다.
+    </p>
+    <img src="/img/tear.png" alt="error"/>
+</div>
+<div class="sub">
+    <p th:text="|상태코드 : ${status}|"></p>
+    <p th:text="|error 메세지 : ${message}|"></p>
+    <p th:text="|error: ${error}|"></p>
+    <p th:text="|exception: ${exception}|"></p>
+    <p th:text="|errors: ${errors}|"></p>
+    <p th:text="|trace: ${trace}|"></p>
+    <a href="/"><- 뒤로가기</a>
+</div>
+</body>
+</html>

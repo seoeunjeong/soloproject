@@ -19,17 +19,17 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+
     private final CustomAuthorityUtils customAuthorityUtils;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        log.info("username=" + username);
         Optional<Member> optionalMember = memberRepository.findByEmail(username);
-        log.info("optionalMember=" + optionalMember);
 
-        Member findMember = optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        Member findMember = optionalMember.orElseThrow(() -> new UsernameNotFoundException("유효하지 않은 아이디 입니다."));
 
-        return new CustomUserDetails(findMember,customAuthorityUtils);
+        return new CustomUserDetails(findMember, customAuthorityUtils);
     }
 
 }

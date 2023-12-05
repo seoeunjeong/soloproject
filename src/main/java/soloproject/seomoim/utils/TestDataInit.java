@@ -11,6 +11,7 @@ import soloproject.seomoim.moim.service.MoimService;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Component
@@ -22,13 +23,24 @@ public class TestDataInit {
     private final MoimService moimService;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         Member member = new Member();
         member.setEmail("dmswjd4015@naver.com");
         member.setPassword("dkssud1!");
         member.setConfirmPassword("dkssud1!");
         member.setName("서은정");
         Long id = memberService.signup(member);
+        Member member2 = new Member();
+        member2.setEmail("2juillet.acc@gmail.com");
+        member2.setPassword("dkssud1!");
+        member2.setConfirmPassword("dkssud1!");
+        member2.setName("서은정");
+        Long member2Id = memberService.signup(member2);
+        Member member3 = new Member();
+        member3.setRoles(List.of("AUTH_USER"));
+        memberService.update(member2Id,member3);
+
+
 
         Moim moim = new Moim();
         moim.setMoimCategory(MoimCategory.EXERCISE);
@@ -37,7 +49,7 @@ public class TestDataInit {
         moim.setTitle("운동할사람 모집");
         moim.setRegion("서울 구로구 경인로 5");
         moim.setTotalParticipantCount(8);
-        moimService.createMoim(id,moim);
+        moimService.createMoim(id, moim);
 
         Moim moim1 = new Moim();
         moim1.setMoimCategory(MoimCategory.STUDY);
@@ -46,7 +58,7 @@ public class TestDataInit {
         moim1.setTitle("스터티모임원구해요");
         moim1.setRegion("경기 광명시 가락골길 7");
         moim1.setTotalParticipantCount(2);
-        moimService.createMoim(id,moim1);
+        moimService.createMoim(id, moim1);
 
         Moim moim2 = new Moim();
         moim2.setMoimCategory(MoimCategory.DRINK);
@@ -55,7 +67,7 @@ public class TestDataInit {
         moim2.setTitle("치킨드실분들");
         moim2.setRegion("경기 가평군 설악면 가마소길 7");
         moim2.setTotalParticipantCount(2);
-        moimService.createMoim(id,moim2);
+        moimService.createMoim(id, moim2);
 
         Moim moim3 = new Moim();
         moim3.setMoimCategory(MoimCategory.TRAVEL);
@@ -64,7 +76,7 @@ public class TestDataInit {
         moim3.setTitle("관악산등산가실분");
         moim3.setRegion("서울 관악구 과천대로 851 (한울아파트)");
         moim3.setTotalParticipantCount(4);
-        moimService.createMoim(id,moim3);
+        moimService.createMoim(id, moim3);
 
         Moim moim4 = new Moim();
         moim4.setMoimCategory(MoimCategory.EXERCISE);
@@ -73,7 +85,7 @@ public class TestDataInit {
         moim4.setTitle("운동할사람 모집");
         moim4.setRegion("인천 연수구 경원대로 지하 285 (원인재역)");
         moim4.setTotalParticipantCount(8);
-        moimService.createMoim(id,moim4);
+        moimService.createMoim(id, moim4);
 /*
         카카오API 같은 주소에대한 제한 있나?
         Moim moim5 = new Moim();

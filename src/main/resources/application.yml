@@ -42,8 +42,9 @@ spring:
             scope:
               - email
               - profile
-
-
+  servlet:
+    multipart:
+      max-file-size: 5MB
 
 
 logging level:
@@ -67,7 +68,12 @@ mail:
 kakao:
   api:
     key: ${KAKAO_REST_API_KEY}
+file:
+  dir: /Users/eunjeong/Desktop/profiles/
 
+
+cloud:
+  bucket: seomoim
 
 
 

@@ -6,7 +6,9 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.utils.BaseEntity;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 
@@ -15,10 +17,12 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class CustomUserDetails extends Member implements UserDetails {
 
+    private LocalDateTime createdAt;
     private final CustomAuthorityUtils customAuthorityUtils;
 
     public CustomUserDetails(Member member, CustomAuthorityUtils customAuthorityUtils) {
         this.customAuthorityUtils = customAuthorityUtils;
+        this.createdAt=member.getCreatedAt();
         setId(member.getId());
         setName(member.getName());
         setAge(member.getAge());
@@ -27,6 +31,12 @@ public final class CustomUserDetails extends Member implements UserDetails {
         setEmail(member.getEmail());
         setPassword(member.getPassword());
         setRoles(member.getRoles());
+
+//        /*이렇게 까지 할일인가 ㅎㅎㅎㅎㅎ*/
+//        if(member instanceof BaseEntity){
+//            BaseEntity base = member;
+//            base.setCreatedAt(member.getCreatedAt());
+//        }
     }
 
     @Override

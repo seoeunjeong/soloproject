@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 import java.util.List;
@@ -50,6 +51,8 @@ public class MemberDto {
         private Character gender;
 
         private String address;
+
+        private MultipartFile file;
     }
 
     @Getter

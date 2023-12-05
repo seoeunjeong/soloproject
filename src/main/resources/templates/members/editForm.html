@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <title>프로필편집</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Nanum Gothic', serif, sans-serif;
+    }
+
+    header {
+      position: fixed;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      background-color: #fffffff8;
+      color: #000000f8;
+      height: 40px;
+      z-index: 1000;
+      top: 0;
+    }
+
+    header > a {
+      align-items: center;
+      text-decoration: none;
+    }
+    header a span {
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
+      margin: 10px 20px;
+    }
+    header a:nth-child(2) {
+      margin: 0 75px;
+    }
+
+    .profile_container {
+      display: flex;
+      margin: 90px 20px;
+    }
+
+    .profile_container img {
+      width: 100px;
+      height: 100px;
+      border: 2px solid whitesmoke;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+    .profile_container form {
+      width: 100%;
+    }
+    .profile_container input {
+      display: inline-block;
+      width: 50%;
+      margin: 20px 0px;
+    }
+    .profile_container > label {
+      width: 50px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    /*
+    .radio-container > label {
+      display: inline-block;
+      width: 30px;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+      background-color: #ffffff;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+    .radio-container >input{
+
+    } */
+
+    .btn {
+      position: fixed;
+      bottom: 0;
+      width: 100vw;
+      border: none;
+      height: 45px;
+      background-color: #d96a7e;
+      color: #fff;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/profile"><span><</span></a>
+  <a><span>프로필 편집</span></a>
+</header>
+
+<div class="profile_container">
+  <form id="edit" th:action="@{'/members/'+ ${member.id}}" method="post" enctype="multipart/form-data">
+    <input type="file" id="fileInput" name="file"  style="display: none" />
+    <img th:if="${member.profileImgUri}" th:src="${member.profileImgUri}" alt="Click to Upload" class="uploadImage" style="cursor: pointer" />
+    <img th:unless="${member.profileImgUri}" th:src="@{/img/profile.png}" alt="Default Image" class="uploadImage" style="cursor: pointer" />
+    <hr />
+    <div>
+      <label for="name">이름 ㅣ</label>
+      <input
+              type="text"
+              id="name"
+              name="name"
+              th:value="${member.name}"
+              placeholder="이름"
+      />
+    </div>
+    <div>
+      <label for="age">나이 ㅣ</label>
+      <input
+              type="number"
+              id="age"
+              placeholder="나이"
+              name="age"
+              th:value="${member.name}"
+              min="0"
+              max="100"
+      />
+    </div>
+    <div>
+      <label for="address_kakao">주소 ㅣ</label>
+      <input
+              type="text"
+              id="address_kakao"
+              name="address"
+              th:value="${member.address}"
+              placeholder="주소"
+              required
+              readonly
+      />
+    </div>
+    <div class="radio-container">
+      <label for="female">여자</label>
+      <input type="radio" id="female" name="gender" th:value="${member.gender}"/>
+      <label for="male">남자</label>
+      <input type="radio" id="male" name="gender" th:value="${member.gender} "/>
+    </div>
+  </form>
+</div>
+<button type="submit" class="btn" form="edit">수정</button>
+
+<!-- Kakao 우편번호 서비스 -->
+<!-- https://postcode.map.daum.net/guide -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+  window.onload = function () {
+    document
+            .getElementById('address_kakao')
+            .addEventListener('click', function () {
+              new daum.Postcode({
+                oncomplete: function (data) {
+                  document.getElementById('address_kakao').value = data.address;
+                },
+              }).open();
+            });
+  };
+
+  var elements = document.getElementsByClassName('uploadImage')
+
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].addEventListener('click', function () {
+      document.getElementById('fileInput').click();
+    });
+  }
+
+
+  document
+          .getElementById('fileInput')
+          .addEventListener('change', function (event) {
+            var selectedFile = event.target.files[0];
+
+            if (selectedFile) {
+              displaySelectedImage(selectedFile);
+            } else {
+              var images = document.getElementsByClassName('uploadImage');
+              for (var i = 0; i < images.length; i++) {
+                images[i].src = '/img/profile.png';
+              }
+            }})
+
+            function displaySelectedImage(file) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                // 클래스를 사용하여 모든 이미지에 대해 처리
+                var images = document.getElementsByClassName('uploadImage');
+                for (var i = 0; i < images.length; i++) {
+                  images[i].src = e.target.result;
+                }
+              };
+              reader.readAsDataURL(file);
+            };
+</script>
+</body>
+</html>

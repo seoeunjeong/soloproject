@@ -15,11 +15,6 @@ public class CustomAuthorityUtils {
     @Value("${mail.address.admin}")
     private String adminMailAddress;
 
-    private final List<GrantedAuthority> ADMIN_AUTH = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
-
-    // (3)
-    private final List<GrantedAuthority> USER_AUTH = AuthorityUtils.createAuthorityList("ROLE_USER");
-
     private final List<String> ADMIN_ROLES = List.of("ADMIN", "USER");
     private final List<String> USER_ROLES = List.of("USER");
     public List<GrantedAuthority> createAuthorities(List<String> roles) {

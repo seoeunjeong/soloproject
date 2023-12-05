@@ -7,12 +7,12 @@
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
   />
-  <link rel="stylesheet" href="/css/home.css" />
+  <link rel="stylesheet" href="/css/login.css" />
 </head>
 <body>
-<!-- <header>로그인</header> -->
+
 <class class="main-container">
-  <img src="/logo.jpg" alt="로고" />
+  <img src="/img/logo.jpg" alt="로고" />
   <p class="main-item">안녕하세요.</p>
   <p class="main-item">SEOMOIM입니다.</p>
   <p class="submain-item">회원 서비스 이용을 위해 로그인 해주세요.</p>
@@ -35,25 +35,26 @@
             placeholder="비밀번호"
             required
     />
-    <class class="alert" th:if="${param.error != null}">
-      <div>아이디 또는 비밀번호를 확인해주세요.</div>
-    </class>
+    <div th:if="${param.error != null}" class="alert">
+      <p>아이디 또는 비밀번호를 확인해주세요.</p>
+    </div>
+
   </form>
   <div>
     <p>아이디 찾기</p>
     <p>|</p>
     <p>Google 로그인</p>
     <p>|</p>
-    <p class="singupform" onclick="sinupform()">회원가입</p>
+    <p class="singupform" onclick="signupForm()">회원가입</p>
   </div>
 </class>
 <button type="submit" class="btn" form="loginForm">로그인하기</button>
 
 
 <script>
-  function sinupform(){
+  function signupForm(){
 
-      window.location.href = '/members/signupForm';
+      window.location.href = '/signup-form';
     }
 </script>
 <!-- <div>

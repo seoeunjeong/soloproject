@@ -3,7 +3,7 @@ package soloproject.seomoim.moim.entitiy;
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.moim.BaseEntitiy;
+import soloproject.seomoim.utils.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,15 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
-public class Moim extends BaseEntitiy{
+@Getter
+@Setter
+public class Moim extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="moim_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -48,8 +49,14 @@ public class Moim extends BaseEntitiy{
     private List<MoimMember> participant= new ArrayList<>();
 
     public Moim() {
-    }
 
+    }
+//   연관관계 편의 메소드
+//    public void setMember(Member member){
+//        this.member=member;
+//        member.getCreateMoims().add(this);
+//
+//    }
    /*모임참여 메소드*/
     public void joinMoim(Moim moim,Member member){
         MoimMember moimMember = new MoimMember();

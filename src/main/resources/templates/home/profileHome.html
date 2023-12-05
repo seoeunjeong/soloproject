@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/layoutForm::layout (~{::header},~{::section})}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>프로필</title>
+  </head>
+  <style>
+    header a img,
+    header a p {
+      color: #d96a7e;
+      filter: opacity(100%);
+    }
+  </style>
+<body>
+<header>
+  <a><span>프로필</span></a>
+  <a
+  ><p>로그아웃</p>
+    <img src="/img/logout.png" alt="logout.png"
+    /></a>
+</header>
+<section>
+  <body>
+  <div class="image-container">
+    <a id="editButton">
+      <img th:if="${member.profileImgUri}" th:src="${member.profileImgUri}">
+      <img th:unless="${member.profileImgUri}" src="/img/profile.png">
+    </a>
+    <div class="info-container">
+      <h3 class="info-container-item1" th:text="${member.name}">name</h3>
+      <p class="info-container-item2" th:text="${member.email}">email</p>
+      <hr />
+      <p class="info-container-item3" th:text="${#temporals.format(member.createdAt,'yyyy-MM-dd HH:mm:ss')}"
+      >
+        가입일
+      </p>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+
+    var memberId = /*[[${member.id}]]*/ '';
+
+    var editButton = document.getElementById('editButton');
+
+    editButton.addEventListener('click', function () {
+      window.location.href = '/members/edit_form'
+
+    });
+  </script>
+
+  <div class="create-container">
+    <h3>내가만든모임</h3>
+    <table>
+      <thead>
+      <th>제목</th>
+      <th>전체인원수</th>
+      <th>참여인원수</th>
+      <th>모임일</th>
+      <th>모임장소</th>
+      </thead>
+      <tbody>
+      <tr th:each=" moim :${moimList}">
+        <td th:text="${moim.title}"></td>
+        <td th:text="${moim.totalParticipantCount}"></td>
+        <td th:text="${moim.participantCount}"></td>
+        <td th:text="${moim.startedAt}"></td>
+        <td th:text="${moim.region}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="like-container">
+    <h3>찜한 모임</h3>
+    <table>
+      <thead>
+      <th>제목</th>
+      <th>전체인원수</th>
+      <th>참여인원수</th>
+      <th>모임일</th>
+      <th>모임장소</th>
+      </thead>
+      <tbody>
+      <tr th:each=" moim :${moimList}">
+        <td th:text="${moim.title}"></td>
+        <td th:text="${moim.totalParticipantCount}"></td>
+        <td th:text="${moim.participantCount}"></td>
+        <td th:text="${moim.startedAt}"></td>
+        <td th:text="${moim.region}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="latest-container">
+    <h3>최근본 모임</h3>
+    <table>
+      <thead>
+      <th>제목</th>
+      <th>전체인원수</th>
+      <th>참여인원수</th>
+      <th>모임일</th>
+      <th>모임장소</th>
+      </thead>
+      <tbody>
+      <tr th:each=" moim :${moimList}">
+        <td th:text="${moim.title}"></td>
+        <td th:text="${moim.totalParticipantCount}"></td>
+        <td th:text="${moim.participantCount}"></td>
+        <td th:text="${moim.startedAt}"></td>
+        <td th:text="${moim.region}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+  </body>
+</section>
+
+
+</body>
+</html>

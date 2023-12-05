@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/layoutForm::layout (~{::header},~{::section})}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>프로필</title>
+  </head>
+  <style>
+    header a img,
+    header a p {
+      color: #d96a7e;
+      filter: opacity(100%);
+    }
+  </style>
+<body>
+<header>
+  <a><span>모임찾기</span></a>
+  <a
+  ><p>로그아웃</p>
+    <img src="/img/logout.png" alt="logout.png"
+    /></a>
+</header>
+<section>
+  <div class="container">
+    <form class="search-container">
+      <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+      <button type="button">검색</button>
+    </form>
+    <button>카테고리</button>  <button>카테고리</button>  <button>카테고리</button>  <button>카테고리</button>  <button>카테고리</button><br>
+    <button>카테고리</button>  <button>카테고리</button>  <button>카테고리</button>  <button>카테고리</button>  <button>카테고리</button><br>
+  </div>
+  <div class="container">
+  </div>
+  <div class="container">
+  </div>
+
+
+
+
+
+  <button class="post-but" id="postButton">+</button>
+
+  <script th:inline="javascript">
+    var memberId = /*[[${memberId}]]*/ '';
+    const postButton = document.getElementById('postButton');
+    postButton.addEventListener('click', function () {
+      window.location.href = '/moims/postForm/' + memberId;
+    });
+  </script>
+</section>
+
+
+</body>
+</html>

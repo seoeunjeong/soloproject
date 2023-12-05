@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            position: fixed;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+            background-color: #fffffff8;
+            color: #000000f8;
+            padding: 20px;
+            height: 40px;
+        }
+
+        header > a {
+            display: flex;
+            align-items: center;
+        }
+
+        header img {
+            width: 25px;
+            height: 20px;
+            margin-right: 20px;
+        }
+
+        header > a > p {
+            font-size: 15px;
+        }
+
+        header a span {
+            font-size: 17px;
+            font-weight: 700;
+            margin-left: 20px;
+        }
+
+        header a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<header th:fragment="header">
+    <a><span>프로필</span></a>
+    <a
+    ><p>로그아웃</p>
+        <img src="/logout.png" alt="logout.png"
+        /></a>
+</header>
+</body>
+</html>

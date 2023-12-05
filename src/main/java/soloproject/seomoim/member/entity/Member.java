@@ -1,11 +1,9 @@
 package soloproject.seomoim.member.entity;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.like.LikeMoim;
-import soloproject.seomoim.moim.BaseEntitiy;
+import soloproject.seomoim.utils.BaseEntity;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 
@@ -16,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Member extends BaseEntitiy {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,12 +40,14 @@ public class Member extends BaseEntitiy {
     private double latitude;
     private double longitude;
 
+    private String profileImgUri;
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
     //멤버는 여러 모임을 만들 수 있다.
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
     private List<Moim> createMoims = new ArrayList<>();
 
     //멤버는 여러 모임에 참여 할수있다.

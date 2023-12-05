@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.moim.BaseEntitiy;
+import soloproject.seomoim.utils.BaseEntity;
 
 import javax.persistence.*;
 
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Getter @Setter
 @Table(name = "moim_member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MoimMember extends BaseEntitiy {
+public class MoimMember extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="moim_member_id")

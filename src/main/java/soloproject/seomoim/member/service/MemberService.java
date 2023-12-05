@@ -68,13 +68,20 @@ public class MemberService {
                 .ifPresent(age -> findmember.setAge(age));
         Optional.ofNullable(member.getGender())
                 .ifPresent(gender -> findmember.setGender(gender));
-        Optional.ofNullable(member.getAddress())
-                .ifPresent(address -> findmember.setAddress(address));
         Optional.ofNullable(member.getRoles())
                 .ifPresent(roles->findmember.setRoles(roles));
-        if(member.getAddress()!=null){
+        Optional.ofNullable(member.getProfileImgUri())
+                .ifPresentOrElse(
+                        profileImageUri -> findmember.setProfileImgUri(profileImageUri),
+                        () -> {
+                            findmember.setProfileImgUri("/img/profile.png");
+                        });
+
+        /*빈 문자열 들어온다*/
+        if(member.getAddress()!=null && !member.getAddress().equals("")){
             KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(member.getAddress());
             DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
+            findmember.setAddress(member.getAddress());
             findmember.setLatitude(documentDto.getLatitude());
             findmember.setLongitude(documentDto.getLongitude());
         }

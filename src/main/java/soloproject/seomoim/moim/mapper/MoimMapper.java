@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MoimMapper {
 
-    Moim moimPostDtoToMoim(MoimDto.Post createDto);
+    Moim moimPostDtoToMoim(MoimDto.Post postDto);
 
     Moim moimUpdateDtoToMoim(MoimDto.Update updateDto);
 

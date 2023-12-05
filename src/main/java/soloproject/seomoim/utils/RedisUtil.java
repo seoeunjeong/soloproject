@@ -16,17 +16,16 @@ public class RedisUtil {
         redisTemplate.opsForValue().set(email, authNumber, minutes, TimeUnit.MINUTES);
     }
 
-    public Object get(String key){
+    public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public boolean delete(String key){
+    public boolean delete(String key) {
         return redisTemplate.delete(key);
     }
 
-    public boolean hasKey(String key){
+    public boolean hasKey(String key) {
         return redisTemplate.hasKey(key);
     }
-
 
 }

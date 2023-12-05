@@ -3,7 +3,6 @@ package soloproject.seomoim.recommend;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 
@@ -14,8 +13,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DistanceService {
-
-    private final MemberService memberService;
 
     private final MoimService moimService;
     private static final double DIRECTION_KM=10.0;

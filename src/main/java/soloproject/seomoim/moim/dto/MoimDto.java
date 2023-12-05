@@ -19,7 +19,6 @@ public class MoimDto {
     public static class Post{
 
         @NotBlank(message = "모임 title은 필수값입니다.")
-        @Pattern(regexp = "^[가-힣a-zA-Z]{1,12}$")
         private String title;
 
         @Length(min=10)
@@ -35,6 +34,7 @@ public class MoimDto {
         private String region;
 
         private MoimCategory moimCategory;
+
     }
 
     @Getter

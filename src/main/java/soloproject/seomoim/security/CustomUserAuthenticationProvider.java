@@ -20,6 +20,7 @@ import java.util.Optional;
 public class CustomUserAuthenticationProvider implements AuthenticationProvider {
 
     private final CustomUserDetailsService userDetailsService;
+
     private final PasswordEncoder passwordEncoder;
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

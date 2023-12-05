@@ -4,19 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,45 +22,41 @@ public class SecurityConfiguration {
     private String clientSecret;
 
     private final CustomOauth2UserService customOauth2UserService;
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-                .headers().frameOptions().sameOrigin()
-                .and()
+                .headers(headers -> headers.frameOptions().sameOrigin())
                 .csrf().disable()
-                .formLogin()
-                .loginPage("/members/loginFrom")
-                .loginProcessingUrl("/process_login")
-                .failureUrl("/members/loginFrom?error")
-                .defaultSuccessUrl("/",true)
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true).deleteCookies("JSESSIONID")
-                .and()
+                .formLogin(login -> login
+                        .loginPage("/login-form")
+                        .defaultSuccessUrl("/", true)
+                        .loginProcessingUrl("/process_login")
+                        .failureUrl("/login-form?error"))
+                .logout(logout -> logout
+                        .logoutUrl("/members/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"))
+//                .oauth2Login(oauth2Login -> oauth2Login
+//                        .loginPage("/members/loginFrom")
+//                        .defaultSuccessUrl("/oauth/loginHome", true)
+//                        .userInfoEndpoint(userInfo -> userInfo.userService(customOauth2UserService)))
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/members/loginFrom").permitAll()
-                        .antMatchers("/logo.jpg").permitAll()
-                        .antMatchers("/members/signupForm").permitAll()
-                        .antMatchers("/css/home.css").permitAll()
-                        .antMatchers("/members/authFrom").permitAll()
-                        .antMatchers("/members/detail").permitAll()
-                        .antMatchers("//members").permitAll()
-                        .antMatchers("/email").permitAll()
-                        .antMatchers("/email/auth").permitAll()
-                        .antMatchers("/").hasRole("AUTH_USER")
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login()
-                .loginPage("/members/loginFrom")
-                .defaultSuccessUrl("/oauth/loginHome", true)
-                .userInfoEndpoint()
-                .userService(customOauth2UserService);
+                        .antMatchers("/img/**", "/css/**", "/login-form", "/signup-form", "/email/**", "/members/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/moims/postForm/**").hasRole("AUTH_USER")
+                        .antMatchers("/").hasAnyRole("USER", "AUTH_USER")
+                        .anyRequest().authenticated());
+
         return http.build();
     }
 
-//    /*카카오 API 전송할때는 cors 상관없는건가*/
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    //    /*카카오 API 전송할때는 cors 상관없는건가*/
 //    @Bean
 //    CorsConfigurationSource corsConfigurationSource() {
 //        var configuration = new CorsConfiguration();
@@ -81,8 +70,4 @@ public class SecurityConfiguration {
 //        return source;
 //    }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
 }
