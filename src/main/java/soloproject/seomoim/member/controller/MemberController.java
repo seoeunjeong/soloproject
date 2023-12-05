@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
@@ -58,14 +59,19 @@ public class MemberController {
     public String signUp(@Valid @ModelAttribute MemberDto.Signup signup,
                          BindingResult bindingResult,
                          Model model) {
-
         /*검증실패시 리다이렉트말고 다시 가입폼으로 이동 /컨트롤러 호출 안하고 바로 페이지이동해야 bindingResult담긴다*/
         if (bindingResult.hasErrors()) {
             return "members/signupForm";
         }
-        Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(signup));
 
-        model.addAttribute("memberId", signupId);
+        try {
+            memberService.signup(mapper.memberSignUpDtoToMember(signup));
+
+        } catch (BusinessLogicException e) {
+            model.addAttribute("error", e.getMessage());
+            return "members/signupForm";
+        }
+
         model.addAttribute("email", signup.getEmail());
 
         return "members/emailAuthForm";

@@ -46,6 +46,9 @@
             비밀번호 확인 오류
         </div>
     </form>
+    <div th:class="alert" th:if="${error != null}">
+        <p th:text="${error}">회원가입 예외발생</p>
+    </div>
 </class>
 <button id="redirect" type="submit" class="btn" form="post-form">완료</button>
 
