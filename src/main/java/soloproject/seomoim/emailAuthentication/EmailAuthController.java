@@ -23,7 +23,7 @@ public class EmailAuthController {
     private final MemberService memberService;
     private final RedisUtil redisUtil;
 
-    @GetMapping("/email/authFrom")
+    @GetMapping("/email/authForm")
     public String emailAuthFrom(@RequestParam(required = false) String email, Model model) {
         model.addAttribute("email", email);
         return "members/emailAuthForm";

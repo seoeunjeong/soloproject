@@ -13,29 +13,38 @@
 </class>
 
 <class class="container">
-    <form id="post-form" th:action="@{/members}" method="post">
-        <input type="text" id="name" name="name" placeholder="이름" required />
+    <form id="post-form" th:object="${signup}"th:action="@{/members}" method="post">
+        <input type="text" id="name" th:field="*{name}" th:errorclass="field-error-input" placeholder="이름" required />
+        <div class="field-error" th:errors="*{name}">이름오류</div>
         <input
                 type="email"
+                th:field="*{email}" th:errorclass="field-error-input"
                 id="email"
-                name="email"
                 placeholder="이메일 아이디"
-                required
-        />
+                required/>
+        <div class="field-error" th:errors="*{email}">
+            이메일 오류
+        </div>
         <input
                 type="password"
                 id="password"
-                name="password"
+                th:field="*{password}" th:errorclass="field-error-input"
                 placeholder="비밀번호(영문,특수문자,숫자를 포함 8자리 이상)"
                 required
         />
+        <div class="field-error" th:errors="*{password}">
+            비밀번호 오류
+        </div>
         <input
                 type="password"
                 id="confirmPassword"
-                name="confirmPassword"
+                th:field="*{confirmPassword}" th:errorclass="field-error-input"
                 placeholder="비밀번호 확인"
                 required
         />
+        <div class="field-error" th:errors="*{confirmPassword}">
+            비밀번호 확인 오류
+        </div>
     </form>
 </class>
 <button id="redirect" type="submit" class="btn" form="post-form">완료</button>

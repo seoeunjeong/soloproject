@@ -8,6 +8,8 @@
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
   />
   <link rel="stylesheet" href="/css/login.css" />
+<!--알림을 위해 Toastify CDN추가-->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
 
@@ -51,12 +53,27 @@
 <button type="submit" class="btn" form="loginForm">로그인하기</button>
 
 
-<script>
-  function signupForm(){
+<script th:inline="javascript">
+  function signupForm() {
+    window.location.href = '/signup-form';
+  }
 
-      window.location.href = '/signup-form';
+  window.onload = function () {
+
+    var successValue = /*[[${success}]]*/ false;
+
+    if (successValue) {
+      Toastify({
+        text: '회원가입 완료',
+        duration: 3000,
+        gravity: 'center',
+        position: 'center',
+        backgroundColor: '#d96a7e',
+        close: true}).showToast();
     }
+  };
 </script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <!-- <div>
       <input
         type="checkbox"

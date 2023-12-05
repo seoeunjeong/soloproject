@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.member.entity.Member;
@@ -34,8 +35,12 @@ public class MemberController {
     private final ImageUploadService imageUploadService;
     private static final String IMAGE_DEFAULT_URL= "https://storage.googleapis.com/seomoim/";
     @GetMapping("/login-form")
-    public String loginForm(){
+    public String loginForm(HttpServletRequest request,Model model){
+        String referer = request.getHeader("Referer");
 
+        if(referer!=null&& referer.equals("http://localhost:8080/members")){
+            model.addAttribute("success","signupSuccess");
+        }
         return "members/loginForm";
     }
     @GetMapping("/auth-form")
@@ -43,21 +48,28 @@ public class MemberController {
         return "members/loginForm";
     }
 
-    //회원가입폼
     @GetMapping("/signup-form")
-    public String signUpForm() {
+    public String signUpForm(Model model) {
+        model.addAttribute("signup",new MemberDto.Signup());
         return "members/signupForm";
     }
 
     @PostMapping("/members")
-    public String signUp(@Valid @ModelAttribute MemberDto.Signup request,
-                         RedirectAttributes redirectAttributes) {
-        Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(request));
-        redirectAttributes.addAttribute("memberId",signupId);
-        redirectAttributes.addAttribute("email",request.getEmail());
-        return "redirect:/email_authFrom";
-    }
+    public String signUp(@Valid @ModelAttribute MemberDto.Signup signup,
+                         BindingResult bindingResult,
+                         Model model) {
 
+        /*검증실패시 리다이렉트말고 다시 가입폼으로 이동 /컨트롤러 호출 안하고 바로 페이지이동해야 bindingResult담긴다*/
+        if (bindingResult.hasErrors()) {
+            return "members/signupForm";
+        }
+        Long signupId = memberService.signup(mapper.memberSignUpDtoToMember(signup));
+
+        model.addAttribute("memberId", signupId);
+        model.addAttribute("email", signup.getEmail());
+
+        return "members/emailAuthForm";
+    }
 
     @GetMapping("/members/edit_form")
     public String myPageEditFrom(@AuthenticationPrincipal UserDetails userDetails,

@@ -124,10 +124,17 @@ footer a:hover {
   color: #000;
 }
 
-.field-error{
-  border-color:darkred ;
+.alert p{
+  margin-top: 0px;
   color: darkred;
 }
-.alert p{
+
+.field-error-input{
+  border-bottom: 2px solid darkred;
+  font-size: 12px;
+}
+
+.field-error{
   color: darkred;
+  font-size: 12px;
 }
