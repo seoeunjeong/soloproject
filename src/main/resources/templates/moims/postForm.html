@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEOMOIM</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Nanum Gothic', serif, sans-serif;
+    }
+
+    header {
+      position: fixed;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      background-color: #fffffff8;
+      color: #000000f8;
+      height: 40px;
+      z-index: 1000;
+      top: 0;
+    }
+
+    header > a {
+      align-items: center;
+      text-decoration: none;
+    }
+    header a span {
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
+      margin: 10px 20px;
+    }
+    header a:nth-child(2) {
+      margin: 0 90px;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      margin-top: 40px;
+      padding: 20px 20px;
+    }
+
+    .post-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 50px;
+      align-items: center;
+    }
+
+    .category {
+      width: 100px;
+      height: 30px;
+      color: #565555;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 2px 2px;
+    }
+    .datetime {
+      width: 120px;
+      height: 30px;
+      color: #565555;
+      border: 1px solid #ccc;
+      padding: 2px 2px;
+    }
+    .title {
+      width: 200px;
+      height: 30px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+    .textarea {
+      width: 300px;
+      height: 110px;
+      font-size: large;
+      border: 1px solid #ccc;
+      margin-bottom: 30px;
+    }
+    .count {
+      width: 50px;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .region {
+      width: 200px;
+      padding: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .btn {
+      width: 200px;
+      padding: 10px;
+      background-color: #d96a7e;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      align-self: center;
+      font-size: 20px;
+    }
+    .field-error{
+      color: darkred;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/"><span><</span></a>
+  <a><span>모임 개설</span></a>
+</header>
+
+<div class="main-container">
+
+  <form class="post-form" id="post-form" th:action="@{/moims/{id}(id=${memberId})}" th:object="${postRequest}" method="post">
+    <div class="row">
+      <div>
+        <select class="category" id="moimCategory" th:field="*{moimCategory}" th:errorclass="field-error">
+          <option value="">카테고리선택</option>
+          <option
+                  th:each="category:${moimCategorys}"
+                  th:value="${category}"
+                  th:text="${category}"
+          >
+          </option>
+        </select>
+        <div class="field-error" th:errors="*{moimCategory}">
+          카테고리 오류
+        </div>
+      </div>
+      <div>
+        <input
+                type="datetime-local"
+                class="datetime"
+                id="startedAt"
+                name="startedAt"
+                placeholder="모임날짜 지정"
+                required
+        />
+      </div>
+    </div>
+    <div>
+      <input
+              type="text"
+              class="title"
+              id="title"
+              th:field="*{title}"
+              th:errorclass="field-error"
+              placeholder="모임 제목"
+              required />
+      <div class="field-error" th:errors="*{title}">
+      모임제목 오류
+      </div>
+    </div>
+    <div>
+          <textarea
+                  class="textarea"
+                  id="content"
+                  th:field="*{content}"
+                  th:errorclass="field-error"
+                  rows="4"
+                  placeholder="모임의 목표"
+                  required
+          ></textarea>
+      <div class="field-error" th:errors="*{content}">
+        모임제목 오류
+      </div>
+    </div>
+    <div>
+      <input
+              type="number"
+              class="count"
+              id="totalParticipantCount"
+              th:field="*{totalParticipantCount}"
+              placeholder="모집인원"
+              required
+      />
+      <div class="field-error" th:errors="*{totalParticipantCount}">
+        모집인원 오류
+      </div>
+    </div>
+    <div>
+      <input
+              type="text"
+              class="region"
+              id="address_kakao"
+              name="region"
+              placeholder="모임장소"
+              required
+              readonly
+      />
+    </div>
+    <button type="submit" class="btn" form="post-form">모임 만들기</button>
+  </form>
+</div>
+
+<!-- Kakao 우편번호 서비스 -->
+<!-- https://postcode.map.daum.net/guide -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+<script>
+  window.onload = function () {
+    document
+            .getElementById('address_kakao')
+            .addEventListener('click', function () {
+              new daum.Postcode({
+                oncomplete: function (data) {
+                  document.getElementById('address_kakao').value = data.address;
+                },
+              }).open();
+            });
+  };
+</script>
+</body>
+</html>

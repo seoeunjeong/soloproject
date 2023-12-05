@@ -6,10 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 public class MoimDto {
@@ -18,7 +15,7 @@ public class MoimDto {
     @Setter
     public static class Post{
 
-        @NotBlank(message = "모임 title은 필수값입니다.")
+        @NotBlank(message = "모임 제목은 필수값입니다.")
         private String title;
 
         @Length(min=10)
@@ -33,6 +30,7 @@ public class MoimDto {
 
         private String region;
 
+        @NotNull(message = "카테고리 선택은 필수입니다.")
         private MoimCategory moimCategory;
 
     }

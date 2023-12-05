@@ -31,19 +31,25 @@ public class MoimService {
     private final MoimMemberRepository moimMemberRepository;
     private final KakaoAddressSearchService kakaoAddressSearchService;
 
+    @Transactional
+    public Long createMoim(Long memberId, Moim moim) {
 
-    public Long createMoim(Long memberId,Moim moim){
         Member member = memberService.findMember(memberId);
         moim.setMember(member);
+
         KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(moim.getRegion());
         DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
+
         moim.setLatitude(documentDto.getLatitude());
         moim.setLongitude(documentDto.getLongitude());
-        Moim saveMoim = moimRepository.save(moim);
-        joinMoim(saveMoim.getId(), memberId);
-        return saveMoim.getId();
-    }
 
+        Moim savedMoim = moimRepository.save(moim);
+
+        joinMoim(savedMoim.getId(), memberId);
+
+        return savedMoim.getId();
+    }
+    @Transactional
     public Moim updateMoim(Long moimId, Moim moim){
         Moim findMoim = findMoim(moimId);
         Optional.ofNullable(moim.getTitle())
@@ -60,50 +66,55 @@ public class MoimService {
     }
 
 
-    public Moim findMoim(Long moimId){
-        Optional<Moim> findMoin = moimRepository.findById(moimId);
-        return findMoin.orElseThrow(()->new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
-    }
-
     //회원이 만든 moim 을 조회할수있다.
+
     public List<Moim> findCreatedMoim(Long memberId){
         Member member = memberService.findMember(memberId);
         return moimRepository.findMoimsByMember(member);
     }
-
     //모임삭제
+
     public void deleteMoim(Long moimId){
         Moim moim = findMoim(moimId);
         moimRepository.delete(moim);
     }
-
     public List<Moim> findAll(){
         return moimRepository.findAll();
     }
 
+
     /*회원이 모임에 참여하는 로직 moimMember table에 저장*/
+
     public Moim joinMoim(Long moimId, Long memberId) {
-        MoimMember byMoimAndMember = moimMemberRepository.findByMoimAndMember(moimId, memberId);
-        if (byMoimAndMember!=null) {
+        MoimMember join = moimMemberRepository.findByMoimAndMember(moimId, memberId);
+
+        if (join!=null) {
             throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
         }
+
         Moim moim = findMoim(moimId);
         Member member = memberService.findMember(memberId);
+
         moim.joinMoim(moim, member);
+
         return moim;
     }
     /*회원이 모임에 참여취소 로직 moimMember table에 삭제*/
+
     public void notJoinMoim(Long moimId,Long memberId){
         Moim moim = findMoim(moimId);
         moim.reduceCount();
         MoimMember findMoimMember = moimMemberRepository.findByMoimAndMember(moim.getId(), memberId);
         moimMemberRepository.delete(findMoimMember);
     }
-
     /*모임 전체조회 페이지네이션 */
+
     public Page<Moim> findAllbyPage(int page,int size){
         Page<Moim> moims = moimRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
         return moims;
     }
 
+    public Moim findMoim(Long moimId) {
+        return moimRepository.findById(moimId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
+    }
 }

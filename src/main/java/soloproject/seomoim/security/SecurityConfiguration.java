@@ -44,7 +44,7 @@ public class SecurityConfiguration {
 //                        .userInfoEndpoint(userInfo -> userInfo.userService(customOauth2UserService)))
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/img/**", "/css/**", "/login-form", "/signup-form", "/email/**", "/members/**").permitAll()
-                        .antMatchers(HttpMethod.GET, "/moims/postForm/**").hasRole("AUTH_USER")
+                        .antMatchers("/moims/postForm/**").hasRole("AUTH_USER")
                         .antMatchers("/").hasAnyRole("USER", "AUTH_USER")
                         .anyRequest().authenticated());
 

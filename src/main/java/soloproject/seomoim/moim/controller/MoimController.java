@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -44,22 +45,35 @@ public class MoimController {
     private final DistanceService distanceService;
 
 
-    @GetMapping("/postForm/{member-id}")
-    public String postMoimForm(@PathVariable("member-id") Long memberId,
+    @GetMapping("/postForm")
+    public String postMoimForm(@AuthenticationPrincipal CustomUserDetails userDetails,
                                Model model) {
-        model.addAttribute("memberId", memberId);
 
-        return "moims/postFrom";
+        Member requestMember = memberService.findByEmail(userDetails.getUsername());
+        model.addAttribute("memberId", requestMember.getId());
+
+        model.addAttribute("postRequest",new MoimDto.Post());
+
+        return "moims/postForm";
     }
 
-    //모임 등록
+
+/*todo! Valid
+javax.validation.ConstraintViolationException 예외 처리못한다?*/
     @PostMapping("/{member-id}")
     public String createMoim(@PathVariable("member-id") @Positive Long memberId,
-                             @Valid @ModelAttribute MoimDto.Post PostRequest) {
-        Moim moim = mapper.moimPostDtoToMoim(PostRequest);
-        log.info("moim",moim.toString());
+                             @Validated @ModelAttribute MoimDto.Post postRequest, BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            log.info("bindingResult={}",bindingResult);
+            return "moims/postForm";
+        }
+        Moim moim = mapper.moimPostDtoToMoim(postRequest);
+
         moimService.createMoim(memberId, moim);
-        return "redirect:/";
+
+
+        return "moims/postForm";
     }
 
     //모임 상세페이지

@@ -172,10 +172,11 @@
 <button class="post-but" id="postButton">+</button>
 
 <script th:inline="javascript">
-    var memberId = /*[[${memberId}]]*/ '';
+    // var memberId = /*[[${memberId}]]*/ '';
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
-        window.location.href = '/moims/postForm/' + memberId;
+        window.location.href='/moims/postForm'
+        // window.location.href = '/moims/postForm/' + memberId;
     });
 </script>
 </section>

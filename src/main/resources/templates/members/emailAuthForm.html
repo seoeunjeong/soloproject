@@ -98,6 +98,7 @@
 <class class="main-container">
     <p class="main-item">Email 인증</p>
     <p class="subMain-item">
+        가입이 완료 되었습니다.<br/>
         원활한 모임 활동을 위해<br />인증을 진행해주세요.
     </p>
 </class>
@@ -116,7 +117,7 @@
             <button type="submit" class="btn-1" form="login-form">인증번호전송</button>
         </div>
     </form>
-    <class class="alert" th:if="${param.send != null}">
+    <class class="alert" th:if="${send != null}">
         <div>전송되었습니다.확인 후 5분 이내 입력해 주세요.</div>
     </class>
     <form id="auth-form" th:action="@{/email/auth}" method="post">
@@ -131,7 +132,7 @@
             />
             <button type="submit" class="btn-1" form="auth-form">인증번호확인</button>
         </div>
-        <class class="alert" th:if="${param.error != null}">
+        <class class="alert" th:if="${error != null}">
         <div>인증이 실패했습니다.인증번호를 다시 확인해 주세요.</div>
         </class>
 
