@@ -25,9 +25,11 @@ public class MoimDto {
         @Max(value = 10, message = "모임참여자수는 10명 이하만 가능합니다.")
         private int totalParticipantCount;
 
+        @NotNull
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         private LocalDateTime startedAt;
 
+        @NotEmpty(message = "주소는 필수 입력 값 입니다.")
         private String region;
 
         @NotNull(message = "카테고리 선택은 필수입니다.")

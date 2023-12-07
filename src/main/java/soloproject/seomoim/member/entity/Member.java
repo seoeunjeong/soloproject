@@ -33,7 +33,7 @@ public class Member extends BaseEntity {
 
     private Integer age;
 
-    private Character gender;
+    private char gender;
 
     private String address;
 

@@ -1,4 +1,4 @@
-package soloproject.seomoim.security;
+package soloproject.seomoim.security.FormLogin;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,16 +14,15 @@ public class CustomAuthorityUtils {
 
     @Value("${mail.address.admin}")
     private String adminMailAddress;
-
     private final List<String> ADMIN_ROLES = List.of("ADMIN", "USER");
     private final List<String> USER_ROLES = List.of("USER");
+
     public List<GrantedAuthority> createAuthorities(List<String> roles) {
 
-        List<GrantedAuthority> authorities= roles.stream()
+        List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
         return authorities;
-
     }
 
     public List<String> createRoles(String email) {
@@ -32,6 +31,5 @@ public class CustomAuthorityUtils {
         }
         return USER_ROLES;
     }
-
 
 }

@@ -21,15 +21,14 @@
 
       header {
         position: fixed;
+        top: 0;
         display: flex;
         justify-content: space-between;
         width: 100%;
         align-items: center;
         background-color: #fffffff8;
-        color: #000000f8;
         padding: 20px auto;
         height: 40px;
-        z-index: 1000;
       }
 
       header > a {
@@ -58,13 +57,13 @@
 
       footer {
         display: flex;
+        position: fixed;
+        bottom: 0;
         justify-content: space-between;
         text-align: center;
         align-items: center;
-        background-color: #ffffff;
-        position: fixed;
+        background-color: #fffffff8;
         width: 100%;
-        bottom: 0;
         padding-bottom: 20px;
         padding-top: 10px;
       }
@@ -86,42 +85,32 @@
         text-decoration: none;
       }
 
-
-
-      #section-container {
+      section {
         background-color: #b9b9b90e;
-        position: absolute;
         margin-top: 40px;
-        margin-bottom: 20px;
+        margin-bottom: 70px;
         width: 100vw;
-        padding: 0px 20px 80px 20px;
+        height: 100%;
+        padding: 10px 20px;
         overflow-y: scroll;
       }
-      .post-but {
-        position: fixed;
-        font-size: 25px;
-        border-radius: 50%;
-        border: none;
-        background-color: #d96a7e;
-        color: #fff;
-        bottom: 85px;
-        right: 10px;
-        padding: 10px 20px;
-      }
+
     </style>
   </head>
 
   <body>
     <header th:replace="${header}">
-      <a><span>SEOMOIM</span></a>
-      <a href="/members/logout"><p>로그아웃</p>
+      <a href="home"><span>SEOMOIM</span></a>
+      <a href="/logout"><p>로그아웃</p>
         <img src="/img/logout.png" alt="logout.png"
       /></a>
     </header>
-    <div id="section-container">
-    <section th:replace="${content}">
 
+
+    <section th:replace="${content}">
     </section>
+
+
     </div>
     <footer>
       <a href="/"><img src="/img/home.png" alt="home" /><span>홈</span></a>

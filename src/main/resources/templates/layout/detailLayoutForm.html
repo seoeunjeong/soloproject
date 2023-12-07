@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html th:fragment="detailLayout (header, content)" xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>seomoim :: 1회성 모임커뮤니티</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="/css/detail.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Nanum Gothic', serif, sans-serif;
+        }
+
+        header {
+            display: flex;
+            position: fixed;
+            width: 100%;
+            height: 40px;
+            z-index: 1000;
+            top: 0;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fffffff8;
+            color: #000000f8;
+        }
+
+        header >a {
+            text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+            padding: 20px;
+        }
+
+
+        header span {
+            margin: 0 auto;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+
+        .btn {
+            position: fixed;
+            bottom: 0;
+            width: 100vw;
+            border: none;
+            height: 45px;
+            background-color: #d96a7e;
+            color: #fff;
+            font-size: 18px;
+        }
+        section {
+            background-color: #b9b9b90e;
+            margin-top: 40px;
+            margin-bottom: 70px;
+            width: 100vw;
+            height: 100%;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="${header}">
+    <a href="/profile"><</a>
+    <span>프로필 편집</span>
+</header>
+<section th:replace="${content}">
+
+
+
+</section>
+
+</body>
+</html>

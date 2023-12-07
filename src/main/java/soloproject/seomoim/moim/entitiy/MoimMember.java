@@ -29,4 +29,6 @@ public class MoimMember extends BaseEntity {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name="member_id")
     private Member member;
+
+    private boolean  status;
 }

@@ -36,7 +36,7 @@ public class SeomoimApplication {
 	@Bean
 	public Storage storage() throws IOException {
 
-		ClassPathResource resource = new ClassPathResource("third-impact-407104-a0c32fe5c72f.json");
+		ClassPathResource resource = new ClassPathResource("third-impact-407104-07e059ead5a3.json");
 		GoogleCredentials credentials = GoogleCredentials.fromStream(resource.getInputStream());
 		String projectId = "third-impact-407104";
 		return StorageOptions.newBuilder()

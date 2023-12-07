@@ -1,28 +1,22 @@
-package soloproject.seomoim.security;
+package soloproject.seomoim.security.FormLogin;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.utils.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-public final class CustomUserDetails extends Member implements UserDetails {
+public class CustomUserDetails extends Member implements UserDetails {
 
-    private LocalDateTime createdAt;
-    private final CustomAuthorityUtils customAuthorityUtils;
+    /*todo! customAuthorityUtils 여기서 주입받는게 최선일까*/
+    private CustomAuthorityUtils customAuthorityUtils;
 
-    public CustomUserDetails(Member member, CustomAuthorityUtils customAuthorityUtils) {
-        this.customAuthorityUtils = customAuthorityUtils;
-        this.createdAt=member.getCreatedAt();
+    public CustomUserDetails(Member member,CustomAuthorityUtils customAuthorityUtils) {
+        this.customAuthorityUtils=customAuthorityUtils;
         setId(member.getId());
         setName(member.getName());
         setAge(member.getAge());
@@ -31,12 +25,7 @@ public final class CustomUserDetails extends Member implements UserDetails {
         setEmail(member.getEmail());
         setPassword(member.getPassword());
         setRoles(member.getRoles());
-
-//        /*이렇게 까지 할일인가 ㅎㅎㅎㅎㅎ*/
-//        if(member instanceof BaseEntity){
-//            BaseEntity base = member;
-//            base.setCreatedAt(member.getCreatedAt());
-//        }
+        setCreatedAt(member.getCreatedAt());
     }
 
     @Override

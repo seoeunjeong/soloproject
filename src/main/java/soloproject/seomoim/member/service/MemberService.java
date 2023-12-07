@@ -17,10 +17,9 @@ import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.moim.repository.MoimRepository;
-import soloproject.seomoim.security.CustomAuthorityUtils;
+import soloproject.seomoim.security.FormLogin.CustomAuthorityUtils;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,6 +40,7 @@ public class MemberService {
     public Long signup(Member member) {
         checkIdDuplication(member);
 
+
         if (!member.getPassword().equals(member.getConfirmPassword())) {
             throw new BusinessLogicException(ExceptionCode.PASSWORD_MISMATCH);
         }
@@ -54,6 +54,10 @@ public class MemberService {
         Member savedMember = memberRepository.save(member);
 
         return savedMember.getId();
+    }
+
+    public void saveMember(Member member){
+        memberRepository.save(member);
     }
 
     @Transactional

@@ -1,4 +1,4 @@
-package soloproject.seomoim.security;
+package soloproject.seomoim.security.FormLogin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,8 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 
@@ -19,7 +17,6 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-
     private final CustomAuthorityUtils customAuthorityUtils;
 
     @Override
@@ -29,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         Member findMember = optionalMember.orElseThrow(() -> new UsernameNotFoundException("유효하지 않은 아이디 입니다."));
 
-        return new CustomUserDetails(findMember, customAuthorityUtils);
+        return new CustomUserDetails(findMember,customAuthorityUtils        );
     }
 
 }

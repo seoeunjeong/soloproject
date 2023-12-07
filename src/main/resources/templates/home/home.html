@@ -1,15 +1,14 @@
 <!DOCTYPE HTML>
 <html th:replace="~{layout/layoutForm::layout (~{::header},~{::section})}">
 <header>
-    <a><span>SEOMOIM</span></a>
-    <a
-    ><p>로그아웃</p>
+    <a href="/"><span>SEOMOIM</span></a>
+    <a href="/logout"><p>로그아웃</p>
         <img src="/img/logout.png" alt="logout.png"
         /></a>
 </header>
 <section>
-    <h4>전체 모임</h4>
-    <div class="card-container">
+    <div class="total-title"><h4>전체 모임</h4><a>전체보기 ></a></div>
+    <div class="total-card-container">
     <div th:each="moim:${moims}">
         <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
             <div class="card">
@@ -29,28 +28,29 @@
                     >일시 및 시간</span
                     ><br/>
                 </p>
-
+                <div class="participant-container">
                 <div class="participant" th:each="people:${moim.getParticipant()}">
                     <img
                             th:src="${people.getMember().getProfileImgUri()}"
                             alt="Image"
                     />
-                    <div>
-                        <strong>참여자 </strong
-                        ><span th:text="${moim.participantCount}">0명</span
-                    ><span>/</span
+                </div>
+                <div class="participant-detail">
+                    <span>참여자 </span>
+                    <strong th:text="${moim.participantCount}">0명</strong>
+                    <strong>/</strong
                     ><span th:text="${moim.totalParticipantCount}"
-                    >전체참여자수</span
-                    >
-                    </div>
+                    >전체참여자수</span>
+                </div>
                 </div>
             </div>
         </a>
     </div>
     </div>
-    <h4>Today 모임</h4>
-    <div class="card-container">
-        <div th:each="moim:${moims}">
+    <div class="division"></div>
+    <div class="total-title"><h4>Today 모임</h4><a>더보기 ></a></div>
+    <div class="today-card-container">
+        <div th:each="moim:${todayMoims}">
             <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
                 <div class="card">
                     <div>
@@ -88,48 +88,9 @@
             </a>
         </div>
     </div>
-    <h4>마감임박 모임</h4>
-    <div class="card-container">
-        <div th:each="moim:${moims}">
-            <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
-                <div class="card">
-                    <div>
-                        <p class="categry" th:text="${moim.moimCategory}">
-                            카테고리명
-                        </p>
-                        <p class="dday">D-Day</p>
-                    </div>
-                    <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
-                    <p class="card-text">
-                        <strong>장소 |</strong>
-                        <span th:text="${moim.region}">위치 정보</span><br/>
-                        <strong>일시 |</strong>
-                        <span
-                                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
-                        >일시 및 시간</span
-                        ><br/>
-                    </p>
-
-                    <div class="participant" th:each="people:${moim.getParticipant()}">
-                        <img
-                                th:src="${people.getMember().getProfileImgUri()}"
-                                alt="Image"
-                        />
-                        <div>
-                            <strong>참여자 </strong
-                            ><span th:text="${moim.participantCount}">0명</span
-                        ><span>/</span
-                        ><span th:text="${moim.totalParticipantCount}"
-                        >전체참여자수</span
-                        >
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-    <h4>인기있는 모임</h4>
-    <div class="card-container">
+    <div class="division"></div>
+    <div class="total-title"><h4>인기있는 모임</h4> <a>더보기 ></a></div>
+    <div class="popular-card-container">
         <div th:each="moim:${moims}">
             <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
                 <div class="card">
@@ -175,7 +136,7 @@
     // var memberId = /*[[${memberId}]]*/ '';
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
-        window.location.href='/moims/postForm'
+        window.location.href='/moims/post'
         // window.location.href = '/moims/postForm/' + memberId;
     });
 </script>

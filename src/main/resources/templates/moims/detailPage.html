@@ -2,13 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <title>Moim 정보</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <style>
-        <
-        style >
-
         @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -16,51 +17,122 @@
 
         body {
             font-family: 'Nanum Gothic', serif, sans-serif;
+            background-color: rgba(215, 215, 215, 0.179);
         }
 
-
         header {
-            position: fixed;
             display: flex;
+            position: fixed;
             width: 100%;
-            align-items: center;
-            background-color: #fffffff8;
-            color: #000000f8;
             height: 40px;
             z-index: 1000;
             top: 0;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fffffff8;
+            color: #000000f8;
         }
 
         header > a {
-            align-items: center;
             text-decoration: none;
-        }
-
-        header a span {
             font-size: 17px;
             color: black;
             font-weight: 800;
-            margin: 10px 20px;
+            padding: 20px;
         }
 
-        header a:nth-child(2) {
-            margin: 0 75px;
+        header span {
+            margin: 0 auto;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+
+        .likeButton {
+            padding: 3px 5px;
+            cursor: pointer;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
-            margin-top: 40px;
+            margin: 60px 20px;
         }
 
-        .button-container {
+        .title-container {
             display: flex;
-            flex-direction: column;
+        }
+
+        .title-container img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            margin-right: 50px;
+        }
+
+        .title-content {
+            background-color: rgb(255, 255, 255);
+            border-radius: 20px;
+            padding: 5px;
+        }
+
+        .content-container {
+            width: 100%;
+            height: 150px;
+            box-sizing: border-box;
+        }
+
+        .content {
+            font-size: 15px;
+        }
+
+        .info-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 20px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 20px;
+            padding: 5px;
+        }
+
+        .info-container span {
+            font-size: 12px;
+            font-weight: lighter;
+        }
+
+        .participant-container {
+            font-size: 13px;
+            background-color: rgb(255, 255, 255);
+            height: 50px;
+            border-radius: 20px;
+            padding: 5px;
+        }
+
+        .participant-container td {
+            font-size: 12px;
+        }
+
+        footer {
+            justify-content: center;
+            display: flex;
+            text-align: center;
             align-items: center;
+            background-color: #ffffff;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            padding-bottom: 20px;
+            padding-top: 10px;
         }
 
         .joinButton {
-            position: fixed;
-            bottom: 30px;
-            left: 120px;
             width: 50%;
             background-color: #d96a7e;
             border: none;
@@ -69,37 +141,46 @@
             text-align: center;
             font-size: 17px;
             color: whitesmoke;
-
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
         }
-
-        .likeButton {
-            width: 50px;
-            height: 50px;
-            position: fixed;
-            bottom: 30px;
-            width: 20%;
-            left: 20px;
-            border: none;
-        }
-
     </style>
 </head>
 <body>
 <header>
-    <a href="/"><span><</span></a>
-    <a><span>모임 정보</span></a>
+    <a href="/"><</a>
+    <span th:text="${moim.title}">모임 정보</span>
+    <p class="likeButton" id="likeButton">❤️</p>
 </header>
 <div class="container">
-    <div>
-        <h5 class="modal-title" th:text="${moim.title}">모임 상세 정보</h5>
-        <h6><strong>시간:</strong> <span
-                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}">일시 및 시간</span></h6>
-        <h6><strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span></h6>
-        <p><strong>모집자:</strong><span th:text="${moim.member.getName()}">모집자</span></p>
-        <p><strong>참여자수/모집인원:</strong><span th:text="${moim.participantCount}">참여자수</span><span>/</span>
-            <span th:text="${moim.totalParticipantCount}">모집인원</span></p>
-        <p><strong>내용:</strong><span th:text="${moim.content}">내용</span></p>
-
+    <div class="title-content">
+        <div class="title-container">
+            <h5 class="title" th:text="${moim.title}">모임 제목</h5>
+            <p><img th:src="${moim.member.profileImgUri}" /></p>
+        </div>
+        <div class="content-container">
+            <p class="content" th:text="${moim.content}">내용</p>
+        </div>
+    </div>
+    <div class="info-container">
+        <h6>
+            <strong>시간:</strong>
+            <span
+                    th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
+            >일시 및 시간</span
+            >
+        </h6>
+        <h6>
+            <strong>위치:</strong> <span th:text="${moim.region}">위치 정보</span>
+        </h6>
+        <h6>
+            <strong>참석: </strong
+            ><span th:text="${moim.participantCount}">참여자수</span
+        ><span>/</span>
+            <span th:text="${moim.totalParticipantCount}">모집인원</span>
+        </h6>
+    </div>
+    <div class="participant-container">
         <table>
             <thead>
             <tr>
@@ -111,114 +192,77 @@
                 <td th:text="${member.name}"></td>
             </tr>
             </tbody>
-
         </table>
-
-        <div class="button-container">
-            <div>
-                <img src="/img/like.png" class="likeButton" id="likeButton" alt="좋아요 버튼"/>
-            </div>
-            <div>
-                <button type="button" class="joinButton" id="joinButton">참여</button>
-            </div>
-        </div>
-
-
-        <button type="button" class="btn btn-outline-secondary" id="notJoinButton">참여취소
-        </button>
-        <button type="button" class="btn btn-outline-danger" id="cancelLikeButton">좋아요취소</button>
-
     </div>
+</div>
 
+<footer>
+    <button
+            type="button"
+            class="joinButton"
+            id="joinButton"
+            th:onclick="|toggleJoinButton('${moim.id}','${member.Id}')|"
+    >
+        참여
+    </button>
+</footer>
 
-    <script th:inline="javascript">
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function toggleJoinButton(moimId, memberId) {
+        var button = document.getElementById('joinButton');
+        button.addEventListener('click', function () {
+            if (button.innerText === '참여') {
+                button.innerText = '참여 취소';
+                button.addEventListener('click', function () {
+                    var url = '/moims/' + moimId + '/' + memberId;
 
-        var editButton = document.getElementById('likeButton');
+                    fetch(url, {
+                        method: 'DELETE',
+                    });
+                });
+            } else {
+                button.innerText = '참여';
+                var url = '/moims/' + moimId + '/' + memberId;
 
-        editButton.addEventListener('click', function () {
-            /*<![CDATA[*/
-            var moimId = /*[[${moim.id}]]*/ null;
-            var memberId = /*[[${member.id}]]*/ null;
-            /*]]>*/
-            var url = '/like/' + memberId + '/' + moimId;
-
-            fetch(url, {
-                method: 'POST',
-            })
-        });
-    </script>
-
-    <script th:inline="javascript">
-
-        var editButton = document.getElementById('cancelLikeButton');
-
-        editButton.addEventListener('click', function () {
-            /*<![CDATA[*/
-            var moimId = /*[[${moim.id}]]*/ null;
-            var memberId = /*[[${member.id}]]*/ null;
-            /*]]>*/
-            var url = '/like/' + memberId + '/' + moimId;
-
-            fetch(url, {
-                method: 'DELETE',
-            })
-        });
-    </script>
-
-    <script th:inline="javascript">
-
-        var editButton = document.getElementById('joinButton');
-
-        editButton.addEventListener('click', function () {
-            /*<![CDATA[*/
-            var moimId = /*[[${moim.id}]]*/ null;
-            var memberId = /*[[${member.id}]]*/ null;
-            /*]]>*/
-            var url = '/moims/' + moimId + '/' + memberId;
-
-            fetch(url, {
-                method: 'POST',
-            }).then(function (response) {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json(); // JSON 파싱
-            })
-                .then(function (data) {
-                    // 서버로부터의 응답을 확인하여 리다이렉션 URL이 있는 경우 이동
-                    if (data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        // 리다이렉션이 없는 경우 추가로직 수행
-                        console.log('No redirection URL provided in the response');
-                    }
+                fetch(url, {
+                    method: 'POST',
                 })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json(); // JSON 파싱
+                    })
+                    .then(function (data) {
+                        // 서버로부터의 응답을 확인하여 리다이렉션 URL이 있는 경우 이동
+                        if (data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            // 리다이렉션이 없는 경우 추가로직 수행
+                            console.log('No redirection URL provided in the response');
+                        }
+                    });
+            }
         });
+    }
+    /*]]>*/
+</script>
 
-    </script>
-    <script th:inline="javascript">
+<script th:inline="javascript">
+    var editButton = document.getElementById('likeButton');
 
-        var editButton = document.getElementById('notJoinButton');
+    editButton.addEventListener('click', function () {
+        /*<![CDATA[*/
+        var moimId = /*[[${moim.id}]]*/ null;
+        var memberId = /*[[${member.id}]]*/ null;
+        /*]]>*/
+        var url = '/like/' + memberId + '/' + moimId;
 
-
-        editButton.addEventListener('click', function () {
-            /*<![CDATA[*/
-            var moimId = /*[[${moim.id}]]*/ null;
-            var memberId = /*[[${member.id}]]*/ null;
-            /*]]>*/
-            var url = '/moims/' + moimId + '/' + memberId;
-
-            fetch(url, {
-                method: 'DELETE',
-            })
+        fetch(url, {
+            method: 'POST',
         });
-    </script>
-
-
-</div>
-</div>
-</div>
-</div>
-
+    });
+</script>
 </body>
 </html>

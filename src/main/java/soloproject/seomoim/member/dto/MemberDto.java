@@ -48,11 +48,11 @@ public class MemberDto {
 
         private Integer age;
 
-        private Character gender;
+        private char gender;
 
         private String address;
 
-        private MultipartFile file;
+        private MultipartFile profileImage;
     }
 
     @Getter

@@ -9,15 +9,6 @@ body {
   font-family: 'Nanum Gothic', serif, sans-serif;
   flex-direction: column;
 }
-/* header{
-        position: fixed;
-        width: 100vw;
-        text-align: center;
-        display: block;
-        background-color: #000;
-        color: #fffffff8;
-        padding: 15px;
-      } */
 
 .main-container {
   display: flex;

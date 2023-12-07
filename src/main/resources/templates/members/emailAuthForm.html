@@ -69,13 +69,20 @@
         color: #d96a7ecd;
 
     }
-    .btn-1 {
-        border: none;
+    .btn-1{
         height: 40px;
         width: 130px;
-        background-color: #d96a7e;
-        color: #fff;
+        padding: 10px 20px;
         font-size: 15px;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #d96a7e;
+        border: 2px solid #d96a7e;
+        border-radius: 5px;
+        transition: background-color 0.3s;
         margin-left: 20px;
     }
     .container form {
@@ -114,7 +121,7 @@
                     placeholder="이메일"
                     required readonly
             />
-            <button type="submit" class="btn-1" form="login-form">인증번호전송</button>
+            <button type="submit" class="btn-1" form="login-form">전송</button>
         </div>
     </form>
     <class class="alert" th:if="${send != null}">
@@ -130,7 +137,7 @@
                     placeholder="인증번호 입력"
                     required
             />
-            <button type="submit" class="btn-1" form="auth-form">인증번호확인</button>
+            <button type="submit" class="btn-1" form="auth-form">확인</button>
         </div>
         <class class="alert" th:if="${error != null}">
         <div>인증이 실패했습니다.인증번호를 다시 확인해 주세요.</div>

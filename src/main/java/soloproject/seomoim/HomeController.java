@@ -14,8 +14,11 @@ import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
-import soloproject.seomoim.security.CustomUserDetails;
+import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,35 +34,46 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(@AuthenticationPrincipal CustomUserDetails userDetails,
-                       Model model) {
+                       Model model, HttpServletRequest request) {
         String email = userDetails.getEmail();
         Long id = memberService.findByEmail(email).getId();
         List<Moim> moims = moimService.findAll();
-        log.info("moims"+moims.get(0).getRegion());
-//        List<Moim> flashedMoims = (List<Moim>) model.getAttribute("moims");
-//
-//        if (flashedMoims != null) {
-//            moims = flashedMoims;
-//        }
+        List<Moim> todayMoims = moimService.findTodayMoims();
+        log.info("todayMoims={}",todayMoims);
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Enumeration<String> attributeNames = session.getAttributeNames();
+
+            while (attributeNames.hasMoreElements()) {
+                String attributeName = attributeNames.nextElement();
+                Object attributeValue = session.getAttribute(attributeName);
+
+                System.out.println("Attribute Name: " + attributeName + ", Value: " + attributeValue);
+            }
+        } else {
+            System.out.println("Session is not available or not created.");
+        }
+
 
         model.addAttribute("memberId", id);
         model.addAttribute("moims", moims);
+        model.addAttribute("todayMoims",todayMoims);
         return "home/home";
     }
 
 
-
-    /*Todo oauth 인증객체 폼로그인객체와 통합*/
-    @GetMapping("/oauth/loginHome")
-    public String oauthLoginHome(@AuthenticationPrincipal OAuth2User oAuth2User,
-                                 Model model) {
-        Optional<Member> optionalMember = memberRepository.findByEmail(oAuth2User.getAttribute("email"));
-        Member member = optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        model.addAttribute("member", member);
-        List<Moim> moims = moimService.findAll();
-        model.addAttribute("moims", moims);
-        return "home/loginHome";
-    }
+//    /*Todo oauth 인증객체 폼로그인객체와 통합*/
+//    @GetMapping("/oauth/loginHome")
+//    public String oauthLoginHome(@AuthenticationPrincipal OAuth2User oAuth2User,
+//                                 Model model) {
+//        Optional<Member> optionalMember = memberRepository.findByEmail(oAuth2User.getAttribute("email"));
+//        Member member = optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+//        model.addAttribute("member", member);
+//        List<Moim> moims = moimService.findAll();
+//        model.addAttribute("moims", moims);
+//        return "home/loginHome";
+//    }
 
     @GetMapping("/profile")
     public String profileFrom(@AuthenticationPrincipal CustomUserDetails userDetails,Model model){

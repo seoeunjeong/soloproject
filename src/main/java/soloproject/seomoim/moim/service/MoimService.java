@@ -18,6 +18,9 @@ import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.moim.repository.MoimRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +48,7 @@ public class MoimService {
 
         Moim savedMoim = moimRepository.save(moim);
 
-        joinMoim(savedMoim.getId(), memberId);
+//        joinMoim(savedMoim.getId(), memberId);
 
         return savedMoim.getId();
     }
@@ -65,56 +68,63 @@ public class MoimService {
          return findMoim;
     }
 
+//    public Moim joinMoim(Long moimId, Long memberId) {
+//        MoimMember joinMoim = moimMemberRepository.findByMoimAndMember(moimId, memberId);
+//        if (joinMoim != null) {
+//            if (joinMoim.isStatus()) {
+//                throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
+//            }
+//        } else {
+//            joinMoim.setStatus(true);
+//            MoimMember save = moimMemberRepository.save(joinMoim);
+//            Moim moim = findMoim(moimId);
+//            moim.addParticipant(save);
+//        }
+//        return null;
+//    }
+
 
     //회원이 만든 moim 을 조회할수있다.
-
-    public List<Moim> findCreatedMoim(Long memberId){
+    public List<Moim> findMyCreatedMoim(Long memberId){
         Member member = memberService.findMember(memberId);
         return moimRepository.findMoimsByMember(member);
     }
-    //모임삭제
+
+
+    public void cancelJoinMoim(Long moimId, Long memberId) {
+        MoimMember findMoimMember = moimMemberRepository.findByMoimAndMember(moimId, memberId);
+        moimMemberRepository.delete(findMoimMember);
+        Moim moim = findMoim(moimId);
+        moim.reduceCount();
+    }
+
+    public Moim findMoim(Long moimId) {
+        return moimRepository.findById(moimId).orElseThrow(()
+                -> new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
+    }
+
+    public List<Moim> findAll(){
+        return moimRepository.findAll();
+    }
 
     public void deleteMoim(Long moimId){
         Moim moim = findMoim(moimId);
         moimRepository.delete(moim);
     }
-    public List<Moim> findAll(){
-        return moimRepository.findAll();
-    }
 
 
-    /*회원이 모임에 참여하는 로직 moimMember table에 저장*/
-
-    public Moim joinMoim(Long moimId, Long memberId) {
-        MoimMember join = moimMemberRepository.findByMoimAndMember(moimId, memberId);
-
-        if (join!=null) {
-            throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
-        }
-
-        Moim moim = findMoim(moimId);
-        Member member = memberService.findMember(memberId);
-
-        moim.joinMoim(moim, member);
-
-        return moim;
-    }
-    /*회원이 모임에 참여취소 로직 moimMember table에 삭제*/
-
-    public void notJoinMoim(Long moimId,Long memberId){
-        Moim moim = findMoim(moimId);
-        moim.reduceCount();
-        MoimMember findMoimMember = moimMemberRepository.findByMoimAndMember(moim.getId(), memberId);
-        moimMemberRepository.delete(findMoimMember);
-    }
     /*모임 전체조회 페이지네이션 */
-
     public Page<Moim> findAllbyPage(int page,int size){
         Page<Moim> moims = moimRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
         return moims;
     }
 
-    public Moim findMoim(Long moimId) {
-        return moimRepository.findById(moimId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.NOT_EXISTS_MOIM));
+    public List<Moim> findTodayMoims(){
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = LocalDateTime.of(today, LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+
+        return moimRepository.findByStartedAtBetween(startOfDay, endOfDay);
     }
+
 }

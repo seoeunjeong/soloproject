@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static soloproject.seomoim.moim.entitiy.QMoimMember.moimMember;
+
 @Entity
 @Getter
 @Setter
@@ -58,10 +60,7 @@ public class Moim extends BaseEntity {
 //
 //    }
    /*모임참여 메소드*/
-    public void joinMoim(Moim moim,Member member){
-        MoimMember moimMember = new MoimMember();
-        moimMember.setMoim(moim);
-        moimMember.setMember(member);
+    public void addParticipant(MoimMember moimMember){
         participant.add(moimMember);
         this.participantCount += 1;
     }

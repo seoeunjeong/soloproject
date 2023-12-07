@@ -17,7 +17,7 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.recommend.DistanceService;
-import soloproject.seomoim.security.CustomUserDetails;
+import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 import soloproject.seomoim.utils.PageResponseDto;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.mapper.MoimMapper;
@@ -45,35 +45,38 @@ public class MoimController {
     private final DistanceService distanceService;
 
 
-    @GetMapping("/postForm")
+    @GetMapping("/post")
     public String postMoimForm(@AuthenticationPrincipal CustomUserDetails userDetails,
                                Model model) {
 
         Member requestMember = memberService.findByEmail(userDetails.getUsername());
-        model.addAttribute("memberId", requestMember.getId());
 
-        model.addAttribute("postRequest",new MoimDto.Post());
+        model.addAttribute("memberId", requestMember.getId());
+        model.addAttribute("post", new MoimDto.Post());
 
         return "moims/postForm";
     }
 
 
-/*todo! Valid
-javax.validation.ConstraintViolationException 예외 처리못한다?*/
-    @PostMapping("/{member-id}")
-    public String createMoim(@PathVariable("member-id") @Positive Long memberId,
-                             @Validated @ModelAttribute MoimDto.Post postRequest, BindingResult bindingResult,
-                             Model model) {
+    /*todo! Valid
+    BindingResult 객체의 이름하고 같아야한다?*/
+    @PostMapping("/post/{member-id}")
+    public String postMoim(@PathVariable("member-id") @Positive Long memberId,
+                           @Validated @ModelAttribute MoimDto.Post post, BindingResult bindingResult,
+                           Model model,RedirectAttributes redirectAttributes) {
+
+        model.addAttribute("memberId", memberId);
+
         if (bindingResult.hasErrors()) {
-            log.info("bindingResult={}",bindingResult);
             return "moims/postForm";
         }
-        Moim moim = mapper.moimPostDtoToMoim(postRequest);
 
-        moimService.createMoim(memberId, moim);
+        Moim moim = mapper.moimPostDtoToMoim(post);
 
+        Long moimId = moimService.createMoim(memberId, moim);
 
-        return "moims/postForm";
+        redirectAttributes.addAttribute("moimId",moimId);
+        return "redirect:/moims/"+moimId;
     }
 
     //모임 상세페이지
@@ -100,7 +103,7 @@ javax.validation.ConstraintViolationException 예외 처리못한다?*/
                            HttpServletRequest request,
                            HttpServletResponse response) {
         response.setHeader("Pragma", "no-cache");
-        Moim moim = moimService.joinMoim(moimId, memberId);
+//        Moim moim = moimService.joinMoim(moimId, memberId);
         String referer = request.getHeader("Referer");
 
         return "{redirectUrl:" + referer + "}";
@@ -113,7 +116,7 @@ javax.validation.ConstraintViolationException 예외 처리못한다?*/
     @DeleteMapping("/{moim-id}/{member-id}")
     public void notJoinMoim(@PathVariable("moim-id") Long moimId,
                             @PathVariable("member-id") Long memberId) {
-        moimService.notJoinMoim(moimId, memberId);
+        moimService.cancelJoinMoim(moimId, memberId);
     }
 
 
@@ -183,5 +186,12 @@ javax.validation.ConstraintViolationException 예외 처리못한다?*/
     @ModelAttribute("moimCategorys")
     public MoimCategory[] moimCategorys() {
         return MoimCategory.values();
+    }
+
+//  오늘 진행하는 모임 조회기능 개발
+    @GetMapping("/today")
+    public List<Moim> getTodayMoims(){
+        return moimService.findTodayMoims();
+
     }
 }

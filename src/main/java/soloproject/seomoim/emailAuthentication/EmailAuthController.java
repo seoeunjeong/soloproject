@@ -2,12 +2,14 @@ package soloproject.seomoim.emailAuthentication;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 import soloproject.seomoim.utils.RedisUtil;
 
 import java.util.List;
@@ -23,7 +25,9 @@ public class EmailAuthController {
     private final RedisUtil redisUtil;
 
     @GetMapping("/email/authForm")
-    public String emailAuthFrom() {
+    public String emailAuthFrom(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        String email = userDetails.getEmail();
+        model.addAttribute("email", email);
         return "members/emailAuthForm";
     }
 
@@ -50,7 +54,7 @@ public class EmailAuthController {
             Member findMember = memberService.findByEmail(email);
             findMember.setRoles(List.of("AUTH_USER"));
             memberService.update(findMember.getId(), findMember);
-            return "redirect:/";
+            return "home/home";
         } else {
             model.addAttribute("error", "인증실패");
             model.addAttribute("email", email);

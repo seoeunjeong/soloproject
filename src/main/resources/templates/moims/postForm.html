@@ -61,36 +61,39 @@
 
     .category {
       width: 100px;
-      height: 30px;
+      height: 35px;
       color: #565555;
       border: 1px solid #ccc;
       border-radius: 10px;
       padding: 2px 2px;
+      margin-top: 2;
     }
     .datetime {
-      width: 120px;
+      width: 150px;
       height: 30px;
       color: #565555;
       border: 1px solid #ccc;
       padding: 2px 2px;
+      font-size: 10px;
+      letter-spacing:-1px;
     }
     .title {
       width: 200px;
       height: 30px;
       border: 1px solid #ccc;
-      margin-bottom: 20px;
     }
     .textarea {
       width: 300px;
       height: 110px;
       font-size: large;
       border: 1px solid #ccc;
-      margin-bottom: 30px;
+      margin-top: 15px;
+      margin-bottom: -3px;
     }
     .count {
       width: 50px;
-      padding: 8px;
-      margin-bottom: 10px;
+      padding: 10px;
+      margin-top: 15px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
@@ -98,7 +101,7 @@
     .region {
       width: 200px;
       padding: 8px;
-      margin-bottom: 20px;
+      margin-top: 15px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
@@ -113,10 +116,17 @@
       cursor: pointer;
       align-self: center;
       font-size: 20px;
+      margin-top: 30px;
     }
-    .field-error{
+    .field-error {
       color: darkred;
       font-size: 12px;
+      margin-top: 4px;
+    }
+    .main-container p {
+      font-size: 15px;
+      display: inline-block;
+      color: gray;
     }
   </style>
 </head>
@@ -127,18 +137,27 @@
 </header>
 
 <div class="main-container">
-
-  <form class="post-form" id="post-form" th:action="@{/moims/{id}(id=${memberId})}" th:object="${postRequest}" method="post">
+  <form
+          class="post-form"
+          id="post-form"
+          th:action="@{/moims/post/{id}(id=${memberId})}"
+          th:object="${post}"
+          method="post"
+  >
     <div class="row">
       <div>
-        <select class="category" id="moimCategory" th:field="*{moimCategory}" th:errorclass="field-error">
-          <option value="">카테고리선택</option>
+        <select
+                class="category"
+                id="moimCategory"
+                th:field="*{moimCategory}"
+                th:errorclass="field-error"
+        >
+          <option value="">카테고리</option>
           <option
                   th:each="category:${moimCategorys}"
                   th:value="${category}"
                   th:text="${category}"
-          >
-          </option>
+          ></option>
         </select>
         <div class="field-error" th:errors="*{moimCategory}">
           카테고리 오류
@@ -153,6 +172,7 @@
                 placeholder="모임날짜 지정"
                 required
         />
+        <div class="field-error" th:errors="*{startedAt}">날짜오류</div>
       </div>
     </div>
     <div>
@@ -163,10 +183,9 @@
               th:field="*{title}"
               th:errorclass="field-error"
               placeholder="모임 제목"
-              required />
-      <div class="field-error" th:errors="*{title}">
-      모임제목 오류
-      </div>
+              required
+      />
+      <div class="field-error" th:errors="*{title}">모임제목 오류</div>
     </div>
     <div>
           <textarea
@@ -178,9 +197,7 @@
                   placeholder="모임의 목표"
                   required
           ></textarea>
-      <div class="field-error" th:errors="*{content}">
-        모임제목 오류
-      </div>
+      <div class="field-error" th:errors="*{content}">모임제목 오류</div>
     </div>
     <div>
       <input
@@ -191,6 +208,7 @@
               placeholder="모집인원"
               required
       />
+      <p>명</p>
       <div class="field-error" th:errors="*{totalParticipantCount}">
         모집인원 오류
       </div>
@@ -200,15 +218,19 @@
               type="text"
               class="region"
               id="address_kakao"
-              name="region"
+              th:field="*{region}"
               placeholder="모임장소"
               required
               readonly
       />
     </div>
+    <div class="field-error" th:errors="*{region}">
+      모임위치 오류
+    </div>
     <button type="submit" class="btn" form="post-form">모임 만들기</button>
   </form>
 </div>
+
 
 <!-- Kakao 우편번호 서비스 -->
 <!-- https://postcode.map.daum.net/guide -->
@@ -227,5 +249,6 @@
             });
   };
 </script>
+
 </body>
 </html>

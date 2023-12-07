@@ -3,7 +3,7 @@ package soloproject.seomoim.member.mapper;
 import org.mapstruct.Mapper;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
-import soloproject.seomoim.security.CustomUserDetails;
+import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 
 
 @Mapper(componentModel = "spring")

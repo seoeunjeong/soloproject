@@ -1,4 +1,4 @@
-package soloproject.seomoim.security;
+package soloproject.seomoim.security.FormLogin;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;

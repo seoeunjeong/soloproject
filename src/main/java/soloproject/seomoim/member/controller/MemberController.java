@@ -93,8 +93,8 @@ public class MemberController {
                                 RedirectAttributes redirectAttributes,
                                 @Valid @ModelAttribute MemberDto.Update request) throws IOException {
         Member member = mapper.memberUpdateDtoToMember(request);
-        if(request.getFile()!=null) {
-            String imageUuid = imageUploadService.uploadFileToGCS(request.getFile());
+        if(request.getProfileImage()!=null) {
+            String imageUuid = imageUploadService.uploadFileToGCS(request.getProfileImage());
             member.setProfileImgUri(IMAGE_DEFAULT_URL + imageUuid);
             memberService.update(memberId, member);
         }else{
@@ -111,10 +111,12 @@ public class MemberController {
     public String findCreatedMoimList(@PathVariable("member-id")Long memberId,
                                       Model model){
         Member member = memberService.findMember(memberId);
-        List<Moim> createdMoimList = moimService.findCreatedMoim(memberId);
+        List<Moim> createdMoimList = moimService.findMyCreatedMoim(memberId);
         model.addAttribute("MoimList", createdMoimList);
         return null;
     }
+
+
     /* 회원이 참여한 모암 List 조회 */
     //members/moims/{member-id}
     @GetMapping("members/moims/{member-id}")
@@ -133,6 +135,7 @@ public class MemberController {
             session.invalidate();
         return "redirect:/";
     }
+
 
 
 
