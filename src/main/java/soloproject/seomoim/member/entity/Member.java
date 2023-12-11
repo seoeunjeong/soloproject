@@ -3,6 +3,7 @@ package soloproject.seomoim.member.entity;
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.like.LikeMoim;
+import soloproject.seomoim.profileImage.ProfileImage;
 import soloproject.seomoim.utils.BaseEntity;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+
 public class Member extends BaseEntity {
 
     @Id
@@ -40,7 +42,8 @@ public class Member extends BaseEntity {
     private double latitude;
     private double longitude;
 
-    private String profileImgUri;
+    @OneToOne(mappedBy = "member",cascade = CascadeType.ALL,orphanRemoval = true)
+    private ProfileImage profileImage;
 
 
     @ElementCollection(fetch = FetchType.EAGER)

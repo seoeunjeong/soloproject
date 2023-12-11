@@ -37,7 +37,7 @@ public class MailSendService {
         }
         javaMailSender.send(message);
         String sendNumber = String.valueOf(number);
-        redisUtil.set(email,sendNumber,5);
+        redisUtil.set(email,sendNumber,3);
 //        email을 키로 저장 ㅎㅎㅎㅎㅎ
         return number;
     }

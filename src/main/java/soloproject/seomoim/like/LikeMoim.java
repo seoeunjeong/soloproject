@@ -1,6 +1,7 @@
 package soloproject.seomoim.like;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 public class LikeMoim {
 
     @Id
@@ -24,4 +26,10 @@ public class LikeMoim {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private boolean status;
+
+    public LikeMoim(Moim moim, Member member) {
+        this.moim = moim;
+        this.member = member;
+    }
 }

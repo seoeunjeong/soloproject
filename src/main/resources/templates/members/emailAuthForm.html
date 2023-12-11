@@ -2,57 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <title>SEOMOIM</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/css/login.css"/>
 </head>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
-
-    * {
-        margin: 0;
-        padding: 0;
-    }
-    body {
-        font-family: 'Nanum Gothic', serif, sans-serif;
-        flex-direction: column;
-        position: fixed;
-    }
-    .main-container {
-        display: flex;
-        flex-direction: column;
-        padding: 50px 30px;
-    }
     .main-container .main-item {
         margin-top:40px;
-        font-size: 25px;
-        font-weight: 500;
-        letter-spacing: -0.5px;
-    }
-    .main-container .subMain-item {
-        margin-top: 40px;
-        font-size: 15px;
-        color: #948f8f;
     }
 
     .container {
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        padding: 30px;
         margin-top: -10px;
     }
 
-    .container input {
-        border: none;
-        font-size: 16px;
-        border-bottom: 1px solid #ccc;
-        width: 100%;
-        padding: 20px 0px;
-    }
-    input:focus {
-        outline: none;
-        border-bottom: 2px solid #d96a7e;
-    }
 
     .container a {
         display: inline-block;
@@ -102,15 +64,15 @@
     }
 </style>
 <body>
-<class class="main-container">
+<div class="main-container">
     <p class="main-item">Email 인증</p>
-    <p class="subMain-item">
+    <p class="submain-item">
         가입이 완료 되었습니다.<br/>
-        원활한 모임 활동을 위해<br />인증을 진행해주세요.
+        원활한 모임 활동을 위해<br/>인증을 진행해주세요.
     </p>
-</class>
+</div>
 
-<class class="container">
+<div class="container">
     <form id="login-form" th:action="@{/email}" method="get">
         <div>
             <input
@@ -124,9 +86,9 @@
             <button type="submit" class="btn-1" form="login-form">전송</button>
         </div>
     </form>
-    <class class="alert" th:if="${send != null}">
-        <div>전송되었습니다.확인 후 5분 이내 입력해 주세요.</div>
-    </class>
+    <div class="alert" th:if="${send != null}">
+        <div>전송되었습니다.확인 후 3분 이내 입력해 주세요.</div>
+    </div>
     <form id="auth-form" th:action="@{/email/auth}" method="post">
         <div>
             <input type="hidden" id="hiddenEmail" name="email" th:value="${email}" />
@@ -144,8 +106,8 @@
         </class>
 
         <br />
-        <a th:href="@{/login-form}" class="next">다음에 인증하기 ></a>
+        <a href="/" class="next">다음에 인증하기 ></a>
     </form>
-</class>
+</div>
 </body>
 </html>

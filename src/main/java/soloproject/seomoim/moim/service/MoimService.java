@@ -48,7 +48,7 @@ public class MoimService {
 
         Moim savedMoim = moimRepository.save(moim);
 
-//        joinMoim(savedMoim.getId(), memberId);
+        joinMoim(savedMoim.getId(), memberId);
 
         return savedMoim.getId();
     }
@@ -68,20 +68,33 @@ public class MoimService {
          return findMoim;
     }
 
-//    public Moim joinMoim(Long moimId, Long memberId) {
-//        MoimMember joinMoim = moimMemberRepository.findByMoimAndMember(moimId, memberId);
-//        if (joinMoim != null) {
-//            if (joinMoim.isStatus()) {
-//                throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
-//            }
-//        } else {
-//            joinMoim.setStatus(true);
-//            MoimMember save = moimMemberRepository.save(joinMoim);
-//            Moim moim = findMoim(moimId);
-//            moim.addParticipant(save);
-//        }
-//        return null;
-//    }
+    @Transactional
+    public void joinMoim(Long moimId, Long memberId) {
+        MoimMember joinMoim = moimMemberRepository.findByMoimAndMember(moimId, memberId);
+        if (joinMoim != null) {
+            if (joinMoim.isStatus()) {
+                throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
+            }
+            joinMoim.setStatus(true);
+        } else {
+            MoimMember moimMember = new MoimMember();
+            Moim findMoim = findMoim(moimId);
+            Member joinMember = memberService.findMember(memberId);
+            moimMember.setMoim(findMoim);
+            moimMember.setMember(joinMember);
+            moimMember.setStatus(true);
+            moimMemberRepository.save(moimMember);
+            findMoim.addCount();
+        }
+    }
+
+    @Transactional
+    public void cancelJoinMoim(Long moimId, Long memberId) {
+        MoimMember findMoimMember = moimMemberRepository.findByMoimAndMember(moimId, memberId);
+        moimMemberRepository.delete(findMoimMember);
+        Moim moim = findMoim(moimId);
+        moim.reduceCount();
+    }
 
 
     //회원이 만든 moim 을 조회할수있다.
@@ -91,12 +104,6 @@ public class MoimService {
     }
 
 
-    public void cancelJoinMoim(Long moimId, Long memberId) {
-        MoimMember findMoimMember = moimMemberRepository.findByMoimAndMember(moimId, memberId);
-        moimMemberRepository.delete(findMoimMember);
-        Moim moim = findMoim(moimId);
-        moim.reduceCount();
-    }
 
     public Moim findMoim(Long moimId) {
         return moimRepository.findById(moimId).orElseThrow(()

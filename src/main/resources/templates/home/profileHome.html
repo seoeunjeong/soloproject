@@ -9,14 +9,17 @@
 <section>
   <div class="image-container">
     <a id="editButton">
-      <img src="img/profile2.png" />
+      <img th:if="${member?.profileImage?.profileImageUrl}" th:src="${member?.profileImage?.profileImageUrl}" />
+      <img th:unless="${member?.profileImage?.profileImageUrl}" src="img/profile2.png" />
+
     </a>
   </div>
     <div class="info-container">
       <p class="item1" th:text="${member.name}">name</p>
       <div class="email">
         <p class="item2" th:text="${member.email}">email</p>
-        <button class="email-button" id="email-button">인증</button>
+        <button th:if="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button">인증완료</button>
+        <button th:unless="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button" id="email-button">인증</button>
       </div>
       <hr />
       <div class="day">
@@ -53,7 +56,7 @@
     const emailButton = document.getElementById('email-button');
 
     emailButton.addEventListener('click',function (){
-      window.location.href='/email/authForm'
+      window.location.href='/email/auth-form'
     })
 
   </script>

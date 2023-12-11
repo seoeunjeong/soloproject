@@ -50,6 +50,7 @@ public class Moim extends BaseEntity {
     @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
     private List<MoimMember> participant= new ArrayList<>();
 
+    private boolean open;
     public Moim() {
 
     }
@@ -60,13 +61,13 @@ public class Moim extends BaseEntity {
 //
 //    }
    /*모임참여 메소드*/
-    public void addParticipant(MoimMember moimMember){
-        participant.add(moimMember);
+    public void addCount(){
         this.participantCount += 1;
     }
 
     /*참여인원줄이기*/
     public void reduceCount(){
+
         this.participantCount -=1;
     }
 

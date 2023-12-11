@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Entity
 @Getter @Setter
 @Table(name = "moim_member")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MoimMember extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

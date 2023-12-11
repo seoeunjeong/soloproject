@@ -30,10 +30,9 @@
                 </p>
                 <div class="participant-container">
                 <div class="participant" th:each="people:${moim.getParticipant()}">
-                    <img
-                            th:src="${people.getMember().getProfileImgUri()}"
-                            alt="Image"
-                    />
+                    <img th:if="${people.member?.profileImage?.profileImageUrl}" th:src="${people.member?.profileImage?.profileImageUrl}" />
+                    <img th:unless="${people.member?.profileImage?.profileImageUrl}" src="img/profile2.png" />
+
                 </div>
                 <div class="participant-detail">
                     <span>참여자 </span>
@@ -71,10 +70,9 @@
                     </p>
 
                     <div class="participant" th:each="people:${moim.getParticipant()}">
-                        <img
-                                th:src="${people.getMember().getProfileImgUri()}"
-                                alt="Image"
-                        />
+                        <img th:if="${people.member?.profileImage?.profileImageUrl}" th:src="${member?.profileImage?.profileImageUrl}" />
+                        <img th:unless="${people.member?.profileImage?.profileImageUrl}" src="img/profile2.png" />
+
                         <div>
                             <strong>참여자 </strong
                             ><span th:text="${moim.participantCount}">0명</span
@@ -112,10 +110,9 @@
                     </p>
 
                     <div class="participant" th:each="people:${moim.getParticipant()}">
-                        <img
-                                th:src="${people.getMember().getProfileImgUri()}"
-                                alt="Image"
-                        />
+                        <img th:if="${people.member?.profileImage?.profileImageUrl}" th:src="${member?.profileImage?.profileImageUrl}" />
+                        <img th:unless="${people.member?.profileImage?.profileImageUrl}" src="img/profile2.png" />
+
                         <div>
                             <strong>참여자 </strong
                             ><span th:text="${moim.participantCount}">0명</span

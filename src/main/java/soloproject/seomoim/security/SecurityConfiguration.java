@@ -72,22 +72,22 @@ public class SecurityConfiguration {
 //        return source;
 //    }
 
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        var clientRegistration = clientRegistration();
-
-        return new InMemoryClientRegistrationRepository(clientRegistration);
-//        나를 !메모리에저장해놓고사용
-    }
+//    @Bean
+//    public ClientRegistrationRepository clientRegistrationRepository() {
+//        var clientRegistration = clientRegistration();
+//
+//        return new InMemoryClientRegistrationRepository(clientRegistration);
+////        나를 !메모리에저장해놓고사용
+//    }
 
 /*ClientRegistration은 한마디로 OAuth 2 Client에 대한 등록 정보를 표현하는 객체 바로 나!*/
-    private ClientRegistration clientRegistration() {
-        // (4-1)
-        return CommonOAuth2Provider
-                .GOOGLE
-                .getBuilder("google")
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .build();
-    }
+//    private ClientRegistration clientRegistration() {
+//        // (4-1)
+//        return CommonOAuth2Provider
+//                .GOOGLE
+//                .getBuilder("google")
+//                .clientId(clientId)
+//                .clientSecret(clientSecret)
+//                .build();
+//    }
 }

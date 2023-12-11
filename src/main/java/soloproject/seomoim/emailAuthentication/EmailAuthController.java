@@ -24,8 +24,14 @@ public class EmailAuthController {
     private final MemberService memberService;
     private final RedisUtil redisUtil;
 
-    @GetMapping("/email/authForm")
+    @GetMapping("/email/auth-form")
     public String emailAuthFrom(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        List<String> roles = userDetails.getRoles();
+        if (roles.get(0).equals("AUTH_USER")) {
+
+            throw new IllegalStateException("이미 인증된 회원입니다");
+
+        }
         String email = userDetails.getEmail();
         model.addAttribute("email", email);
         return "members/emailAuthForm";
@@ -41,6 +47,7 @@ public class EmailAuthController {
     }
 
 
+    //재로그인 유도
     @PostMapping("/email/auth")
     public String authEmail(@RequestParam String number,
                             @RequestParam String email,
@@ -49,12 +56,14 @@ public class EmailAuthController {
         log.info("sendNumber=" + sendNumber);
         log.info("number=" + number);
 
-        /*todo 인증완료되면 로그인해서 홈으로 보내줘야지*/
         if (number.equals(sendNumber)) {
             Member findMember = memberService.findByEmail(email);
             findMember.setRoles(List.of("AUTH_USER"));
             memberService.update(findMember.getId(), findMember);
-            return "home/home";
+            model.addAttribute("authSuccess","인증이 완료되었습니다 로그인 해주세요.");
+
+            return "members/loginForm";
+
         } else {
             model.addAttribute("error", "인증실패");
             model.addAttribute("email", email);

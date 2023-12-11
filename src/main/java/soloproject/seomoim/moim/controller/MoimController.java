@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
+import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.recommend.DistanceService;
 import soloproject.seomoim.security.FormLogin.CustomUserDetails;
@@ -27,9 +28,9 @@ import soloproject.seomoim.moim.service.MoimService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -80,17 +81,25 @@ public class MoimController {
     }
 
     //모임 상세페이지
-    //Todo 뷰에 Dto 전달로 분리할 것!
+    //Todo 뷰에 Dto 전달로 분리할 것! userDetails에 정보없음 주의
     @GetMapping("/{moim-id}")
     public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
                                  Model model, @AuthenticationPrincipal CustomUserDetails userDetails,
                                  HttpServletResponse response) {
-        model.addAttribute("member", userDetails);
         Moim moim = moimService.findMoim(moimId);
-        log.info("moim.parti=" + moim.getParticipant());
+        Member findMember = memberService.findByEmail(userDetails.getEmail());
+        model.addAttribute("member", userDetails);
         model.addAttribute("moim", moim);
-        List<Member> joinMembers = moimMemberRepository.findJoinMembers(moimId);
-        model.addAttribute("joinMembers", joinMembers);
+        log.info("moim.getParticipant()={}",moim.getParticipant());
+        Optional<MoimMember> findMoimMember = moim.getParticipant().stream()
+                .filter(moimMember -> moimMember.getMember() == findMember)
+                .findAny();
+        log.info("findMoimMember={}",findMoimMember);
+        if(!findMoimMember.isEmpty())
+            model.addAttribute("status",true);
+
+//        List<Member> joinMembers = moimMemberRepository.findJoinMembers(moimId);
+//        model.addAttribute("joinMembers", joinMembers);
         return "moims/detailPage";
     }
 
@@ -103,7 +112,7 @@ public class MoimController {
                            HttpServletRequest request,
                            HttpServletResponse response) {
         response.setHeader("Pragma", "no-cache");
-//        Moim moim = moimService.joinMoim(moimId, memberId);
+        moimService.joinMoim(moimId, memberId);
         String referer = request.getHeader("Referer");
 
         return "{redirectUrl:" + referer + "}";

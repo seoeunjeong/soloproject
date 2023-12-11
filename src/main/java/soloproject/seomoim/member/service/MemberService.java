@@ -2,6 +2,7 @@ package soloproject.seomoim.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,7 @@ import soloproject.seomoim.KakaoApi.dto.DocumentDto;
 import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
 import soloproject.seomoim.KakaoApi.service.KakaoAddressSearchService;
 import soloproject.seomoim.exception.BusinessLogicException;
+import soloproject.seomoim.exception.ClientRequestException;
 import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
@@ -40,9 +42,8 @@ public class MemberService {
     public Long signup(Member member) {
         checkIdDuplication(member);
 
-
         if (!member.getPassword().equals(member.getConfirmPassword())) {
-            throw new BusinessLogicException(ExceptionCode.PASSWORD_MISMATCH);
+            throw new ClientRequestException(ExceptionCode.PASSWORD_MISMATCH);
         }
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
@@ -66,23 +67,20 @@ public class MemberService {
         Member findmember = findMember(memberId);
         Optional.ofNullable(member.getPassword())
                 .ifPresent(password -> findmember.getPassword());
+
         Optional.ofNullable(member.getName())
                 .ifPresent(name -> findmember.setName(name));
         Optional.ofNullable(member.getAge())
                 .ifPresent(age -> findmember.setAge(age));
         Optional.ofNullable(member.getGender())
                 .ifPresent(gender -> findmember.setGender(gender));
+
         Optional.ofNullable(member.getRoles())
-                .ifPresent(roles->findmember.setRoles(roles));
-        Optional.ofNullable(member.getProfileImgUri())
-                .ifPresentOrElse(
-                        profileImageUri -> findmember.setProfileImgUri(profileImageUri),
-                        () -> {
-                            findmember.setProfileImgUri("/img/profile.png");
-                        });
+                .filter(roles -> !roles.isEmpty())
+                .ifPresent(roles -> findmember.setRoles(roles));
 
         /*빈 문자열 들어온다*/
-        if(member.getAddress()!=null && !member.getAddress().equals("")){
+        if (member.getAddress() != null && !member.getAddress().equals("")) {
             KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(member.getAddress());
             DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
             findmember.setAddress(member.getAddress());
