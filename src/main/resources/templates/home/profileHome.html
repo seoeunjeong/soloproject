@@ -9,8 +9,8 @@
 <section>
   <div class="image-container">
     <a id="editButton">
-      <img th:if="${member?.profileImage?.profileImageUrl}" th:src="${member?.profileImage?.profileImageUrl}" />
-      <img th:unless="${member?.profileImage?.profileImageUrl}" src="img/profile2.png" />
+      <img th:if="${member?.profileImageUrl}" th:src="${member?.profileImageUrl}" />
+      <img th:unless="${member?.profileImageUrl}" src="img/profile2.png" />
 
     </a>
   </div>
@@ -33,10 +33,30 @@
     </div>
   </div>
   <div class="create-container">
+<!--    3개만 만들수있도록 해야지-->
     <h3>내가만든모임</h3>
+    <div class="createdMoim"th:each="moim:${member.createMoims}">
+      <p th:text="${moim.title}"></p>
+      <a href="">관리</a>
+    </div>
+  </div>
+  <div class="join-container">
+    <h3>참여한 모임</h3>
+    <div class="joinMoim">
+      <div class="block" th:each="moim:${member.joinMoims}">
+        <p th:text="${moim.title}"></p>
+        <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">상세보기</a>
+      </div>
+    </div>
   </div>
   <div class="like-container">
     <h3>좋아요한 모임</h3>
+    <div class="likeMoim">
+      <div class="block" th:each="moim:${member.likeMoims}">
+        <p th:text="${moim.title}"></p>
+        <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">상세보기</a>
+      </div>
+    </div>
   </div>
   <div class="latest-container">
     <h3>최근본 모임</h3>
@@ -58,7 +78,6 @@
     emailButton.addEventListener('click',function (){
       window.location.href='/email/auth-form'
     })
-
   </script>
 
 </section>

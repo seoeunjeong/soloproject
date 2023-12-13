@@ -41,7 +41,7 @@ class DistanceServiceTest {
         moim.setContent("방가워욯ㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎ");
         moim.setMoimCategory(MoimCategory.EXERCISE);
         moim.setRegion("서울 구로구 온수동 45-32");
-        Long moim1 = moimService.createMoim(member1Id, moim);
+        Long moim1 = moimService.createMoim(member1Id,moim);
         //when
 
         Member member2 = new Member();

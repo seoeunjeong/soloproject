@@ -2,26 +2,23 @@ package soloproject.seomoim;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.repository.MemberRepository;
+import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
+import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.service.MoimService;
 import soloproject.seomoim.security.FormLogin.CustomUserDetails;
+import soloproject.seomoim.utils.PageResponseDto;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Optional;
-
 
 @Controller
 @RequiredArgsConstructor
@@ -29,37 +26,48 @@ import java.util.Optional;
 public class HomeController {
 
     private final MoimService moimService;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final MemberMapper mapper;
+    private final MoimMapper moimMapper;
+
 
     @GetMapping("/")
     public String home(@AuthenticationPrincipal CustomUserDetails userDetails,
                        Model model, HttpServletRequest request) {
         String email = userDetails.getEmail();
         Long id = memberService.findByEmail(email).getId();
-        List<Moim> moims = moimService.findAll();
+        Page<Moim> allbyPage = moimService.findAllbyPage(0, 12);
+        List<Moim> moims = allbyPage.getContent();
+        PageResponseDto<MoimDto.Response> responseDto = new PageResponseDto<>(moimMapper.moimsToResponseDtos(moims), allbyPage);
+        List<Moim> popularMoims = moimService.findPopularMoims();
         List<Moim> todayMoims = moimService.findTodayMoims();
-        log.info("todayMoims={}",todayMoims);
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            Enumeration<String> attributeNames = session.getAttributeNames();
-
-            while (attributeNames.hasMoreElements()) {
-                String attributeName = attributeNames.nextElement();
-                Object attributeValue = session.getAttribute(attributeName);
-
-                System.out.println("Attribute Name: " + attributeName + ", Value: " + attributeValue);
-            }
-        } else {
-            System.out.println("Session is not available or not created.");
-        }
-
-
+        List<MoimDto.Response> todayResponse = moimMapper.moimsToResponseDtos(todayMoims);
+        List<MoimDto.Response> popularResponse = moimMapper.moimsToResponseDtos(popularMoims);
         model.addAttribute("memberId", id);
-        model.addAttribute("moims", moims);
-        model.addAttribute("todayMoims",todayMoims);
+        model.addAttribute("moims", responseDto);
+        model.addAttribute("todayMoims",todayResponse);
+        model.addAttribute("popularMoims",popularResponse);
         return "home/home";
+    }
+
+
+    @GetMapping("/profile")
+    public String profileFrom(@AuthenticationPrincipal CustomUserDetails userDetails,
+                              Model model) {
+        Member member = memberService.findByEmail(userDetails.getEmail());
+        model.addAttribute("member", mapper.memberToMemberResponseDto(member));
+
+        return "home/profileHome";
+    }
+
+    @GetMapping("/alarm")
+    public String alarmFrom(){
+        return "home/alarmHome";
+    }
+
+    @GetMapping("/search")
+    public String searchFrom(){
+        return "home/searchHome";
     }
 
 
@@ -74,25 +82,5 @@ public class HomeController {
 //        model.addAttribute("moims", moims);
 //        return "home/loginHome";
 //    }
-
-    @GetMapping("/profile")
-    public String profileFrom(@AuthenticationPrincipal CustomUserDetails userDetails,Model model){
-        Member member = memberService.findByEmail(userDetails.getEmail());
-        model.addAttribute("member",member);
-        List<Moim> all = moimService.findAll();
-        model.addAttribute("moims",all);
-
-        return "home/profileHome";
-    }
-
-    @GetMapping("/alarm")
-    public String alarmFrom(){
-        return "home/alarmHome";
-    }
-
-    @GetMapping("/search")
-    public String searchFrom(){
-        return "home/searchHome";
-    }
 }
 

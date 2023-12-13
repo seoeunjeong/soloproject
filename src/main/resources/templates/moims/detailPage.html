@@ -150,13 +150,15 @@
 <header>
     <a href="/"><</a>
     <span th:text="${moim.title}">모임 정보</span>
-    <p class="likeButton" id="likeButton">❤️</p>
+    <p th:if="${likeStatus==true}" class="unLikeButton" id="unLikeButton">🤔</p>
+    <p th:if="${likeStatus==false}" class="likeButton" id="likeButton">❤️</p>
+    <p th:text="${moim.likeCount}"></p>
 </header>
 <div class="container">
     <div class="title-content">
         <div class="title-container">
             <h5 class="title" th:text="${moim.title}">모임 제목</h5>
-            <p><img th:src="${moim.member?.profileImage?.profileImageUrl ?: '/img/profile2.png'}"/></p>
+            <p><img th:src="${moim?.memberProfileImageUrl ?: '/img/profile2.png'}"/></p>
         </div>
         <div class="content-container">
             <p class="content" th:text="${moim.content}">내용</p>
@@ -188,8 +190,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="people: ${moim.participant}">
-                <td th:text="${people.member.name}"></td>
+            <tr th:each="participant : ${moim.participants}">
+                <td th:text="${participant.name}"></td>
             </tr>
             </tbody>
         </table>
@@ -201,6 +203,7 @@
             type="button"
             class="joinButton"
             id="joinButton"
+            th:text="${joinStatus == false ? '참여' : '참여취소'}"
             onclick="toggleJoinButton()"
     >
         참여
@@ -209,23 +212,8 @@
 
 <script th:inline="javascript">
 
-    var status=  /*[[${status}]]*/ false;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var button = document.getElementById('joinButton');
-
-        if (status === 'true') {
-            // status가 true이면 참여 취소 버튼으로 텍스트 변경
-            button.innerText = '참여취소';
-        } else {
-            // status가 false이면 참여 버튼으로 텍스트 변경
-            button.innerText = '참여';
-        }
-    });
-
-
-    var memberId = /*[[${member.id}]]*/ '';
-    var moimId=   /*[[${moim.id}]]*/ '';
+    var memberId = /*[[${memberId}]]*/ '';
+    var moimId=   /*[[${moim.moimId}]]*/ '';
 
     function toggleJoinButton() {
         var button = document.getElementById('joinButton');
@@ -242,12 +230,6 @@
                             throw new Error('Network response was not ok');
                         }
                         return response.json(); // JSON 파싱
-                    })
-                    .then(function (data) {
-                        // 서버로부터의 응답을 확인하여 리다이렉션 URL이 있는 경우 이동
-                        if (data.redirectUrl) {
-                            window.location.href = data.redirectUrl;
-                        }
                     })
                     .then(function () {
                         button.innerText = '참여취소';
@@ -271,16 +253,55 @@
     var editButton = document.getElementById('likeButton');
 
     editButton.addEventListener('click', function () {
-        /*<![CDATA[*/
-        var moimId = /*[[${moim.id}]]*/ null;
-        var memberId = /*[[${member.id}]]*/ null;
-        /*]]>*/
-        var url = '/like/' + memberId + '/' + moimId;
+
+        var moimId = /*[[${moim.moimId}]]*/ null;
+        var memberId = /*[[${memberId}]]*/ null;
+
+        var url = '/likes/' + moimId + '/' + memberId;
 
         fetch(url, {
             method: 'POST',
         });
     });
 </script>
+
+<script th:inline="javascript">
+    var editButton = document.getElementById('unLikeButton');
+
+    editButton.addEventListener('click', function () {
+
+        var moimId = /*[[${moim.moimId}]]*/ null;
+        var memberId = /*[[${memberId}]]*/ null;
+
+        var url = '/likes/' + moimId + '/' + memberId;
+
+        fetch(url, {
+            method: 'DELETE',
+        });
+    });
+</script>
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+        // Update Data 버튼 클릭 시 AJAX 요청
+        $("joinButton").click(function() {
+            $.ajax({
+                url: "/moims/"+moimId, // 업데이트를 수행할 컨트롤러 엔드포인트
+                type: "GET",
+                success: function(response) {
+                    // 성공 시 데이터 컨테이너 업데이트
+                    $("body").text(response);
+                },
+                error: function(error) {
+                    console.error("에러 발생:", error);
+                }
+            });
+        });
+    });
+    /*]]>*/
+</script>
+
 </body>
 </html>

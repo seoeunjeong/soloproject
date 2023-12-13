@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class ImageUploadService {
+public class ProfileImageUploadService {
 
 
     @Value("${cloud.bucket}")
@@ -58,23 +58,25 @@ public class ImageUploadService {
         }
     }
 
+    @Transactional
     public void deleteFile(Member findMember){
-        String uuid1 = findMember.getProfileImage().getUuid();
-        BlobId blobId = BlobId.of(bucketName, uuid1);
-        storage.delete(blobId);
-        log.info("findMember.profileIamge={}",findMember.getProfileImage());
-        profileImageRepository.delete(findMember.getProfileImage());
+        if(findMember.getProfileImage()!=null) {
+            log.info("findMember.getProfileImage()={}",findMember.getProfileImage());
+            String uuid1 = findMember.getProfileImage().getUuid();
+            BlobId blobId = BlobId.of(bucketName, uuid1);
+            storage.delete(blobId);
+            profileImageRepository.delete(findMember.getProfileImage());
+        }
     }
-     private void uploadFile(String bucketName, String uuid, String ext, InputStream inputStream) throws IOException {
+
+    private void uploadFile(String bucketName, String uuid, String ext, InputStream inputStream) throws IOException {
         BlobId blobId = BlobId.of(bucketName, uuid);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(ext)
                 .setCacheControl("no-cache")
                 .build();
 
-        // 새로운 객체 생성
         storage.create(blobInfo, inputStream);
     }
-
 
 }

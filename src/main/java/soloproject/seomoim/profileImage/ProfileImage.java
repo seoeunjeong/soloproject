@@ -1,5 +1,6 @@
 package soloproject.seomoim.profileImage;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import soloproject.seomoim.member.entity.Member;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter @Setter
+@Data
 public class ProfileImage {
 
     @Id

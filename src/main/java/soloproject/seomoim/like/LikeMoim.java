@@ -26,10 +26,7 @@ public class LikeMoim {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean status;
 
-    public LikeMoim(Moim moim, Member member) {
-        this.moim = moim;
-        this.member = member;
-    }
 }

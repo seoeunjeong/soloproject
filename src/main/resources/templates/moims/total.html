@@ -1,0 +1,97 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>seomoim :: 1회성 모임커뮤니티</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="/css/home.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Nanum Gothic', serif, sans-serif;
+        }
+
+        header {
+            display: flex;
+            position: fixed;
+            width: 100%;
+            height: 40px;
+            z-index: 1000;
+            top: 0;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fffffff8;
+            color: #000000f8;
+        }
+
+        header >a {
+            text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+            padding: 20px;
+        }
+
+        header span {
+            margin: 0 auto;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+        .result-container{
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="/"><</a>
+    <span>전체 모임</span>
+</header>
+<div class="result-container">
+    <div th:each="moim:${moims?.data}">
+        <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
+            <div class="card">
+                <div>
+                    <p class="categry" th:text="${moim.moimCategory}">
+                        카테고리명
+                    </p>
+                    <p class="dday">D-Day</p>
+                </div>
+                <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+                <p class="card-text">
+                    <strong>장소 |</strong>
+                    <span th:text="${moim.region}">위치 정보</span><br/>
+                    <strong>일시 |</strong>
+                    <span
+                            th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
+                    >일시 및 시간</span
+                    ><br/>
+                </p>
+                <div class="participant-container">
+                    <div class="participant" th:each="people:${moim.getParticipants()}">
+                        <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
+                        <img th:unless="${people.profileImageUrl}" src="/img/profile2.png" />
+
+                    </div>
+                    <div class="participant-detail">
+                        <span>참여자 </span>
+                        <strong th:text="${moim.participantCount}">0명</strong>
+                        <strong>/</strong
+                        ><span th:text="${moim.totalParticipantCount}"
+                    >전체참여자수</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+</body>
+</html>

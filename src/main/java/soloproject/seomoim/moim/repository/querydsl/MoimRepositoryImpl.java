@@ -10,6 +10,8 @@ import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static soloproject.seomoim.moim.entitiy.QMoim.*;
@@ -18,44 +20,38 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public MoimRepositoryImpl(JPAQueryFactory queryFactory)
-    {
+    public MoimRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
 
-    /*모임 위치,카테고리,검색어 기반 조회*/
+    /*모임 날짜,카테고리,검색어 기반 조회 페이지네이션*/
     @Override
-    public Page<Moim> searchAll(MoimSearchDto searchDto,Pageable pageable) {
+    public Page<Moim> searchAll(MoimSearchDto searchDto, Pageable pageable) {
         QueryResults<Moim> results = queryFactory
                 .selectFrom(moim)
-                .where(moimRegion(searchDto.getRegion()),
+                .where(
+                        moimStartedAt(searchDto.getStartedAt()),
                         moimCategory(searchDto.getMoimCategory()),
                         moimKeyword(searchDto.getKeyword())
                 )
                 .offset(pageable.getOffset())
-//        페이지 요청 을 1페이지의 size 10개를 보고싶다고 하는것은 데이터 0부터 10까지 보고싶다는 말이다
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<Moim> content = results.getResults();
+
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
     }
-
-    @Override
-    public List<Moim> keywordSearch(MoimSearchDto searchDto) {
-        return null;
-    }
-
 
     /* or 조합*/
     private BooleanExpression moimKeyword(String keyword){
         return keyword != null ? moimTitleKeyword(keyword).or(moimContentKeyword(keyword)) : null;
     }
 
-    private BooleanExpression moimRegion(String region) {
-        return region != null ? moim.region.eq(region) : null;
+    private BooleanExpression moimStartedAt(LocalDate startedAt) {
+        return startedAt != null ? moim.startedAt.between(startedAt.atStartOfDay(), startedAt.atTime(LocalTime.MAX)) : null;
     }
 
     private BooleanExpression moimCategory(MoimCategory moimCategory) {

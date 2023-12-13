@@ -12,25 +12,22 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import soloproject.seomoim.like.LikeMoim;
+import soloproject.seomoim.like.LikeMoimService;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.entitiy.MoimMember;
-import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.recommend.DistanceService;
 import soloproject.seomoim.security.FormLogin.CustomUserDetails;
-import soloproject.seomoim.utils.PageResponseDto;
-import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
+import soloproject.seomoim.utils.PageResponseDto;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -41,12 +38,12 @@ public class MoimController {
 
     private final MoimService moimService;
     private final MoimMapper mapper;
-    private final MoimMemberRepository moimMemberRepository;
     private final MemberService memberService;
     private final DistanceService distanceService;
+    private final LikeMoimService likeMoimService;
 
 
-    @GetMapping("/post")
+    @GetMapping("/post-form")
     public String postMoimForm(@AuthenticationPrincipal CustomUserDetails userDetails,
                                Model model) {
 
@@ -59,14 +56,13 @@ public class MoimController {
     }
 
 
-    /*todo! Valid
-    BindingResult 객체의 이름하고 같아야한다?*/
-    @PostMapping("/post/{member-id}")
-    public String postMoim(@PathVariable("member-id") @Positive Long memberId,
-                           @Validated @ModelAttribute MoimDto.Post post, BindingResult bindingResult,
-                           Model model,RedirectAttributes redirectAttributes) {
+    @PostMapping("/post")
+    public String postMoim(@Validated @ModelAttribute MoimDto.Post post,
+                           BindingResult bindingResult,
+                           Model model) {
 
-        model.addAttribute("memberId", memberId);
+        Long memberId = post.getMemberId();
+        model.addAttribute("memberId",memberId);
 
         if (bindingResult.hasErrors()) {
             return "moims/postForm";
@@ -74,58 +70,80 @@ public class MoimController {
 
         Moim moim = mapper.moimPostDtoToMoim(post);
 
-        Long moimId = moimService.createMoim(memberId, moim);
+        log.info("post.getMemberId()={}",post.getMemberId());
+        Long moimId = moimService.createMoim(post.getMemberId(),moim);
 
-        redirectAttributes.addAttribute("moimId",moimId);
         return "redirect:/moims/"+moimId;
     }
 
-    //모임 상세페이지
-    //Todo 뷰에 Dto 전달로 분리할 것! userDetails에 정보없음 주의
     @GetMapping("/{moim-id}")
     public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
-                                 Model model, @AuthenticationPrincipal CustomUserDetails userDetails,
-                                 HttpServletResponse response) {
+                                 @AuthenticationPrincipal CustomUserDetails userDetails,
+                                 Model model) {
         Moim moim = moimService.findMoim(moimId);
-        Member findMember = memberService.findByEmail(userDetails.getEmail());
-        model.addAttribute("member", userDetails);
-        model.addAttribute("moim", moim);
-        log.info("moim.getParticipant()={}",moim.getParticipant());
-        Optional<MoimMember> findMoimMember = moim.getParticipant().stream()
-                .filter(moimMember -> moimMember.getMember() == findMember)
-                .findAny();
-        log.info("findMoimMember={}",findMoimMember);
-        if(!findMoimMember.isEmpty())
-            model.addAttribute("status",true);
+        model.addAttribute("moim",mapper.moimToResponseDto(moim));
 
-//        List<Member> joinMembers = moimMemberRepository.findJoinMembers(moimId);
-//        model.addAttribute("joinMembers", joinMembers);
+        Member findMember = memberService.findByEmail(userDetails.getEmail());
+        MoimMember joinStatus = moimService.checkJoin(moimId, findMember.getId());
+        LikeMoim likeMoim = likeMoimService.checkLike(findMember, moim);
+        model.addAttribute("memberId",findMember.getId());
+        model.addAttribute("joinStatus",joinStatus.isStatus());
+        model.addAttribute("likeStatus",likeMoim.isStatus());
+
         return "moims/detailPage";
     }
 
-
-    //모임 참여
-    @PostMapping("/{moim-id}/{member-id}")
-    @ResponseBody
-    public String joinMoim(@PathVariable("moim-id") Long moimId,
-                           @PathVariable("member-id") Long memberId,
-                           HttpServletRequest request,
-                           HttpServletResponse response) {
-        response.setHeader("Pragma", "no-cache");
-        moimService.joinMoim(moimId, memberId);
-        String referer = request.getHeader("Referer");
-
-        return "{redirectUrl:" + referer + "}";
-
-
+    @PostMapping("/{moim-id}")
+    public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
+                                     @RequestBody MoimDto.Update updateRequest) {
+        Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
+        Moim updateMoim = moimService.updateMoim(moimId, moim);
+        return new ResponseEntity<>(mapper.moimToResponseDto(updateMoim), HttpStatus.OK);
     }
 
-    //모임 참여 취소
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{moim-id}")
+    public void deleteMoim(@PathVariable("moim-id") Long moimId) {
+        moimService.deleteMoim(moimId);
+    }
+
+    @PostMapping("/{moim-id}/{member-id}")
+    public String joinMoim(@PathVariable("moim-id") Long moimId,
+                           @PathVariable("member-id") Long memberId){
+        moimService.joinMoim(moimId, memberId);
+
+        return "redirect:/moims/"+moimId;
+    }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}/{member-id}")
     public void notJoinMoim(@PathVariable("moim-id") Long moimId,
                             @PathVariable("member-id") Long memberId) {
         moimService.cancelJoinMoim(moimId, memberId);
+    }
+
+    /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
+    @GetMapping("/all")
+    public String findAll(@RequestParam(defaultValue = "1") int page,
+                          @RequestParam(defaultValue = "10") int size,
+                          Model model) {
+        Page<Moim> pageMoims = moimService.findAllbyPage(page - 1, size);
+        List<Moim> moims = pageMoims.getContent();
+        PageResponseDto pageResponseDto = new PageResponseDto(mapper.moimsToResponseDtos(moims), pageMoims);
+        model.addAttribute("moims", pageResponseDto);
+        return "moims/total";
+    }
+
+    @PostMapping("/search")
+    public String findSearchMoims(@ModelAttribute MoimSearchDto moimSearchDto,
+                                  @RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "10") int size,
+                                  Model model) {
+        Page<Moim> pageMoims = moimService.findAllbySearch(moimSearchDto, page - 1, size);
+        List<Moim> moims = pageMoims.getContent();
+        PageResponseDto<MoimDto.Response> pageResponseDto = new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims);
+        model.addAttribute("moims", pageResponseDto);
+        return "home/searchHome";
     }
 
 
@@ -144,63 +162,25 @@ public class MoimController {
         return "redirect:/";
     }
 
-
-    @PatchMapping("/{moim-id}")
-    public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
-                                     @RequestBody MoimDto.Update updateRequest) {
-        Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
-        Moim updateMoim = moimService.updateMoim(moimId, moim);
-        return new ResponseEntity<>(mapper.MoimToResponseDto(updateMoim), HttpStatus.OK);
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/delete/{moim-id}")
-    public void deleteMoim(@PathVariable("moim-id") Long moimId) {
-        moimService.deleteMoim(moimId);
-    }
-
-
-    /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
-    @GetMapping("/all")
-    public ResponseEntity findAll(@RequestParam int page, @RequestParam int size) {
-        Page<Moim> pageMoims = moimService.findAllbyPage(page - 1, size);
-        List<Moim> moims = pageMoims.getContent();
-        return new ResponseEntity<>(new PageResponseDto(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
-    }
-
-
-    /* 키워드로 검색 */
-    @GetMapping("/keyword")
-    @ResponseBody
-    public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto) {
-//                                          @RequestParam int page,@RequestParam int size){
-        Page<Moim> pageMoims = moimService.findAllbyPage(10, 10);
-        List<Moim> moims = pageMoims.getContent();
-        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
-    }
-
-    /*
-     * 위치조회/카테고리조회/키워드-동적 쿼리 작성 쿼리DSL)
-     * 위치(String,카테고리 enum,String keyword)
-     */
-//    @GetMapping("/search")
-//    @ResponseBody
-//    public ResponseEntity findSearchMoims(@RequestBody MoimSearchDto moimSearchDto) {
-////                                          @RequestParam int page,@RequestParam int size){
-//        Page<Moim> pageMoims = moimService.findAllSearch(moimSearchDto, moimSearchDto.getPage() - 1, moimSearchDto.getSize());
-//        List<Moim> moims = pageMoims.getContent();
-//        return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
-//    }
-
-    @ModelAttribute("moimCategorys")
-    public MoimCategory[] moimCategorys() {
-        return MoimCategory.values();
-    }
-
-//  오늘 진행하는 모임 조회기능 개발
+    //today모임
     @GetMapping("/today")
     public List<Moim> getTodayMoims(){
         return moimService.findTodayMoims();
 
     }
+
+    //인기있는모임
+    @GetMapping("/popular")
+    public List<Moim> getPopularMoims(){
+        return moimService.findPopularMoims();
+    }
+
+
+    @ModelAttribute("moimCategorys")
+    public MoimCategory[] moimCategorys() {
+
+        return MoimCategory.values();
+    }
+
+
 }

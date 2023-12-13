@@ -1,19 +1,27 @@
 package soloproject.seomoim.moim.dto;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
+import soloproject.seomoim.moim.entitiy.MoimMember;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MoimDto {
 
     @Getter
     @Setter
+    @NoArgsConstructor
     public static class Post{
+
+        @NotNull
+        private Long memberId;
 
         @NotBlank(message = "모임 제목은 필수값입니다.")
         private String title;
@@ -52,14 +60,27 @@ public class MoimDto {
     @Getter
     @Setter
     public static class Response{
+        private Long moimId;
         private Long memberId;
+        private String memberProfileImageUrl;
         private String title;
         private String content;
+        private LocalDateTime startedAt;
+        private String region;
         private int totalParticipantCount;
         private int participantCount;
-        private String region;
         private MoimCategory moimCategory;
         private int likeCount;
+        private List<MoimMemberDto> participants;
+        private boolean open;
 
+
+    }
+    @Builder
+    @Getter
+    public static class MoimMemberDto{
+        private Long memberId;
+        private String name;
+        private String profileImageUrl;
     }
 }

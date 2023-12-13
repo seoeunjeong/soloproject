@@ -4,18 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/like")
+@Controller
+@RequestMapping("/likes")
 @RequiredArgsConstructor
 public class LikeMoimController {
 
     public final LikeMoimService likeMoimService;
 
-    @PostMapping("/{member-Id}/{moim-Id}")
-    public String postLike(@PathVariable("member-Id") Long memberId,
-                           @PathVariable("moim-Id") Long moimId) {
-        likeMoimService.like(memberId, moimId);
-        return "ok";
+    @PostMapping("/{moim-Id}/{member-Id}")
+    public String postLike(@PathVariable("moim-Id") Long moimId,
+                           @PathVariable("member-Id") Long memberId) {
+        likeMoimService.like(moimId, memberId);
+        return "redirect:/moims/"+moimId;
     }
 
     @DeleteMapping("/{member-Id}/{moim-Id}")

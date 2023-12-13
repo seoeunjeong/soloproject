@@ -57,17 +57,13 @@ public class MemberService {
         return savedMember.getId();
     }
 
-    public void saveMember(Member member){
-        memberRepository.save(member);
-    }
-
     @Transactional
     public void update(Long memberId, Member member) {
         //변경감지 사용
         Member findmember = findMember(memberId);
+
         Optional.ofNullable(member.getPassword())
                 .ifPresent(password -> findmember.getPassword());
-
         Optional.ofNullable(member.getName())
                 .ifPresent(name -> findmember.setName(name));
         Optional.ofNullable(member.getAge())
@@ -95,21 +91,22 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    public Member findMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-    }
-
-
     /*회원이 자신이 참여한 모임 조회*/
     public List<Moim> findParticipationMoims(Long memberId){
-        List<MoimMember> participationMoims = moimMemberRepository.findParticipatingMoims(memberId);
+        List<MoimMember> participationMoims = moimMemberRepository.findJoinMoims(memberId);
         List<Moim> moims = participationMoims.stream()
                 .map(moimMember -> moimMember.getMoim().getId())
                 .map(moimId -> moimRepository.findById(moimId).orElse(null))
                 .collect(Collectors.toList());
         return moims;
     }
+
+
+    public Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    }
+
 
     public Member findByEmail(String email){
          return memberRepository.findByEmail(email)

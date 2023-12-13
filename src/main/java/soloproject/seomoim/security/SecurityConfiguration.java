@@ -5,16 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import soloproject.seomoim.member.service.MemberService;
-import soloproject.seomoim.security.FormLogin.CustomAuthorityUtils;
-import soloproject.seomoim.security.oauth.Oauth2SuccessHandler;
 
 
 @Configuration
@@ -48,6 +41,9 @@ public class SecurityConfiguration {
                         .antMatchers("/img/**", "/css/**","/auth/google","/login-form", "/signup-form", "/email/**", "/members/**").permitAll()
                         .antMatchers("/moims/post/**").hasRole("AUTH_USER")
                         .antMatchers("/").hasAnyRole("USER", "AUTH_USER")
+                        .antMatchers("/moims/post-form").hasRole("AUTH_USER")
+                        .antMatchers("/moims/mapper/**").permitAll()
+                        .antMatchers("/moims/search/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();

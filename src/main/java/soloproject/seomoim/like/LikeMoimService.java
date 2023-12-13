@@ -9,9 +9,6 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 
-import java.util.Optional;
-
-import static soloproject.seomoim.like.QLikeMoim.likeMoim;
 
 @Service
 @RequiredArgsConstructor
@@ -23,28 +20,39 @@ public class LikeMoimService {
     private final MemberService memberService;
     private final MoimService moimService;
 
-    public void like(Long memberId, Long moimId) {
-        Member member = memberService.findMember(memberId);
+    @Transactional
+    public void like(Long moimId, Long memberId) {
         Moim moim = moimService.findMoim(moimId);
+        Member member = memberService.findMember(memberId);
         LikeMoim likeMoim = checkLike(member, moim);
-        LikeMoim saveLike = likeMoimRepository.save(likeMoim);
-        moim.likeCountUp();
-        saveLike.setStatus(true);
+        if (likeMoim.isStatus()) {
+            throw new IllegalStateException("이미 좋아요한 모임입니다");
+        }
+        likeMoim.setStatus(true);
+        likeMoim.getMoim().likeCountUp();
+        likeMoimRepository.save(likeMoim);
     }
-    public void cancelLike(long memberId, long moimId) {
-        Member member = memberService.findMember(memberId);
+
+    public void cancelLike(long moimId, long memberId) {
         Moim moim = moimService.findMoim(moimId);
-        LikeMoim likeMoim = likeMoimRepository.findLikeMoimByMemberAndMoim(member, moim)
-                .orElseThrow(() -> new IllegalStateException("This moim not like"));
+        Member member = memberService.findMember(memberId);
+        LikeMoim likeMoim = checkLike(member, moim);
+        if (!likeMoim.isStatus()) {
+            throw new IllegalStateException("좋아요 하지 않은 모임입니다");
+        }
+        likeMoim.setStatus(false);
         moim.likeCountDown();
-        likeMoimRepository.delete(likeMoim);
     }
 
     @Transactional
     public LikeMoim checkLike(Member member, Moim moim) {
         return likeMoimRepository.findLikeMoimByMemberAndMoim(member, moim)
-                .orElseGet(()->
-                        new LikeMoim(moim,member));
-
+                .orElseGet(() -> {
+                    LikeMoim likeMoim = new LikeMoim();
+                    likeMoim.setMoim(moim);
+                    likeMoim.setMember(member);
+                    likeMoim.setStatus(false);
+                    return likeMoim;
+                });
     }
 }

@@ -11,88 +11,74 @@
 </header>
 <section>
   <div class="search-container">
-    <form><input type="text" placeholder="검색어를 입력하세요"/>
-        <input type="date" id="searchDate"/>
+    <form id="search" action="/moims/search" method="post" >
+      <select class="moimCategory"name="moimCategory">
+        <option value=""> 카테고리 선택 </option>
+        <option data-image="icon/coffee.png" value="COFFEE">COFFEE</option>
+        <option data-image="icon/drink.png" value="DRINK">DRINK</option>
+        <option data-image="icon/eat.png"  value="EAT">EAT</option>
+        <option data-image="icon/exercise.png"  value="EXERCISE">EXERCISE</option>
+        <option data-image="icon/study.png" value="STUDY">STUDY</option>
+        <option data-image="icon/travel.png"  value="TRAVEL">TRAVEL</option>
+      </select>
+      <input type="date" name="startedAt" id="searchDate"/>
       <div>
-      <button><img src="icon/coffee.png" alt="커피 아이콘" /></button>
-      <button><img src="icon/drink.png" alt="음식 아이콘" /></button>
-      <button><img src="icon/eat.png" alt="식사 아이콘" /></button>
-      <button><img src="icon/exercise.png" alt="운동 아이콘" /></button>
-      <button><img src="icon/study.png" alt="공부 아이콘" /></button>
-      <button><img src="icon/traval.png" alt="여행 아이콘" /></button>
+        <input type="text" class="keyword" name="keyword" placeholder="검색어를 입력하세요"/>
+        <button class="search-button" form="search">검색</button>
+      </div>
+    </form>
     </div>
-  <button class="search-button">검색</button></form>
   </div>
   <div class="result-container">
-    <div class="total-title"><h4>검색결과</h4><a>전체보기 ></a></div>
-    <div class="total-card-container">
-      <div th:each="moim:${moims}">
-        <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
-          <div class="card">
-            <div>
-              <p class="categry" th:text="${moim.moimCategory}">
-                카테고리명
-              </p>
-              <p class="dday">D-Day</p>
-            </div>
-            <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
-            <p class="card-text">
-              <strong>장소 |</strong>
-              <span th:text="${moim.region}">위치 정보</span><br/>
-              <strong>일시 |</strong>
-              <span
-                      th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
-              >일시 및 시간</span
-              ><br/>
+    <div th:each="moim:${moims?.data}">
+      <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
+        <div class="card">
+          <div>
+            <p class="categry" th:text="${moim.moimCategory}">
+              카테고리명
             </p>
-            <div class="participant-container">
-              <div class="participant" th:each="people:${moim.getParticipant()}">
-                <img
-                        th:src="${people.getMember().getProfileImgUri()}"
-                        alt="Image"
-                />
-              </div>
-              <div class="participant-detail">
-                <span>참여자 </span>
-                <strong th:text="${moim.participantCount}">0명</strong>
-                <strong>/</strong
-                ><span th:text="${moim.totalParticipantCount}"
-              >전체참여자수</span>
-              </div>
+            <p class="dday">D-Day</p>
+          </div>
+          <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+          <p class="card-text">
+            <strong>장소 |</strong>
+            <span th:text="${moim.region}">위치 정보</span><br/>
+            <strong>일시 |</strong>
+            <span
+                    th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
+            >일시 및 시간</span
+            ><br/>
+          </p>
+          <div class="participant-container">
+            <div class="participant" th:each="people:${moim.getParticipants()}">
+              <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
+              <img th:unless="${people.profileImageUrl}" src="/img/profile2.png" />
+
+            </div>
+            <div class="participant-detail">
+              <span>참여자 </span>
+              <strong th:text="${moim.participantCount}">0명</strong>
+              <strong>/</strong
+              ><span th:text="${moim.totalParticipantCount}"
+            >전체참여자수</span>
             </div>
           </div>
-        </a>
-      </div>
+        </div>
+      </a>
     </div>
-  </div>
 
 
-
-
-  <button class="post-but" id="postButton">+</button>
+    <button class="post-but" id="postButton">+</button>
 
   <script th:inline="javascript">
 
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
-      window.location.href = '/moims/post'
+      window.location.href = '/moims/post-form'
     });
   </script>
 
-  <script>
-    // 검색 기능을 수행하는 JavaScript 함수 예제
-    function search() {
-      // 선택된 날짜를 가져오는 코드
-      var selectedDate = document.getElementById('searchDate').value;
 
-      // 여기에 실제 검색 기능을 추가할 수 있습니다.
-      // 예를 들어, 선택된 날짜를 기반으로 서버에 검색 요청을 보내거나
-      // 클라이언트 측에서 로컬 데이터를 필터링하는 등의 작업을 수행할 수 있습니다.
-      console.log("선택된 날짜: " + selectedDate);
-    }
-  </script>
 </section>
-
-
 </body>
 </html>

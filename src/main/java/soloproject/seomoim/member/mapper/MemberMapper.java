@@ -1,63 +1,66 @@
 package soloproject.seomoim.member.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import soloproject.seomoim.like.LikeMoim;
+import soloproject.seomoim.member.dto.MemberDto.CreateMoimsDto;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
-import soloproject.seomoim.security.FormLogin.CustomUserDetails;
+import soloproject.seomoim.moim.entitiy.Moim;
+import soloproject.seomoim.moim.entitiy.MoimMember;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static soloproject.seomoim.member.dto.MemberDto.*;
 
 
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
-    Member memberSignUpDtoToMember(MemberDto.Signup request);
+    Member memberSignUpDtoToMember(Signup request);
 
-    Member memberUpdateDtoToMember(MemberDto.Update updateRequest);
+    Member memberUpdateDtoToMember(Update updateRequest);
 
-    MemberDto.Dto memberToMemberDto(CustomUserDetails userDetails);
+    @Mapping(source = "profileImage.profileImageUrl",target = "profileImageUrl")
+    @Mapping(target = "joinMoims", qualifiedByName = "filterJoins")
+    ResponseDto memberToMemberResponseDto(Member member);
 
+    List<CreateMoimsDto> createMoimsToCreateMoimsDto(List<Moim> createMoims);
+
+    @Mapping(source ="moim.id",target = "id")
+    @Mapping(source = "moim.title",target = "title")
+    List<MoimMemberDto> joinMoimsTojoinMoimDtos(List<MoimMember> joinMoims);
+
+
+    @Mapping(source ="moim.id",target = "id")
+    @Mapping(source = "moim.title",target = "title")
+    List<LikeMoimDto> likeMoimsTolikeMoimsDtos(List<LikeMoim> likeMoims);
+
+    @Mapping(source ="moim.id",target = "id")
+    @Mapping(source = "moim.title",target = "title")
+    MemberDto.MoimMemberDto moimMemberToMoimMemberDto(MoimMember moimMember);
+
+
+    @Named("filterJoins")
+    default List<MoimMemberDto> filterParticipants(List<MoimMember> moimMembers){
+        return moimMembers.stream()
+                .filter(MoimMember::isStatus)
+                .map(this::moimMemberToMoimMemberDto)
+                .collect(Collectors.toList());
+    }
+
+    default MemberDto.LikeMoimDto likeMoimToLikeMoimDto(LikeMoim likeMoim){
+        if (likeMoim == null) {
+            return null;
+        } else {
+            MemberDto.LikeMoimDto likeMoimDto = new MemberDto.LikeMoimDto();
+            likeMoimDto.setId(likeMoim.getMoim().getId());
+            likeMoimDto.setTitle(likeMoim.getMoim().getTitle());
+            return likeMoimDto;
+        }
+    }
 }
 
-//api 만들때 고려
-//    MemberDto.ResponseDto memberToMemberResponseDto(Member member);
-//
-////    @Mapping(source = "moim.id", target = "moimId")
-////    @Mapping(source = "moim.title",target = "moimTitle")
-////    MemberDto.LikeMoimDto LikeMoimToLikeMoimResponseDto(LikeMoim likeMoim);
-//
-//    default List<MemberDto.LikeMoimDto> likeMoimsToLikeMoimsResponseDtos(List<LikeMoim> likeMoims) {
-//    return likeMoims
-//            .stream()
-//            .map(likeMoim -> {
-//                return MemberDto.LikeMoimDto
-//                        .builder()
-//                        .moimId(likeMoim.getMoim().getId())
-//                        .moimTitle(likeMoim.getMoim().getTitle())
-//                        .build();
-//            })
-//            .collect(Collectors.toList());
-//    }
-//
-//    default List<MemberDto.MoimMemberDto> MoimMemberToMoimMemberResponseDtos(List<MoimMember> moimMembers) {
-//        return moimMembers
-//                .stream()
-//                .map(moimMember -> {
-//                    return MemberDto.MoimMemberDto
-//                            .builder()
-//                            .moimId(moimMember.getMoim().getId())
-//                            .moimTitle(moimMember.getMoim().getTitle())
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//    }
-//
-//    default List<MemberDto.CreateMoimsDto> MoimToCreateMoimsResponseDtos(List<Moim> moims) {
-//        return moims
-//                .stream()
-//                .map(moim -> {
-//                    return MemberDto.CreateMoimsDto
-//                            .builder()
-//                            .moimId(moim.getId())
-//                            .moimTitle(moim.getTitle())
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//    }
+
+

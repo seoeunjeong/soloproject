@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static soloproject.seomoim.moim.entitiy.QMoimMember.moimMember;
 
 @Entity
 @Getter
@@ -48,25 +47,35 @@ public class Moim extends BaseEntity {
     private int likeCount;
 
     @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
-    private List<MoimMember> participant= new ArrayList<>();
+    private List<MoimMember> participants= new ArrayList<>();
 
-    private boolean open;
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean open =true;
     public Moim() {
 
     }
-//   연관관계 편의 메소드
-//    public void setMember(Member member){
-//        this.member=member;
-//        member.getCreateMoims().add(this);
-//
-//    }
-   /*모임참여 메소드*/
-    public void addCount(){
-        this.participantCount += 1;
+
+    //양방향 연관관계에서 한쪽에만 엔티티만 추가해주는 실수를 하더라도 다른쪽 엔티티를 추가
+    public void setMember(Member member) {
+        this.member = member;
+        if (!this.member.getCreateMoims().contains(this)) {
+            this.member.getCreateMoims().add(this);
+        }
     }
 
+    public void setParticipants(MoimMember moimMember) {
+        this.participants.add(moimMember);
+        if (moimMember.getMoim() != this) {
+            moimMember.setMoim(this);
+        };
+        addParticipantCount();
+    }
+
+    public void addParticipantCount(){
+        this.participantCount += 1;
+    }
     /*참여인원줄이기*/
-    public void reduceCount(){
+    public void reduceParticipantCount(){
 
         this.participantCount -=1;
     }

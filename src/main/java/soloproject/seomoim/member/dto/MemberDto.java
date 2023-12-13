@@ -1,14 +1,13 @@
 package soloproject.seomoim.member.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
+import soloproject.seomoim.moim.entitiy.Moim;
 
 import javax.validation.constraints.*;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -58,43 +57,48 @@ public class MemberDto {
 
     @Getter
     @Setter
-    public static class Dto {
+    public static class ResponseDto {
         private Long id;
         private String email;
         private String name;
+        private List<String> roles;
+        private String profileImageUrl;
         private Integer age;
         private char gender;
         private String address;
+        private LocalDateTime createdAt;
+        private List<CreateMoimsDto> createMoims;
+        private List<LikeMoimDto> likeMoims;
+        private List<MoimMemberDto> joinMoims;
+
+    }
+
+
+    @Getter
+    @Setter
+    public static class LikeMoimDto {
+        private Long id;
+        private String title;
+    }
+
+    @Getter
+    @Setter
+    public static class MoimMemberDto {
+        private Long id;
+        private String title;
+    }
+
+    @Getter
+    @Setter
+    public static class CreateMoimsDto {
+        private Long id;
+        private String title;
     }
 }
 
 
 
-//@Getter
-//@Setter
-//@AllArgsConstructor
-//@Builder
-//public static class LikeMoimDto {
-//    private Long moimId;
-//    private String moimTitle;
-//}
-//
-//@Getter
-//@Setter
-//@AllArgsConstructor
-//@Builder
-//public static class MoimMemberDto {
-//    private Long moimId;
-//    private String moimTitle;
-//}
-//
-//@Getter
-//@Setter
-//@AllArgsConstructor
-//@Builder
-//public static class CreateMoimsDto {
-//    private Long moimId;
-//    private String moimTitle;
-//}
+
+
 
 

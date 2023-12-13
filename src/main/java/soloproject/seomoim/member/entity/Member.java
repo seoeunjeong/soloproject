@@ -1,6 +1,7 @@
 package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import soloproject.seomoim.like.LikeMoim;
 import soloproject.seomoim.profileImage.ProfileImage;
@@ -13,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-
+@Getter @Setter
+@NoArgsConstructor
 public class Member extends BaseEntity {
 
     @Id
@@ -40,9 +40,10 @@ public class Member extends BaseEntity {
     private String address;
 
     private double latitude;
+
     private double longitude;
 
-    @OneToOne(mappedBy = "member",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(mappedBy = "member")
     private ProfileImage profileImage;
 
 
@@ -50,12 +51,12 @@ public class Member extends BaseEntity {
     private List<String> roles = new ArrayList<>();
 
     //멤버는 여러 모임을 만들 수 있다.
-    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Moim> createMoims = new ArrayList<>();
 
     //멤버는 여러 모임에 참여 할수있다.
     @OneToMany(mappedBy = "member")
-    private List<MoimMember> participationMoims = new ArrayList<>();
+    private List<MoimMember> joinMoims = new ArrayList<>();
 
     //멤버는 여러 모임을 좋아요 추가할수있다.
     @OneToMany(mappedBy = "member")
@@ -63,12 +64,10 @@ public class Member extends BaseEntity {
 
 
     //연관관계 편의 메소드
-    public Member() {
-    }
-
-    public Member(String email, String name, List<String> roles) {
-        this.email = email;
-        this.name = name;
-        this.roles = roles;
+    public void setCreateMoims(Moim moim) {
+        createMoims.add(moim);
+        if (moim.getMember() != this) {
+            moim.setMember(this);
+        }
     }
 }
