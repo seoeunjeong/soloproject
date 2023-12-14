@@ -54,7 +54,6 @@ public class MoimDto {
         private String content;
         @Max(value = 15, message = "모임참여자수는 15명까지만 늘릴수있습니다.")
         private int totalParticipantCount;
-
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         private LocalDate startedAt;
         private String region;
@@ -73,6 +72,7 @@ public class MoimDto {
         private String content;
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         private LocalDate startedAt;
+        private int dDay;
         private String region;
         private int totalParticipantCount;
         private int participantCount;

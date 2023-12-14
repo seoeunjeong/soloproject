@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.KakaoApi.dto.DocumentDto;
@@ -47,6 +48,11 @@ public class MoimService {
         moim.setLatitude(documentDto.getLatitude());
         moim.setLongitude(documentDto.getLongitude());
 
+        //moim.dDay 컬럼 추가
+        int dDay = moim.calculateDDay();
+
+        moim.setDDay(dDay);
+
         Moim savedMoim = moimRepository.save(moim);
 
         joinMoim(savedMoim.getId(),memberId);
@@ -68,6 +74,8 @@ public class MoimService {
                 .ifPresent(moimCategory -> findMoim.setMoimCategory(moimCategory));
         Optional.ofNullable(moim.getStartedAt())
                 .ifPresent(startedAt->findMoim.setStartedAt(startedAt));
+        Optional.ofNullable(moim.getDDay())
+                .ifPresent(dDay->findMoim.setDDay(dDay));
          return findMoim;
     }
 
@@ -151,6 +159,19 @@ public class MoimService {
 
     public List<Moim> findAll(){
         return moimRepository.findAll();
+    }
+
+
+//스케줄링을 통하여 매일 자정 dday업로드.
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateDDay() {
+        List<Moim> allMoim = findAll();
+
+        for (Moim moim : allMoim) {
+            int dDay = moim.calculateDDay();
+            moim.setDDay(dDay);
+            moimRepository.save(moim);
+        }
     }
 
 }

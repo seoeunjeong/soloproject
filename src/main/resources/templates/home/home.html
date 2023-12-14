@@ -16,7 +16,7 @@
                     <p class="categry" th:text="${moim.moimCategory}">
                         카테고리명
                     </p>
-                    <p class="dday">D-Day</p>
+                    <p class="dday" th:text="|D-day ${moim.DDay}일|">D-Day</p>
                     <span class="status" th:text="${moim.moimStatus.status}"></span>
                 </div>
                 <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
@@ -30,11 +30,12 @@
                     ><br/>
                 </p>
                 <div class="participant-container">
-                <div class="participant" th:each="people:${moim.getParticipants()}">
+                    <div class="participant">
+                <div th:each="people:${moim.getParticipants()}">
                     <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
                     <img th:unless="${people?.profileImageUrl}" src="img/profile2.png" />
-
                 </div>
+                    </div>
                 <div class="participant-detail">
                     <span>참여자 </span>
                     <strong th:text="${moim.participantCount}">0명</strong>
