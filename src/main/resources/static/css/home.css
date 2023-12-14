@@ -402,3 +402,10 @@ hr {
     display: inline-block;
     margin-left: auto;
 }
+
+.status{
+    font-size:12px;
+    border: 1px solid red;
+    color: red;
+    margin-top: 3px;
+}

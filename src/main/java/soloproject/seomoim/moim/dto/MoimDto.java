@@ -8,8 +8,10 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.entitiy.MoimMember;
+import soloproject.seomoim.moim.entitiy.MoimStatus;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,8 +36,8 @@ public class MoimDto {
         private int totalParticipantCount;
 
         @NotNull
-        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-        private LocalDateTime startedAt;
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate startedAt;
 
         @NotEmpty(message = "주소는 필수 입력 값 입니다.")
         private String region;
@@ -52,8 +54,12 @@ public class MoimDto {
         private String content;
         @Max(value = 15, message = "모임참여자수는 15명까지만 늘릴수있습니다.")
         private int totalParticipantCount;
+
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate startedAt;
         private String region;
         private MoimCategory moimCategory;
+        private MoimStatus moimStatus;
 
     }
 
@@ -65,7 +71,8 @@ public class MoimDto {
         private String memberProfileImageUrl;
         private String title;
         private String content;
-        private LocalDateTime startedAt;
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate startedAt;
         private String region;
         private int totalParticipantCount;
         private int participantCount;
@@ -73,6 +80,7 @@ public class MoimDto {
         private int likeCount;
         private List<MoimMemberDto> participants;
         private boolean open;
+        private MoimStatus moimStatus;
 
 
     }

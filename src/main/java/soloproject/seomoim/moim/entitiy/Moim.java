@@ -2,10 +2,12 @@ package soloproject.seomoim.moim.entitiy;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.utils.BaseEntity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,8 @@ public class Moim extends BaseEntity {
 
     private String content;
 
-    private LocalDateTime startedAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startedAt;
 
     private int totalParticipantCount;
 
@@ -49,8 +52,8 @@ public class Moim extends BaseEntity {
     @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
     private List<MoimMember> participants= new ArrayList<>();
 
-    @Column(columnDefinition = "TINYINT(1)")
-    private boolean open =true;
+    @Enumerated(EnumType.STRING)
+    private MoimStatus moimStatus =MoimStatus.MOIM_OPEN;
     public Moim() {
 
     }
@@ -71,16 +74,21 @@ public class Moim extends BaseEntity {
         addParticipantCount();
     }
 
-    public void addParticipantCount(){
+    public void addParticipantCount() {
         this.participantCount += 1;
+        if (totalParticipantCount == participantCount)
+            this.moimStatus = MoimStatus.MOIM_ClOSE;
     }
     /*참여인원줄이기*/
     public void reduceParticipantCount(){
-
         this.participantCount -=1;
+        if(totalParticipantCount-participantCount==1){
+            this.moimStatus=MoimStatus.MOIM_OPEN;
+        }
     }
 
     public void likeCountUp(){
+
         likeCount +=1;
     }
 

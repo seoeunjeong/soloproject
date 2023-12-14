@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +26,8 @@ import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.service.MoimService;
 import soloproject.seomoim.utils.PageResponseDto;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Controller
@@ -59,10 +60,10 @@ public class MoimController {
     @PostMapping("/post")
     public String postMoim(@Validated @ModelAttribute MoimDto.Post post,
                            BindingResult bindingResult,
-                           Model model) {
+                           Model model) throws Exception {
 
         Long memberId = post.getMemberId();
-        model.addAttribute("memberId",memberId);
+        model.addAttribute("memberId", memberId);
 
         if (bindingResult.hasErrors()) {
             return "moims/postForm";
@@ -70,10 +71,10 @@ public class MoimController {
 
         Moim moim = mapper.moimPostDtoToMoim(post);
 
-        log.info("post.getMemberId()={}",post.getMemberId());
-        Long moimId = moimService.createMoim(post.getMemberId(),moim);
+        log.info("post.getMemberId()={}", post.getMemberId());
+        Long moimId = moimService.createMoim(post.getMemberId(), moim);
 
-        return "redirect:/moims/"+moimId;
+        return "redirect:/moims/" + moimId;
     }
 
     @GetMapping("/{moim-id}")
@@ -81,24 +82,40 @@ public class MoimController {
                                  @AuthenticationPrincipal CustomUserDetails userDetails,
                                  Model model) {
         Moim moim = moimService.findMoim(moimId);
-        model.addAttribute("moim",mapper.moimToResponseDto(moim));
+        model.addAttribute("moim", mapper.moimToResponseDto(moim));
 
         Member findMember = memberService.findByEmail(userDetails.getEmail());
-        MoimMember joinStatus = moimService.checkJoin(moimId, findMember.getId());
+        model.addAttribute("memberId", findMember.getId());
+        MoimMember joinStatus = moimService.checkJoin(findMember, moim);
         LikeMoim likeMoim = likeMoimService.checkLike(findMember, moim);
-        model.addAttribute("memberId",findMember.getId());
+        model.addAttribute("memberId", findMember.getId());
+        model.addAttribute("likeStatus", likeMoim.isStatus());
         model.addAttribute("joinStatus",joinStatus.isStatus());
-        model.addAttribute("likeStatus",likeMoim.isStatus());
 
         return "moims/detailPage";
     }
 
+    @GetMapping("/update-form/{moim-id}")
+    public String updateMoimForm(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                 @PathVariable("moim-id") Long moimId,
+                                 Model model) {
+        Moim moim = moimService.findMoim(moimId);
+        Member requestMember = memberService.findByEmail(userDetails.getUsername());
+
+        model.addAttribute("memberId", requestMember.getId());
+        model.addAttribute("moim", moim);
+
+        return "moims/editForm";
+    }
+
     @PostMapping("/{moim-id}")
-    public ResponseEntity updateMoim(@PathVariable("moim-id") Long moimId,
-                                     @RequestBody MoimDto.Update updateRequest) {
+    public String updateMoim(@PathVariable("moim-id") Long moimId,
+                             @ModelAttribute MoimDto.Update updateRequest) {
         Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
         Moim updateMoim = moimService.updateMoim(moimId, moim);
-        return new ResponseEntity<>(mapper.moimToResponseDto(updateMoim), HttpStatus.OK);
+
+        return "redirect:/moims/" + moimId;
+
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -106,13 +123,11 @@ public class MoimController {
     public void deleteMoim(@PathVariable("moim-id") Long moimId) {
         moimService.deleteMoim(moimId);
     }
-
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/{moim-id}/{member-id}")
-    public String joinMoim(@PathVariable("moim-id") Long moimId,
-                           @PathVariable("member-id") Long memberId){
-        moimService.joinMoim(moimId, memberId);
-
-        return "redirect:/moims/"+moimId;
+    public void joinMoim(@PathVariable("moim-id") Long moimId,
+                         @PathVariable("member-id") Long memberId) throws Exception {
+        MoimMember moimMember = moimService.joinMoim(moimId, memberId);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -164,14 +179,14 @@ public class MoimController {
 
     //today모임
     @GetMapping("/today")
-    public List<Moim> getTodayMoims(){
+    public List<Moim> getTodayMoims() {
         return moimService.findTodayMoims();
 
     }
 
     //인기있는모임
     @GetMapping("/popular")
-    public List<Moim> getPopularMoims(){
+    public List<Moim> getPopularMoims() {
         return moimService.findPopularMoims();
     }
 

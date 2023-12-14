@@ -10,6 +10,7 @@ public enum ExceptionCode {
     ALREADY_EXISTS_ID(400,"이미 존재하는 ID 입니다."),
     NOT_EXISTS_MOIM(404,"존재하지않는 모임입니다."),
     ALREADY_JOIN_MOIM(404,"이미 참여한 모임입니다."),
+    NOT_JOIN_MOIM(404,"모임인원이 가득차 참여 할수 없습니다"),
     NOT_ALLOW(400,"아이디 또는 비밀번호가 일치하지 않습니다."),
     NOT_ACCESS(400,"로그인 후 이용 할 수 있습니다."),
     INVALID_REQUEST(400, "유효하지않은 요청입니다"),

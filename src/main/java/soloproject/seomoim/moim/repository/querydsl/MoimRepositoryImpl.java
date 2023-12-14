@@ -51,7 +51,7 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
     }
 
     private BooleanExpression moimStartedAt(LocalDate startedAt) {
-        return startedAt != null ? moim.startedAt.between(startedAt.atStartOfDay(), startedAt.atTime(LocalTime.MAX)) : null;
+        return startedAt != null ? moim.startedAt.eq(startedAt) : null;
     }
 
     private BooleanExpression moimCategory(MoimCategory moimCategory) {

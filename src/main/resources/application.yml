@@ -37,15 +37,14 @@ spring:
       client:
         registration:
           google:
-            clientId: 463358972708-43nlkdcc6dce6er9lt3ler99bj9sj7he.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: 463358972708-6u32qt5iupkdjv4tspshc2pq7jp9g5pu.apps.googleusercontent.com
+            clientSecret: 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
             scope:
               - email
               - profile
   servlet:
     multipart:
       max-file-size: 5MB
-
 
 logging level:
   org.hibernate.sql: debug

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(@AuthenticationPrincipal CustomUserDetails userDetails,
+                       @AuthenticationPrincipal OAuth2User oAuth2User,
                        Model model, HttpServletRequest request) {
         String email = userDetails.getEmail();
         Long id = memberService.findByEmail(email).getId();

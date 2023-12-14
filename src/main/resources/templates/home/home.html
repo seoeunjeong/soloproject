@@ -17,6 +17,7 @@
                         카테고리명
                     </p>
                     <p class="dday">D-Day</p>
+                    <span class="status" th:text="${moim.moimStatus.status}"></span>
                 </div>
                 <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
                 <p class="card-text">
@@ -24,7 +25,7 @@
                     <span th:text="${moim.region}">위치 정보</span><br/>
                     <strong>일시 |</strong>
                     <span
-                            th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
+                            th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
                     >일시 및 시간</span
                     ><br/>
                 </p>
@@ -64,7 +65,7 @@
                         <span th:text="${todayMoim.region}">위치 정보</span><br/>
                         <strong>일시 |</strong>
                         <span
-                                th:text="${#temporals.format(todayMoim.startedAt,'yyyy-MM-dd HH:mm')}"
+                                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
                         >일시 및 시간</span
                         ><br/>
                     </p>
@@ -104,7 +105,7 @@
                         <span th:text="${popularMoim.region}">위치 정보</span><br/>
                         <strong>일시 |</strong>
                         <span
-                                th:text="${#temporals.format(popularMoim.startedAt, 'yyyy-MM-dd HH:mm')}"
+                                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
                         >일시 및 시간</span
                         ><br/>
                     </p>

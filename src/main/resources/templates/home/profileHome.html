@@ -37,7 +37,7 @@
     <h3>내가만든모임</h3>
     <div class="createdMoim"th:each="moim:${member.createMoims}">
       <p th:text="${moim.title}"></p>
-      <a href="">관리</a>
+      <a th:href="@{/moims/update-form/{moimId}(moimId=${moim.id})}">관리</a>
     </div>
   </div>
   <div class="join-container">

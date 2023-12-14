@@ -47,7 +47,7 @@
       padding: 20px 20px;
     }
 
-    .post-form {
+    .update-form{
       display: flex;
       flex-direction: column;
     }
@@ -132,15 +132,15 @@
 <body>
 <header>
   <a href="/"><span><</span></a>
-  <a><span>모임 개설</span></a>
+  <a><span>모임 관리</span></a>
 </header>
 
 <div class="main-container">
   <form
-          class="post-form"
-          id="post-form"
-          th:action="@{/moims/post}"
-          th:object="${post}"
+          class="update-form"
+          id="update-form"
+          th:action="@{/moims/{moimId}(moimId=${moim.id})}"
+          th:object="${moim}"
           method="post"
   >
     <div>
@@ -163,10 +163,10 @@
         </div>
       <div>
         <input
-                type="date"
+                type="datetime-local"
                 class="datetime"
-                th:value="*{startedAt}"
                 id="startedAt"
+                th:value="*{startedAt}"
                 name="startedAt"
                 placeholder="모임날짜 지정"
                 required
@@ -227,7 +227,7 @@
       모임위치 오류
     </div>
       <input type="hidden" name="memberId" th:value="${memberId}"/>
-    <button type="submit" class="btn" form="post-form">모임 만들기</button>
+    <button type="submit" class="btn" form="update-form">모임 수정</button>
     </div>
   </form>
 </div>

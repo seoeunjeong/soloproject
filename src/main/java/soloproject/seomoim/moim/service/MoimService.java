@@ -37,7 +37,7 @@ public class MoimService {
     private final KakaoAddressSearchService kakaoAddressSearchService;
 
     @Transactional
-    public Long createMoim(Long memberId,Moim moim) {
+    public Long createMoim(Long memberId,Moim moim) throws Exception {
         Member member = memberService.findMember(memberId);
         moim.setMember(member);
 
@@ -66,28 +66,35 @@ public class MoimService {
                 .ifPresent(region -> findMoim.setRegion(region));
          Optional.ofNullable(moim.getMoimCategory())
                 .ifPresent(moimCategory -> findMoim.setMoimCategory(moimCategory));
+        Optional.ofNullable(moim.getStartedAt())
+                .ifPresent(startedAt->findMoim.setStartedAt(startedAt));
          return findMoim;
     }
 
     @Transactional
-    public void joinMoim(Long moimId, Long memberId) {
-        MoimMember joinStatus = checkJoin(moimId, memberId);
+    public MoimMember joinMoim(Long moimId, Long memberId) throws Exception{
+        Moim moim = findMoim(moimId);
+        Member member = memberService.findMember(memberId);
+        MoimMember joinStatus = checkJoin(member,moim);
 
         if (joinStatus.isStatus()) {
             throw new BusinessLogicException(ExceptionCode.ALREADY_JOIN_MOIM);
+        }
+        if(moim.getTotalParticipantCount()==moim.getParticipantCount()){
+            throw new BusinessLogicException(ExceptionCode.NOT_JOIN_MOIM);
         }
 
         joinStatus.setStatus(true);
         joinStatus.getMoim().addParticipantCount();
 //        moimMemberRepository.save(joinStatus); 변경감지사용?
+        return joinStatus;
     }
 
     /* 해당 모임에 회원의 참여여부를 확인하기위한 moimMember를 반환해준다. 없으면 참여하지않았기 때문에 false로 반환*/
-    public MoimMember checkJoin(Long moimId, Long memberId) {
-        MoimMember moimMember = moimMemberRepository.findByMoimAndMember(moimId, memberId)
+    @Transactional(readOnly = true)
+    public MoimMember checkJoin(Member member,Moim moim) {
+        MoimMember moimMember = moimMemberRepository.findByMemberAndMoim(member,moim)
                 .orElseGet(() -> {
-                    Moim moim = findMoim(moimId);
-                    Member member = memberService.findMember(memberId);
                     MoimMember defaultMoimMember= new MoimMember();
                     defaultMoimMember.setMoim(moim);
                     defaultMoimMember.setMember(member);
@@ -99,7 +106,9 @@ public class MoimService {
 
     @Transactional
     public void cancelJoinMoim(Long moimId, Long memberId) {
-        MoimMember findMoimMember = checkJoin(moimId, memberId);
+        Moim moim = findMoim(moimId);
+        Member member = memberService.findMember(memberId);
+        MoimMember findMoimMember = checkJoin(member,moim);
         findMoimMember.setStatus(false);
         findMoimMember.getMoim().reduceParticipantCount();
     }
@@ -121,10 +130,7 @@ public class MoimService {
 
     public List<Moim> findTodayMoims(){
         LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = LocalDateTime.of(today, LocalTime.MIN);
-        LocalDateTime endOfDay = LocalDateTime.of(today, LocalTime.MAX);
-
-        return moimRepository.findByStartedAtBetween(startOfDay, endOfDay);
+        return moimRepository.findByStartedAt(today);
     }
 
     public List<Moim> findPopularMoims() {

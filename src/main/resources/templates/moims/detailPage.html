@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" loan="ko">
 <head>
     <title>Moim 정보</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -181,6 +181,7 @@
         ><span>/</span>
             <span th:text="${moim.totalParticipantCount}">모집인원</span>
         </h6>
+        <p th:if="${error}" th:text="${error}">예외발생</p>
     </div>
     <div class="participant-container">
         <table>
@@ -197,9 +198,8 @@
         </table>
     </div>
 </div>
-
 <footer>
-    <button
+    <buttont
             type="button"
             class="joinButton"
             id="joinButton"
@@ -207,7 +207,8 @@
             onclick="toggleJoinButton()"
     >
         참여
-    </button>
+    </buttont>
+<!--    비동기작업 하자.-->
 </footer>
 
 <script th:inline="javascript">
@@ -225,16 +226,11 @@
                 fetch(url, {
                     method: 'POST',
                 })
-                    .then(function (response) {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json(); // JSON 파싱
-                    })
                     .then(function () {
-                        button.innerText = '참여취소';
+                        button.innerText = '참여취소'; // 비동기 작업이 완료된 후에 텍스트 변경
                     });
-            });
+
+            })
         } else {
             button.addEventListener('click', function () {
                 var url = '/moims/' + moimId + '/' + memberId;
@@ -245,8 +241,9 @@
                     .then(function () {
                         button.innerText = '참여'; // 비동기 작업이 완료된 후에 텍스트 변경
                     });
-          });
-        }}
+            });
+        }
+    }
 </script>
 
 <script th:inline="javascript">
@@ -266,6 +263,7 @@
 </script>
 
 <script th:inline="javascript">
+
     var editButton = document.getElementById('unLikeButton');
 
     editButton.addEventListener('click', function () {
@@ -279,28 +277,6 @@
             method: 'DELETE',
         });
     });
-</script>
-
-
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    $(document).ready(function() {
-        // Update Data 버튼 클릭 시 AJAX 요청
-        $("joinButton").click(function() {
-            $.ajax({
-                url: "/moims/"+moimId, // 업데이트를 수행할 컨트롤러 엔드포인트
-                type: "GET",
-                success: function(response) {
-                    // 성공 시 데이터 컨테이너 업데이트
-                    $("body").text(response);
-                },
-                error: function(error) {
-                    console.error("에러 발생:", error);
-                }
-            });
-        });
-    });
-    /*]]>*/
 </script>
 
 </body>

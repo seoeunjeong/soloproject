@@ -12,6 +12,7 @@ import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.service.MoimService;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class TestDataInit {
     private final MoimMapper mapper;
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         Member member = new Member();
         member.setEmail("dmswjd4015@naver.com");
         member.setPassword("dkssud1!");
@@ -47,7 +48,7 @@ public class TestDataInit {
         MoimDto.Post post = new MoimDto.Post();
         post.setMoimCategory(MoimCategory.EXERCISE);
         post.setContent("오늘 8시에 같이 런닝해요");
-        post.setStartedAt(LocalDateTime.of(2023,12,20,18,00));
+        post.setStartedAt(LocalDate.of(2023,12,20));
         post.setTitle("운동할사람 모집");
         post.setRegion("서울 구로구 경인로 5");
         post.setTotalParticipantCount(8);
@@ -58,7 +59,7 @@ public class TestDataInit {
         MoimDto.Post post1 = new MoimDto.Post();
         post1.setMoimCategory(MoimCategory.STUDY);
         post1.setContent("같이 코딩 공부하실분");
-        post1.setStartedAt(LocalDateTime.of(2023,12,22,14,00));
+        post1.setStartedAt(LocalDate.of(2023,12,22));
         post1.setTitle("스터티 모임원 구해요");
         post1.setRegion("경기 광명시 가락골길 7");
         post1.setTotalParticipantCount(2);
@@ -69,7 +70,7 @@ public class TestDataInit {
         MoimDto.Post post2 = new MoimDto.Post();
         post2.setMoimCategory(MoimCategory.DRINK);
         post2.setContent("맛있는거에 한잔 캬");
-        post2.setStartedAt(LocalDateTime.of(2023,12,13,14,00));
+        post2.setStartedAt(LocalDate.of(2023,12,13));
         post2.setTitle("치킨드실분들");
         post2.setRegion("경기 가평군 설악면 가마소길 7");
         post2.setTotalParticipantCount(2);
