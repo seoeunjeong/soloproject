@@ -27,6 +27,8 @@ public interface MoimMapper {
     @Mapping(source = "member.id",target = "memberId")
     @Mapping(source = "member.name",target = "name")
     @Mapping(source = "member.profileImage.profileImageUrl",target ="profileImageUrl")
+    @Mapping(source = "member.age",target ="age")
+    @Mapping(source = "member.gender",target ="gender")
     MoimDto.MoimMemberDto moimMemberToMoimMemberDto(MoimMember moimMember);
 
     @Named("filterParticipants")

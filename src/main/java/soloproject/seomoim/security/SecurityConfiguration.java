@@ -44,6 +44,8 @@ public class SecurityConfiguration {
                         .antMatchers("/moims/post-form").hasRole("AUTH_USER")
                         .antMatchers("/moims/mapper/**").permitAll()
                         .antMatchers("/moims/search/**").permitAll()
+                        .antMatchers("/moims/place-search-page").permitAll()
+
                         .anyRequest().authenticated());
 
         return http.build();

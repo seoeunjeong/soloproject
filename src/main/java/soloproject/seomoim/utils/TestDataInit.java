@@ -50,7 +50,7 @@ public class TestDataInit {
         post.setContent("오늘 8시에 같이 런닝해요");
         post.setStartedAt(LocalDate.of(2023,12,20));
         post.setTitle("운동할사람 모집");
-        post.setRegion("서울 구로구 경인로 5");
+        post.setPlaceAddress("경기 광명시 가락골길 7");
         post.setTotalParticipantCount(8);
         post.setMemberId(id);
         Moim moim = mapper.moimPostDtoToMoim(post);
@@ -61,7 +61,7 @@ public class TestDataInit {
         post1.setContent("같이 코딩 공부하실분");
         post1.setStartedAt(LocalDate.of(2023,12,22));
         post1.setTitle("스터티 모임원 구해요");
-        post1.setRegion("경기 광명시 가락골길 7");
+        post1.setPlaceAddress("경기 광명시 가락골길 7");
         post1.setTotalParticipantCount(2);
         post1.setMemberId(id);
         Moim moim1 = mapper.moimPostDtoToMoim(post1);
@@ -72,7 +72,7 @@ public class TestDataInit {
         post2.setContent("맛있는거에 한잔 캬");
         post2.setStartedAt(LocalDate.of(2023,12,13));
         post2.setTitle("치킨드실분들");
-        post2.setRegion("경기 가평군 설악면 가마소길 7");
+        post2.setPlaceAddress("경기 가평군 설악면 가마소길 7");
         post2.setTotalParticipantCount(2);
         post2.setMemberId(id);
         Moim moim2 = mapper.moimPostDtoToMoim(post2);

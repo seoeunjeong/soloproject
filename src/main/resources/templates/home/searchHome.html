@@ -42,7 +42,7 @@
           <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
           <p class="card-text">
             <strong>장소 |</strong>
-            <span th:text="${moim.region}">위치 정보</span><br/>
+            <span th:text="${moim.placeName}">위치 정보</span><br/>
             <strong>일시 |</strong>
             <span
                     th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"

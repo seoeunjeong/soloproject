@@ -1,12 +1,11 @@
 package soloproject.seomoim.member.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
-import soloproject.seomoim.moim.entitiy.Moim;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -79,6 +78,7 @@ public class MemberDto {
     public static class LikeMoimDto {
         private Long id;
         private String title;
+        private LocalDate startedAt;
     }
 
     @Getter
@@ -86,6 +86,7 @@ public class MemberDto {
     public static class MoimMemberDto {
         private Long id;
         private String title;
+        private LocalDate startedAt;
     }
 
     @Getter
@@ -93,6 +94,7 @@ public class MemberDto {
     public static class CreateMoimsDto {
         private Long id;
         private String title;
+        private LocalDate startedAt;
     }
 }
 

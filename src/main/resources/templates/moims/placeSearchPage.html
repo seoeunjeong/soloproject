@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SEOMOIM</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nanum Gothic', serif, sans-serif;
+    }
+
+    header {
+      position: fixed;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      background-color: #fffffff8;
+      color: #000000f8;
+      height: 40px;
+      z-index: 1000;
+      top: 0;
+    }
+
+    header > a {
+      align-items: center;
+      text-decoration: none;
+    }
+
+    header a span {
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
+      margin: 10px 20px;
+    }
+
+    header a:nth-child(2) {
+      margin: 0 90px;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      margin-top: 40px;
+      padding: 20px 20px;
+    }
+
+    #search-box {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+
+    #input-box {
+      display: flex;
+      flex-direction: row;
+    }
+
+    #keyword {
+      flex: 9;
+      width: 150px;
+      border: 2px solid rgba(0, 0, 0, 0.11);
+      height: 35px;
+      font-size: 15px;
+      background-color: rgba(250, 249, 249, 0.05);
+      border-radius: 20px;
+      padding: 2px 8px;
+    }
+
+    .search-button {
+      flex: 1;
+      padding: 10px;
+      background-color: #d96a7e;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    li {
+      list-style-type: none;
+      margin-bottom: 10px;
+      border-bottomb: 1px solid rgba(0, 0, 0, 0.93);
+    }
+
+    #placesList {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-placeName {
+      font-size: 15px;
+    }
+
+    .info-placeAddress {
+      font-size: 13px;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/moims/post-form"><span><</span></a>
+  <a><span>장소검색</span></a>
+</header>
+
+<div class="main-container">
+  <div id="search-box">
+    <div id="input-box">
+      <input id="keyword" type="text" placeholder="검색어를 입력하세요">
+      <button class="search-button">검색</button>
+    </div>
+
+    <ul id="placesList"></ul>
+  </div>
+</div>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5e763cd3e0c61f4dc0a7068fb9052bbd&libraries=services"></script>
+<script th:inline="javascript">
+
+  jQuery(document).ready(function($) {
+
+    $('.search-button').on('click', function () {
+      searchPlaces();
+    });
+
+    var ps = new kakao.maps.services.Places();
+
+    var listEl = document.getElementById('placesList');//ul
+    function searchPlaces() {
+
+      var keyword = document.getElementById('keyword').value;
+
+      if (!keyword.replace(/^\s+|\s+$/g, '')) {
+        removeAllChildNods(listEl);
+        return false;
+      }
+
+      ps.keywordSearch(keyword, placesSearchCB);
+    }
+
+    function placesSearchCB(data, status, pagination) {
+
+      if (status === kakao.maps.services.Status.OK) {
+
+        displayPlaces(data);
+
+      } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+        removeAllChildNods(listEl);
+        alert('검색 결과가 존재하지 않습니다.');
+        return;
+
+      } else if (status === kakao.maps.services.Status.ERROR) {
+        alert('검색 결과 중 오류가 발생했습니다.');
+        return;
+      }
+    }
+
+    function displayPlaces(places) {
+
+      var fragment = document.createDocumentFragment();
+
+      removeAllChildNods(listEl);
+
+      for (var i = 0; i < places.length; i++) {
+
+        var itemEl = getListItem(i, places[i]);
+
+        (function (name, address) {
+          itemEl.onclick = function () {
+
+            redirectToPreviousPage(name, address);
+
+            removeAllChildNods(listEl);
+          }
+        })(places[i].place_name, places[i].address_name);
+        // var placeAddress = place.address_name;
+        // var placeLatLng = place.y + ', ' + place.x; // 경도 및 위도 정보
+        fragment.appendChild(itemEl);
+      }
+
+      listEl.appendChild(fragment);
+    }
+
+    function redirectToPreviousPage(name, address) {
+      var newUrl = "/moims/post-form?place_name=" + encodeURIComponent(name) + "&place_address=" + encodeURIComponent(address);
+      window.location.href = newUrl;
+    }
+
+    function getListItem(index, places) {
+
+      var el = document.createElement('li'),
+              itemStr ='<span class="markerbg marker_' + (index + 1) + '"></span>' + '<div class="info">' +
+                      '<span class = "info-placeName"><b>' + places.place_name + '</b></span>';
+
+      if (places.road_address_name) {
+        itemStr += '<br><span class = "info-placeAddress"><small>' + '(' + places.road_address_name + ')' + '</small></span>'
+      } else {
+        itemStr += '<br><span class = "info-placeAddress"><small>' + '(' + places.address_name + ')' + '</small></span>';
+      }
+
+      el.innerHTML = itemStr;
+      el.className = 'item';
+
+      return el;
+    }
+
+
+    function removeAllChildNods(el) {
+      while (el.hasChildNodes()) {
+        el.removeChild(el.lastChild);
+      }
+    }
+
+  });
+
+</script>
+</body>
+</html>

@@ -1,37 +1,71 @@
-.image-container {
+.editForm-container{
     display: flex;
-    justify-content: center;
-    margin: 20px 20px;
+    flex-direction: column;
 }
 
+.image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    margin-top: 20px;
+}
 .image-container img {
+    align-self: center;
     width: 100px;
     height: 100px;
     border: 1px solid #b9b7b7;
     border-radius: 50%;
 }
+.button{
+    padding: 5px;
+    background-color: #fdfdfd;
+    color: gray;
+    border: 1px solid gray;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: self-end;
+    font-size: 15px;
+    margin-top: 15px;
+    font-weight: bold;
+
+}
 
 .profile_container {
     display: flex;
     flex-direction: column;
-    margin: 30px 20px;
 }
 
+.profile_container_row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
+.profile_container input {
+    height: 35px;
+    border: none;
+    border-bottom: 1px solid  whitesmoke;;
+    margin: 20px 20px;
+    font-size: 20px;
+
+}
 .profile_container input {
     height: 35px;
     width: 70%;
     border: none;
     border-bottom: 1px solid  whitesmoke;;
     margin: 20px 20px;
-    font-size: 15px;
+    font-size: 18px;
 
 }
 .profile_container label {
     font-size: 20px;
     font-weight: 500;
-    margin-top: 20px;
     color: #a6a6a6;
+}
+
+.gender-container{
+    margin-top: 20px;
 }
 
 .gender-container input[type=radio]{
@@ -44,6 +78,7 @@
     padding: 5px 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-weight: bold;
 }
 .gender-container input[type=radio]:checked+label {
     background-color: #d96a7e;
@@ -52,14 +87,20 @@
 }
 
 .btn {
-    width: 200px;
+    width: 100px;
     padding: 10px;
     background-color: #d96a7e;
+    color: #fff;
     border: none;
-    border-radius: 50px;
-    text-align: center;
-    font-size: 17px;
-    color: whitesmoke;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    align-self: center;
+    font-size: 20px;
+    margin-top: 50px;
+    font-weight: bold;
+}
+.alert{
+    position: relative;
+    margin-top: 30px;
+    font-weight: bold;
 }

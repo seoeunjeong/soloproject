@@ -16,7 +16,6 @@ public enum ExceptionCode {
     INVALID_REQUEST(400, "유효하지않은 요청입니다"),
     MESSAGE_FAIL(500,"인증 메세지 발송이 실패했습니다"),
     CERTIFICATION_FAIL(400,"이메일 인증이 실패했습니다"),
-
     PASSWORD_MISMATCH(400,"비밀번호 확인이 불일치합니다.");
 
     private int status;

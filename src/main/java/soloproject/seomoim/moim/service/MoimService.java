@@ -41,8 +41,11 @@ public class MoimService {
     public Long createMoim(Long memberId,Moim moim) throws Exception {
         Member member = memberService.findMember(memberId);
         moim.setMember(member);
+        if(member.getCreateMoims().size()>3){
+            throw new IllegalStateException("모임은 최대 3개까지 개설 가능합니다.");
+        }
 
-        KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(moim.getRegion());
+        KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(moim.getPlaceAddress());
         DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
 
         moim.setLatitude(documentDto.getLatitude());
@@ -68,8 +71,8 @@ public class MoimService {
                 .ifPresent(content -> findMoim.setContent(content));
          Optional.ofNullable(moim.getTotalParticipantCount())
                 .ifPresent(totalParticipantCount -> findMoim.setTotalParticipantCount(totalParticipantCount));
-         Optional.ofNullable(moim.getRegion())
-                .ifPresent(region -> findMoim.setRegion(region));
+         Optional.ofNullable(moim.getPlaceAddress())
+                .ifPresent(placeAddress -> findMoim.setPlaceAddress(placeAddress));
          Optional.ofNullable(moim.getMoimCategory())
                 .ifPresent(moimCategory -> findMoim.setMoimCategory(moimCategory));
         Optional.ofNullable(moim.getStartedAt())
@@ -173,5 +176,4 @@ public class MoimService {
             moimRepository.save(moim);
         }
     }
-
 }

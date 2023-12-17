@@ -217,13 +217,13 @@
               type="text"
               class="region"
               id="address_kakao"
-              th:field="*{region}"
+              th:field="*{placeName}"
               placeholder="모임장소"
               required
               readonly
       />
     </div>
-    <div class="field-error" th:errors="*{region}">
+    <div class="field-error" th:errors="*{placeName}">
       모임위치 오류
     </div>
       <input type="hidden" name="memberId" th:value="${memberId}"/>

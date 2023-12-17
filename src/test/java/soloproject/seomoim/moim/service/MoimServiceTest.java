@@ -40,7 +40,6 @@ class MoimServiceTest {
         moim.setContent("일요일 10시에 고척에서 축구할 사람");
         moim.setMoimCategory(MoimCategory.EXERCISE);
         moim.setTotalParticipantCount(11);
-        moim.setRegion("구로역");
 
         //when
         Moim savedMoim = moimRepository.save(moim);

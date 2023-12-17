@@ -9,57 +9,61 @@
 <section>
   <div class="image-container">
     <a id="editButton">
-      <img th:if="${member?.profileImageUrl}" th:src="${member?.profileImageUrl}" />
-      <img th:unless="${member?.profileImageUrl}" src="img/profile2.png" />
-
+      <img th:if="${member?.profileImageUrl}" th:src="${member?.profileImageUrl}"/>
+      <img th:unless="${member?.profileImageUrl}" src="img/profile2.png"/>
     </a>
   </div>
-    <div class="info-container">
-      <p class="item1" th:text="${member.name}">name</p>
-      <div class="email">
-        <p class="item2" th:text="${member.email}">email</p>
-        <button th:if="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button">인증완료</button>
-        <button th:unless="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button" id="email-button">인증</button>
-      </div>
-      <hr />
-      <div class="day">
-        <p class="item3">가입일|</p>
-        <p class="item4"
-                th:text="${#temporals.format(member.createdAt,'yy년 MM월 dd일')}"
-        >
-          가입일
-        </p>
-      </div>
+  <div class="info-container">
+    <p class="item1" th:text="${member.name}">name</p>
+    <div class="email">
+      <p class="item2" th:text="${member.email}">email</p>
+      <button th:if="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button">인증완료</button>
+      <button th:unless="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button" id="email-button">인증
+      </button>
+    </div>
+    <hr/>
+    <div class="day">
+      <p class="item3">가입일|</p>
+      <p class="item4"
+         th:text="${#temporals.format(member.createdAt,'yy년 MM월 dd일')}"
+      >
+        가입일
+      </p>
     </div>
   </div>
+  <h3>내가만든모임</h3>
   <div class="create-container">
-<!--    3개만 만들수있도록 해야지-->
-    <h3>내가만든모임</h3>
-    <div class="createdMoim"th:each="moim:${member.createMoims}">
+    <!--    3개만 만들수있도록 해야지-->
+    <div class="createdMoim" th:each="moim:${member.createMoims}">
       <p th:text="${moim.title}"></p>
+      <p th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></p>
       <a th:href="@{/moims/update-form/{moimId}(moimId=${moim.id})}">관리</a>
     </div>
   </div>
+  <h3>참여한 모임</h3>
   <div class="join-container">
-    <h3>참여한 모임</h3>
+    <div th:each="moim:${member.joinMoims}">
+    <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
     <div class="joinMoim">
-      <div class="block" th:each="moim:${member.joinMoims}">
-        <p th:text="${moim.title}"></p>
-        <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">상세보기</a>
-      </div>
+      <p th:text="${moim.title}"></p>
+      <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
+    </div>
+    </a>
     </div>
   </div>
+  <h3>좋아요❤️모임</h3>
   <div class="like-container">
-    <h3>좋아요한 모임</h3>
-    <div class="likeMoim">
-      <div class="block" th:each="moim:${member.likeMoims}">
-        <p th:text="${moim.title}"></p>
-        <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">상세보기</a>
-      </div>
+    <div th:each="moim:${member.likeMoims}">
+      <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
+        <div class="likeMoim">
+          <p th:text="${moim.title}"></p>
+          <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
+        </div>
+      </a>
     </div>
   </div>
+  <h3>최근본 <span style="font-size:15px">o_o </span>모임</h3>
   <div class="latest-container">
-    <h3>최근본 모임</h3>
   </div>
 
   <script th:inline="javascript">

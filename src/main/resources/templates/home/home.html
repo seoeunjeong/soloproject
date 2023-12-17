@@ -16,13 +16,13 @@
                     <p class="categry" th:text="${moim.moimCategory}">
                         카테고리명
                     </p>
-                    <p class="dday" th:text="|D-day ${moim.DDay}일|">D-Day</p>
+                    <p class="dday" th:text="|D- ${moim.DDay}일|">D-Day</p>
                     <span class="status" th:text="${moim.moimStatus.status}"></span>
                 </div>
                 <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
                 <p class="card-text">
                     <strong>장소 |</strong>
-                    <span th:text="${moim.region}">위치 정보</span><br/>
+                    <span th:text="${moim.placeName}">위치 정보</span><br/>
                     <strong>일시 |</strong>
                     <span
                             th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
@@ -58,23 +58,26 @@
                         <p class="categry" th:text="${todayMoim.moimCategory}">
                             카테고리명
                         </p>
-                        <p class="dday">D-Day</p>
+                        <p class="dday" th:text="|D- ${todayMoim.DDay}일|">D-Day</p>
+                        <span class="status" th:text="${todayMoim.moimStatus.status}"></span>
                     </div>
                     <h3 class="card-title" th:text="${todayMoim.title}">모임 제목 1</h3>
                     <p class="card-text">
                         <strong>장소 |</strong>
-                        <span th:text="${todayMoim.region}">위치 정보</span><br/>
+                        <span th:text="${todayMoim.placeName}">위치 정보</span><br/>
                         <strong>일시 |</strong>
                         <span
-                                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
+                                th:text="${#temporals.format(todayMoim.startedAt, 'yyyy-MM-dd')}"
                         >일시 및 시간</span
                         ><br/>
                     </p>
                     <div class="participant-container">
-                        <div class="participant" th:each="people:${todayMoim.participants}">
+                        <div class="participant">
+                        <div th:each="people:${todayMoim.participants}">
                             <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
                             <img th:unless="${people?.profileImageUrl}" src="img/profile2.png" />
 
+                        </div>
                         </div>
                         <div class="participant-detail">
                             <span>참여자 </span>
@@ -98,23 +101,26 @@
                         <p class="categry" th:text="${popularMoim.moimCategory}">
                             카테고리명
                         </p>
-                        <p class="dday">D-Day</p>
+                        <p class="dday" th:text="|D- ${popularMoim.DDay}일|">D-Day</p>
+                        <span class="status" th:text="${popularMoim.moimStatus.status}"></span>
+
                     </div>
                     <h3 class="card-title" th:text="${popularMoim?.title}">모임 제목 1</h3>
                     <p class="card-text">
                         <strong>장소 |</strong>
-                        <span th:text="${popularMoim.region}">위치 정보</span><br/>
+                        <span th:text="${popularMoim.placeName}">위치 정보</span><br/>
                         <strong>일시 |</strong>
                         <span
-                                th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
+                                th:text="${#temporals.format(popularMoim.startedAt, 'yyyy-MM-dd')}"
                         >일시 및 시간</span
                         ><br/>
                     </p>
                     <div class="participant-container">
-                        <div class="participant" th:each="people:${popularMoim.Participants}">
+                        <div class="participant">
+                        <div th:each="people:${popularMoim.Participants}">
                             <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
-                            <img th:unless="${people?.profileImageUrl}" src="img/profile2.png" />
-
+                            <img th:unless="${people?.profileImageUrl}" src="/img/profile2.png" />
+                        </div>
                         </div>
                         <div class="participant-detail">
                             <span>참여자 </span>

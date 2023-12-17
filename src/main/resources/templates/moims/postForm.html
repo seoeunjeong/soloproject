@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
   <title>SEOMOIM</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
@@ -15,15 +17,15 @@
     }
 
     header {
-      position: fixed;
       display: flex;
+      position: fixed;
       width: 100%;
-      align-items: center;
-      background-color: #fffffff8;
-      color: #000000f8;
       height: 40px;
       z-index: 1000;
       top: 0;
+      align-items: center;
+      background-color: #fffffff8;
+      color: #000000f8;
     }
 
     header > a {
@@ -60,53 +62,77 @@
     }
 
     .category {
-      width: 100px;
+      width: 120px;
       height: 35px;
       color: #565555;
       border: 1px solid #ccc;
       border-radius: 10px;
-      padding: 2px 2px;
+      font-size: 15px;
+      padding: 2px 10px;
     }
-    .datetime {
-      width: 150px;
-      height: 30px;
+
+    .date {
+      width: 130px;
+      height: 35px;
       color: #565555;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      padding: 2px 2px;
-      font-size: 10px;
-      letter-spacing:-1px;
+      font-size: 15px;
+      letter-spacing:-2px;
     }
+
     .title {
       width: 200px;
-      height: 30px;
+      height: 35px;
+      color: #565555;
       border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      padding: 2px 10px;
+
     }
-    .textarea {
+    .content {
       width: 300px;
       height: 110px;
-      font-size: large;
+      color: #565555;
+      font-size: 15px;
       border: 1px solid #ccc;
       margin-top: 15px;
       margin-bottom: -3px;
+      border-radius: 10px;
+      padding: 10px;
     }
-    .count {
-      width: 50px;
+    .totalParticipantCount {
+      width: 35px;
       padding: 10px;
       margin-top: 15px;
+      color: #565555;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    .place{
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+
+    }
+    .place >img{
+      width: 40px;
+      hight: 40px;
     }
 
-    .region {
+    .placeName {
       width: 200px;
-      padding: 8px;
-      margin-top: 15px;
+      padding: 10px;
+      color: #565555;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 10px;
+      font-size: 15px;
     }
 
     .btn {
-      width: 200px;
+      width: 150px;
       padding: 10px;
       background-color: #d96a7e;
       color: #fff;
@@ -116,9 +142,12 @@
       align-self: center;
       font-size: 20px;
       margin-top: 30px;
+      font-weight: bold;
     }
+
     .field-error {
       color: darkred;
+      border-color: darkred;
       font-size: 12px;
       margin-top: 4px;
     }
@@ -127,6 +156,8 @@
       display: inline-block;
       color: gray;
     }
+
+
   </style>
 </head>
 <body>
@@ -145,6 +176,7 @@
   >
     <div>
       <div class="row">
+        <div class="bottom">
         <select
                 class="category"
                 id="moimCategory"
@@ -158,20 +190,21 @@
                   th:text="${category}"
           ></option>
         </select>
-        <div class="field-error" th:errors="*{moimCategory}">
-          카테고리 오류
+          <div class="field-error" th:errors="*{moimCategory}">
+            카테고리 오류
+          </div>
         </div>
       <div>
         <input
                 type="date"
-                class="datetime"
+                class="date"
                 th:value="*{startedAt}"
                 id="startedAt"
                 name="startedAt"
+                th:errorclass="field-error"
                 placeholder="모임날짜 지정"
-                required
         />
-        <div class="field-error" th:errors="*{startedAt}">날짜오류</div>
+        <div class="field-error" th:errors="*{startedAt}">날짜 오류</div>
       </div>
     </div>
     <div>
@@ -182,73 +215,76 @@
               th:field="*{title}"
               th:errorclass="field-error"
               placeholder="모임 제목"
-              required
       />
       <div class="field-error" th:errors="*{title}">모임제목 오류</div>
     </div>
     <div>
           <textarea
-                  class="textarea"
+                  class="content"
                   id="content"
                   th:field="*{content}"
                   th:errorclass="field-error"
                   rows="4"
                   placeholder="모임의 목표"
-                  required
           ></textarea>
-      <div class="field-error" th:errors="*{content}">모임제목 오류</div>
+      <div class="field-error" th:errors="*{content}">모임내용 오류</div>
     </div>
     <div>
       <input
               type="number"
-              class="count"
+              class="totalParticipantCount"
               id="totalParticipantCount"
               th:field="*{totalParticipantCount}"
-              placeholder="모집인원"
-              required
+              th:errorclass="field-error"
+              placeholder="인원"
       />
       <p>명</p>
       <div class="field-error" th:errors="*{totalParticipantCount}">
         모집인원 오류
       </div>
     </div>
-    <div>
+    <div class="place" onclick="searchPage()">
+      <img src="/img/place.png" alt="place.png"/>
       <input
               type="text"
-              class="region"
-              id="address_kakao"
-              th:field="*{region}"
+              class="placeName"
+              id="placeName"
+              th:field="*{placeName}"
+              th:errorclass="field-error"
               placeholder="모임장소"
-              required
               readonly
       />
+      <input type="hidden" id="placeAddress" name="placeAddress" th:value="*{placeAddress}">
     </div>
-    <div class="field-error" th:errors="*{region}">
+    <div class="field-error" th:errors="*{placeName}">
       모임위치 오류
     </div>
+
+
       <input type="hidden" name="memberId" th:value="${memberId}"/>
-    <button type="submit" class="btn" form="post-form">모임 만들기</button>
     </div>
+    <button type="submit" class="btn" form="post-form">모임 만들기</button>
   </form>
 </div>
 
+<script th:inline="javascript">
 
-<!-- Kakao 우편번호 서비스 -->
-<!-- https://postcode.map.daum.net/guide -->
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  function searchPage() {
 
-<script>
-  window.onload = function () {
-    document
-            .getElementById('address_kakao')
-            .addEventListener('click', function () {
-              new daum.Postcode({
-                oncomplete: function (data) {
-                  document.getElementById('address_kakao').value = data.address;
-                },
-              }).open();
+    var formData = new FormData(document.getElementById('post-form'));
+
+    fetch('/moims/cookieData', {
+      method: 'Post',
+      body: formData
+    })
+            .then(response => {
+              window.location.href = '/moims/place-search-page';
+            })
+            .catch(error => {
+              console.error('Error:', error);
             });
-  };
+  }
+
 </script>
 
 </body>
