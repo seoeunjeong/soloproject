@@ -1,4 +1,4 @@
-package soloproject.seomoim.emailAuthentication;
+package soloproject.seomoim.member.emailAuthentication;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;

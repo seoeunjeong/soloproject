@@ -50,7 +50,7 @@ public class CustomUserAuthenticationProvider implements AuthenticationProvider 
 
     private void verifyCredentials(Object credentials,String password){
         if(!passwordEncoder.matches((String)credentials,password)){
-            throw  new BadCredentialsException("Invalid User name or User Password");
+            throw new BadCredentialsException("Invalid User name or User Password");
         }
     }
 }

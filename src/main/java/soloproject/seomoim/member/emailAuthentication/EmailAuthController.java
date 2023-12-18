@@ -1,4 +1,4 @@
-package soloproject.seomoim.emailAuthentication;
+package soloproject.seomoim.member.emailAuthentication;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,6 @@ public class EmailAuthController {
         if (roles.get(0).equals("AUTH_USER")) {
 
             throw new IllegalStateException("이미 인증된 회원입니다");
-
         }
         String email = userDetails.getEmail();
         model.addAttribute("email", email);
@@ -53,6 +52,11 @@ public class EmailAuthController {
                             Model model) {
         String sendNumber = (String) redisUtil.get(email);
         log.info("sendNumber=" + sendNumber);
+        if(sendNumber==null){
+            model.addAttribute("email",email);
+            model.addAttribute("expire","인증시간이 만료되었습니다.");
+            return "members/emailAuthForm";
+        }
         log.info("number=" + number);
 
         if (number.equals(sendNumber)) {

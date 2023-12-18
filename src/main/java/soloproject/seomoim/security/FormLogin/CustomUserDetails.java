@@ -7,7 +7,6 @@ import soloproject.seomoim.member.entity.Member;
 
 import java.util.Collection;
 
-
 @Getter
 @Setter
 public class CustomUserDetails extends Member implements UserDetails {
@@ -15,8 +14,8 @@ public class CustomUserDetails extends Member implements UserDetails {
     /*todo! customAuthorityUtils 여기서 주입받는게 최선일까*/
     private CustomAuthorityUtils customAuthorityUtils;
 
-    public CustomUserDetails(Member member,CustomAuthorityUtils customAuthorityUtils) {
-        this.customAuthorityUtils=customAuthorityUtils;
+    public CustomUserDetails(Member member, CustomAuthorityUtils customAuthorityUtils) {
+        this.customAuthorityUtils = customAuthorityUtils;
         setId(member.getId());
         setName(member.getName());
         setAge(member.getAge());

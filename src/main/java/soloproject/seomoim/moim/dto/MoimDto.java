@@ -3,14 +3,12 @@ package soloproject.seomoim.moim.dto;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-import soloproject.seomoim.exception.PastDate;
+import soloproject.seomoim.moim.dto.validator.PastDate;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
-import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.moim.entitiy.MoimStatus;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class MoimDto {

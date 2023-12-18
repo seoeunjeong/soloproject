@@ -1,9 +1,10 @@
 package soloproject.seomoim.member.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import soloproject.seomoim.like.LikeMoim;
+import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.profileImage.ProfileImage;
 import soloproject.seomoim.utils.BaseEntity;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -43,7 +44,7 @@ public class Member extends BaseEntity {
 
     private double longitude;
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member",cascade = CascadeType.ALL)
     private ProfileImage profileImage;
 
 
@@ -69,5 +70,13 @@ public class Member extends BaseEntity {
         if (moim.getMember() != this) {
             moim.setMember(this);
         }
+    }
+
+    public Member(String email,String name,String profile) {
+        this.email = email;
+        this.name = name;
+        ProfileImage profileImage = new ProfileImage();
+        profileImage.setProfileImageUrl(profile);
+        this.setProfileImage(profileImage);
     }
 }

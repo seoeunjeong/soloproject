@@ -42,6 +42,7 @@ spring:
             scope:
               - email
               - profile
+
   servlet:
     multipart:
       max-file-size: 5MB

@@ -1,4 +1,4 @@
-package soloproject.seomoim.like;
+package soloproject.seomoim.moim.like;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import soloproject.seomoim.member.entity.Member;

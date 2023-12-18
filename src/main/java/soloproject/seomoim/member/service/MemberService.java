@@ -110,7 +110,8 @@ public class MemberService {
 
     public Member findByEmail(String email){
          return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+                .
+                 orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
     private void checkIdDuplication(Member member) {
@@ -120,6 +121,10 @@ public class MemberService {
         }
     }
 
+    //오어쓰회원정보저장
+    public void save(Member member) {
+        memberRepository.save(member);
+    }
 
 
     //회원 정보와 함께 참여한 모임 조회

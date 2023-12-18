@@ -11,7 +11,7 @@
 //import org.springframework.web.bind.annotation.ResponseStatus;
 //import org.springframework.web.bind.annotation.RestControllerAdvice;
 //import soloproject.seomoim.exception.BusinessLogicException;
-//import soloproject.seomoim.exception.ErrorResponse;
+//import soloproject.seomoim.advice.ErrorResponse;
 //import soloproject.seomoim.exception.ExceptionCode;
 //
 //import javax.validation.ConstraintViolationException;

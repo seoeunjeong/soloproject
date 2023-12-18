@@ -3,6 +3,7 @@ package soloproject.seomoim;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ import soloproject.seomoim.moim.service.MoimService;
 import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 import soloproject.seomoim.utils.PageResponseDto;
 
-import javax.servlet.http.HttpServletRequest;
+
 import java.util.List;
 
 @Controller
@@ -33,11 +34,21 @@ public class HomeController {
 
 
     @GetMapping("/")
-    public String home(@AuthenticationPrincipal CustomUserDetails userDetails,
-                       @AuthenticationPrincipal OAuth2User oAuth2User,
-                       Model model, HttpServletRequest request) {
-        String email = userDetails.getEmail();
+    public String home(Authentication authentication,Model model) {
+        Object principal = authentication.getPrincipal();
+        String email = null;
+        if (principal instanceof OAuth2User) {
+            OAuth2User oAuth2User = (OAuth2User) principal;
+            email = oAuth2User.getAttribute("email");
+
+        }else if(principal instanceof CustomUserDetails){
+            CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+            email = customUserDetails.getEmail();
+        }
+
         Long id = memberService.findByEmail(email).getId();
+        model.addAttribute("memberId", id);
+
         Page<Moim> allbyPage = moimService.findAllbyPage(0, 12);
         List<Moim> moims = allbyPage.getContent();
         PageResponseDto<MoimDto.Response> responseDto = new PageResponseDto<>(moimMapper.moimsToResponseDtos(moims), allbyPage);
@@ -45,7 +56,6 @@ public class HomeController {
         List<Moim> todayMoims = moimService.findTodayMoims();
         List<MoimDto.Response> todayResponse = moimMapper.moimsToResponseDtos(todayMoims);
         List<MoimDto.Response> popularResponse = moimMapper.moimsToResponseDtos(popularMoims);
-        model.addAttribute("memberId", id);
         model.addAttribute("moims", responseDto);
         model.addAttribute("todayMoims",todayResponse);
         model.addAttribute("popularMoims",popularResponse);

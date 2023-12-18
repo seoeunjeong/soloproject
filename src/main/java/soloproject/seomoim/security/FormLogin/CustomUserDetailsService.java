@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         Member findMember = optionalMember.orElseThrow(() -> new UsernameNotFoundException("유효하지 않은 아이디 입니다."));
 
-        return new CustomUserDetails(findMember,customAuthorityUtils        );
+        return new CustomUserDetails(findMember,customAuthorityUtils);
     }
 
 }

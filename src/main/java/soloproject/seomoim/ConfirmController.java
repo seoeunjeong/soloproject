@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ConfirmController {
 
+
     @GetMapping("/confirm")
     public String confirm(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

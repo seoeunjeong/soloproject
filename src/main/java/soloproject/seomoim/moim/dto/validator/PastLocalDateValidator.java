@@ -1,4 +1,4 @@
-package soloproject.seomoim.exception;
+package soloproject.seomoim.moim.dto.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

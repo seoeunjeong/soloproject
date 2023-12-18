@@ -1,4 +1,4 @@
-package soloproject.seomoim.like;
+package soloproject.seomoim.moim.like;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

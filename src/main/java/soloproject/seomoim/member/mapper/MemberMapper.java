@@ -3,7 +3,7 @@ package soloproject.seomoim.member.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import soloproject.seomoim.like.LikeMoim;
+import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.member.dto.MemberDto.CreateMoimsDto;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;

@@ -2,11 +2,19 @@ package soloproject.seomoim.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ClientRequestException;
@@ -18,8 +26,10 @@ import soloproject.seomoim.profileImage.ProfileImageUploadService;
 import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URI;
 
 @Slf4j
 @Controller
@@ -29,6 +39,8 @@ public class MemberController {
     private final MemberService memberService;
     private final ProfileImageUploadService profileImageUploadService;
     private final MemberMapper mapper;
+
+    private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
     @GetMapping("/login-form")
     public String loginForm(HttpServletRequest request, Model model) {
@@ -70,10 +82,10 @@ public class MemberController {
     @GetMapping("/members/edit_form")
     public String myPageEditFrom(@AuthenticationPrincipal CustomUserDetails userDetails,
                                  @RequestParam(required = false) Boolean status,
-                                 Model model){
+                                 Model model) {
         Member member = memberService.findByEmail(userDetails.getEmail());
         model.addAttribute("member", member);
-        model.addAttribute("status",status);
+        model.addAttribute("status", status);
         return "members/editForm";
     }
 
@@ -81,49 +93,82 @@ public class MemberController {
     @PostMapping("/members/{member-id}")
     public String updateProfile(@PathVariable("member-id") Long memberId,
                                 RedirectAttributes redirectAttributes,
-                                @Valid @ModelAttribute MemberDto.Update request){
+                                @Valid @ModelAttribute MemberDto.Update request) {
         Member findMember = memberService.findMember(memberId);
 
         Member member = mapper.memberUpdateDtoToMember(request);
 
-        log.info("request.getProfileImage={}",request.getProfileImage());
+        log.info("request.getProfileImage={}", request.getProfileImage());
         if (!request.getProfileImage().isEmpty()) {
             try {
                 profileImageUploadService.uploadFileToGCS(request.getProfileImage(), findMember);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }else {
+        } else {
             //비어있는 요청을 했을때 버킷의 객체는 삭제하는데
             profileImageUploadService.deleteFile(findMember);
         }
 
-        memberService.update(memberId,member);
+        memberService.update(memberId, member);
         redirectAttributes.addAttribute("status", true);
 
         return "redirect:/members/edit_form";
     }
 
 
+    @GetMapping("/member/logout")
+    public String googleLogout(Authentication authentication,HttpServletRequest request) {
 
+        OAuth2AuthorizedClient google = oAuth2AuthorizedClientService.loadAuthorizedClient("google", authentication.getName());
+
+        if (google != null && google.getAccessToken() != null) {
+            String tokenValue = google.getAccessToken().getTokenValue();
+
+            revokeGoogleToken(tokenValue);
+        }
+
+        HttpSession session = request.getSession();
+        session.invalidate();
+
+        return "redirect:/";
+    }
+
+    private static void revokeGoogleToken(String accessToken) {
+        // Google Revoke Token 엔드포인트 URL
+        String revokeTokenUrl = "https://accounts.google.com/o/oauth2/revoke";
+
+        // Google OAuth 토큰을 무효화하는데 필요한 파라미터
+        String tokenParameter = "token=" + accessToken;
+
+        // Request Headers 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Request Entity 생성
+        RequestEntity<String> requestEntity = new RequestEntity<>(tokenParameter, headers, HttpMethod.POST, URI.create(revokeTokenUrl));
+
+        // RestTemplate 생성
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            // Google에 토큰 무효화 요청 보내기
+            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+
+            // 성공적으로 무효화되면 Google 서버는 200 OK를 응답할 것입니다.
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                System.out.println("Google OAuth Token successfully revoked.");
+            } else {
+                System.out.println("Failed to revoke Google OAuth Token. Response: " + responseEntity.getBody());
+            }
+        } catch (HttpClientErrorException e) {
+            // Google 서버에서 오류 응답이 온 경우
+            System.out.println("Failed to revoke Google OAuth Token. Error response: " + e.getResponseBodyAsString());
+        }
+
+    }
 }
 
-
-//    @GetMapping("/auth-form")
-//    public String authLoginForm() {
-//        return "members/loginForm";
-//    }
-//
-//    /*로그아웃확인*/
-//    @GetMapping("members/logout")
-//    public String logoutMember(HttpServletRequest request, HttpServletResponse response) {
-//        HttpSession session = request.getSession(false);
-//        if(session!=null)
-//            session.invalidate();
-//        return "redirect:/";
-//    }
-
-//
 //    /* 회원이 만든 모임 list 조회 */
 //    //members/{member-id}/moims/
 //    @GetMapping("members/{member-id}/moims")

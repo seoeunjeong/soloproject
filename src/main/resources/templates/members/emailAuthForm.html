@@ -101,9 +101,13 @@
             />
             <button type="submit" class="btn-1" form="auth-form">확인</button>
         </div>
-        <class class="alert" th:if="${error != null}">
+        <div class="alert" th:if="${error != null}">
         <div>인증이 실패했습니다.인증번호를 다시 확인해 주세요.</div>
-        </class>
+        </div>
+        <div class="alert" th:if="${expire != null}">
+            <div th:text="${expire}">인증 실패</div>
+        </div>
+
 
         <br />
         <a href="/" class="next">다음에 인증하기 ></a>
