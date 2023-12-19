@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,12 +15,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.exception.BusinessLogicException;
 import soloproject.seomoim.exception.ClientRequestException;
+import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.profileImage.ProfileImageUploadService;
-import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -80,10 +77,10 @@ public class MemberController {
     }
 
     @GetMapping("/members/edit_form")
-    public String myPageEditFrom(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public String myPageEditFrom(@Login String email,
                                  @RequestParam(required = false) Boolean status,
                                  Model model) {
-        Member member = memberService.findByEmail(userDetails.getEmail());
+        Member member = memberService.findByEmail(email);
         model.addAttribute("member", member);
         model.addAttribute("status", status);
         return "members/editForm";
@@ -106,7 +103,6 @@ public class MemberController {
                 throw new RuntimeException(e);
             }
         } else {
-            //비어있는 요청을 했을때 버킷의 객체는 삭제하는데
             profileImageUploadService.deleteFile(findMember);
         }
 

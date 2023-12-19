@@ -1,7 +1,5 @@
 package soloproject.seomoim.moim.dto.validator;
 
-import soloproject.seomoim.moim.dto.validator.PastLocalDateValidator;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.ElementType;

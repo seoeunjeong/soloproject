@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -91,6 +92,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         member.setEmail(email);
         ProfileImage profileImage = new ProfileImage();
         profileImage.setProfileImageUrl(picture);
+        profileImage.setMember(member);
+        UUID uuid = UUID.randomUUID();
+        profileImage.setUuid(uuid.toString());
         member.setProfileImage(profileImage);
         member.setRoles(List.of("AUTH_USER"));
         return member;

@@ -4,8 +4,8 @@ package soloproject.seomoim.moim.entitiy;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum MoimCategory {
-    STUDY,EXERCISE, TRAVEL,EAT,
-    DRINK,COFFEE,ONLINE;
+    STUDY, EXERCISE, TRAVEL, EAT,
+    DRINK, COFFEE, ONLINE;
 
     @JsonCreator
     public static MoimCategory fromString(String value) {

@@ -2,7 +2,6 @@ package soloproject.seomoim.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,12 +119,6 @@ public class MemberService {
             throw new BusinessLogicException(ExceptionCode.ALREADY_EXISTS_ID);
         }
     }
-
-    //오어쓰회원정보저장
-    public void save(Member member) {
-        memberRepository.save(member);
-    }
-
 
     //회원 정보와 함께 참여한 모임 조회
 //    public Member findMemberAndfindParticipationMoim(Long memberId){

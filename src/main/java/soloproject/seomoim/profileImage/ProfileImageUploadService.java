@@ -11,6 +11,8 @@ import soloproject.seomoim.member.entity.Member;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,8 +40,17 @@ public class ProfileImageUploadService {
         {
             String uuid1 = profileImage.getUuid();
 
+            if(profileImage.getProfileImageUrl().startsWith("https://lh3")){
+                try {
+                    uploadDataFromUrl(profileImage.getProfileImageUrl(),bucketName,uuid1);
+                }catch (IOException e){
+                    throw  new RuntimeException(e);
+                }
+            }
+
             try {
                 uploadFile(bucketName, uuid1, file.getContentType(), file.getInputStream());
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -56,6 +67,7 @@ public class ProfileImageUploadService {
             profileImage.setUuid(uuid);
             profileImageRepository.save(profileImage);
         }
+
     }
 
     @Transactional
@@ -79,4 +91,32 @@ public class ProfileImageUploadService {
         storage.create(blobInfo, inputStream);
     }
 
+
+    public void uploadDataFromUrl(String remoteUrl, String bucketName, String uuid) throws IOException {
+        try {
+            // URL에서 데이터 읽기
+            URL url = new URL(remoteUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            InputStream inputStream = connection.getInputStream();
+
+
+            BlobId blobId = BlobId.of(bucketName, uuid);
+
+            // Google Cloud Storage로 데이터 업로드
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+
+            storage.create(blobInfo, inputStream);
+
+            inputStream.close();
+            connection.disconnect();
+
+            System.out.println("Data uploaded successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
+
+

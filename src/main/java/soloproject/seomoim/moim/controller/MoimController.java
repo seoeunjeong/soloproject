@@ -6,13 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.moim.like.LikeMoimService;
 import soloproject.seomoim.member.entity.Member;
@@ -21,7 +21,6 @@ import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 import soloproject.seomoim.recommend.DistanceService;
-import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -97,7 +96,6 @@ public class MoimController {
     }
 
 //  todo! 모임등록시 장소검색 페이지로 이동할때 데이터값 유지
-
     @PostMapping("/cookieData")
     public void addressSearchPage(@ModelAttribute MoimDto.Post post,
                                   HttpServletResponse response) {
@@ -114,18 +112,15 @@ public class MoimController {
     }
 
 
-
     @GetMapping("/{moim-id}")
     public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
-                                 @AuthenticationPrincipal CustomUserDetails userDetails,
-                                 Model model) {
+                                @Login String email, Model model) {
         Moim moim = moimService.findMoim(moimId);
         model.addAttribute("moim", mapper.moimToResponseDto(moim));
 
-        Member findMember = memberService.findByEmail(userDetails.getEmail());
+        Member findMember = memberService.findByEmail(email);
         MoimMember joinStatus = moimService.checkJoin(findMember, moim);
-        LikeMoim likeMoim = likeMoimService.checkLike(findMember, moim);
-        model.addAttribute("memberId", findMember.getId());
+        LikeMoim likeMoim = likeMoimService.checkLike(findMember, moim);;
         model.addAttribute("likeStatus", likeMoim.isStatus());
         model.addAttribute("joinStatus",joinStatus.isStatus());
 
@@ -137,8 +132,7 @@ public class MoimController {
 
 
     @GetMapping("/update-form/{moim-id}")
-    public String updateMoimForm(
-                                 @PathVariable("moim-id") Long moimId,
+    public String updateMoimForm(@PathVariable("moim-id") Long moimId,
                                  Model model) {
         Moim moim = moimService.findMoim(moimId);
 
@@ -161,17 +155,12 @@ public class MoimController {
     }
 
 
-
-
-
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}")
     public void deleteMoim(@PathVariable("moim-id") Long moimId) {
+
         moimService.deleteMoim(moimId);
     }
-
-
-
 
 
     @ResponseStatus(HttpStatus.OK)
@@ -182,16 +171,12 @@ public class MoimController {
     }
 
 
-
-
-
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}/{member-id}")
     public void notJoinMoim(@PathVariable("moim-id") Long moimId,
                             @PathVariable("member-id") Long memberId) {
         moimService.cancelJoinMoim(moimId, memberId);
     }
-
 
 
 
@@ -206,10 +191,6 @@ public class MoimController {
         model.addAttribute("moims", pageResponseDto);
         return "moims/total";
     }
-
-
-
-
 
     @PostMapping("/search")
     public String findSearchMoims(@ModelAttribute MoimSearchDto moimSearchDto,
@@ -254,15 +235,15 @@ public class MoimController {
 
 
 
-
     //모든요청에 데이터 추가
     @ModelAttribute("moimCategorys")
     public MoimCategory[] moimCategorys() {
         return MoimCategory.values();
     }
+
     @ModelAttribute("memberId")
-    public Long loginMember(@AuthenticationPrincipal CustomUserDetails userDetails){
-        Member loginMember = memberService.findByEmail(userDetails.getEmail());
+    public Long loginMember(@Login String email){
+        Member loginMember = memberService.findByEmail(email);
         return loginMember.getId();
     }
 

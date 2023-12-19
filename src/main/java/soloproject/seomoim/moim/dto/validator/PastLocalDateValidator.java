@@ -15,7 +15,8 @@ public class PastLocalDateValidator implements ConstraintValidator<PastDate, Loc
     public boolean isValid(LocalDate startedAt, ConstraintValidatorContext context) {
         LocalDate now = LocalDate.now();
 
-       return startedAt.isAfter(now);
+        return startedAt.isEqual(now) || startedAt.isAfter(now);
     }
+
 }
 

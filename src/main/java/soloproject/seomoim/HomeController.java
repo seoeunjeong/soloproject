@@ -3,12 +3,10 @@ package soloproject.seomoim;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
@@ -16,7 +14,6 @@ import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.service.MoimService;
-import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 import soloproject.seomoim.utils.PageResponseDto;
 
 
@@ -34,17 +31,7 @@ public class HomeController {
 
 
     @GetMapping("/")
-    public String home(Authentication authentication,Model model) {
-        Object principal = authentication.getPrincipal();
-        String email = null;
-        if (principal instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) principal;
-            email = oAuth2User.getAttribute("email");
-
-        }else if(principal instanceof CustomUserDetails){
-            CustomUserDetails customUserDetails = (CustomUserDetails) principal;
-            email = customUserDetails.getEmail();
-        }
+    public String home(@Login String email, Model model) {
 
         Long id = memberService.findByEmail(email).getId();
         model.addAttribute("memberId", id);
@@ -64,9 +51,8 @@ public class HomeController {
 
 
     @GetMapping("/profile")
-    public String profileFrom(@AuthenticationPrincipal CustomUserDetails userDetails,
-                              Model model) {
-        Member member = memberService.findByEmail(userDetails.getEmail());
+    public String profileFrom(@Login String email,Model model) {
+        Member member = memberService.findByEmail(email);
         model.addAttribute("member", mapper.memberToMemberResponseDto(member));
 
         return "home/profileHome";

@@ -275,6 +275,7 @@
             border: 2px solid #d96a7e;
             border-radius: 5px;
             transition: background-color 0.3s;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -298,7 +299,7 @@
                 <p>모임장:</p>
                 <img th:src="${moim?.memberProfileImageUrl ?: '/img/profile2.png'}"/>
             </div>
-            <button class="oneToOneButton">1:1문의</button>
+            <a href="/chat-form" class="oneToOneButton">1:1문의</a>
         </div>
     </div>
 

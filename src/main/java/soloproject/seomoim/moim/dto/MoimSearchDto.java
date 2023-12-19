@@ -13,9 +13,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class MoimSearchDto {
 
-//todo vaild검증
     private MoimCategory moimCategory;
+
     private String keyword;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startedAt;
 

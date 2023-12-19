@@ -25,7 +25,7 @@ public class MoimDto {
         @NotBlank(message = "모임 제목은 필수값입니다.")
         private String title;
 
-        @Length(min=10)
+        @Length(min=5,max =300)
         private String content;
 
         @Min(value = 2, message = "모임참여자수는 2명이상만 가능합니다.")
@@ -50,16 +50,28 @@ public class MoimDto {
     @Getter
     @Setter
     public static class Update{
+
+        @NotBlank(message = "모임 제목은 필수값입니다.")
         private String title;
+
+        @Length(min=5,max =300)
         private String content;
+
+        @Min(value = 2, message = "모임참여자수는 2명이상만 가능합니다.")
         @Max(value = 15, message = "모임참여자수는 15명까지만 늘릴수있습니다.")
         private int totalParticipantCount;
+
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         @PastDate
         private LocalDate startedAt;
+        @NotEmpty(message = "주소는 필수 입력 값 입니다.")
         private String placeName;
+
         private String placeAddress;
+
+        @NotNull(message = "카테고리 선택은 필수입니다.")
         private MoimCategory moimCategory;
+
         private MoimStatus moimStatus;
 
     }

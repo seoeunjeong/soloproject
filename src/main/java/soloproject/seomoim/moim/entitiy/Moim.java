@@ -20,10 +20,10 @@ public class Moim extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="moim_id")
+    @Column(name = "moim_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -53,11 +53,12 @@ public class Moim extends BaseEntity {
 
     private int likeCount;
 
-    @OneToMany(mappedBy = "moim",cascade = CascadeType.PERSIST)
-    private List<MoimMember> participants= new ArrayList<>();
+    @OneToMany(mappedBy = "moim", cascade = CascadeType.PERSIST)
+    private List<MoimMember> participants = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private MoimStatus moimStatus =MoimStatus.MOIM_OPEN;
+    private MoimStatus moimStatus = MoimStatus.MOIM_OPEN;
+
     public Moim() {
 
     }
@@ -74,7 +75,7 @@ public class Moim extends BaseEntity {
         this.participants.add(moimMember);
         if (moimMember.getMoim() != this) {
             moimMember.setMoim(this);
-        };
+        }
         addParticipantCount();
     }
 
@@ -83,22 +84,23 @@ public class Moim extends BaseEntity {
         if (totalParticipantCount == participantCount)
             this.moimStatus = MoimStatus.MOIM_ClOSE;
     }
+
     /*참여인원줄이기*/
-    public void reduceParticipantCount(){
-        this.participantCount -=1;
-        if(totalParticipantCount-participantCount==1){
-            this.moimStatus=MoimStatus.MOIM_OPEN;
+    public void reduceParticipantCount() {
+        this.participantCount -= 1;
+        if (totalParticipantCount - participantCount == 1) {
+            this.moimStatus = MoimStatus.MOIM_OPEN;
         }
     }
 
-    public void likeCountUp(){
+    public void likeCountUp() {
 
-        likeCount +=1;
+        likeCount += 1;
     }
 
-    public void likeCountDown(){
+    public void likeCountDown() {
 
-        this.likeCount= likeCount-1;
+        this.likeCount = likeCount - 1;
     }
 
 
