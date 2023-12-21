@@ -29,6 +29,8 @@ public interface MoimMapper {
     @Mapping(source = "member.profileImage.profileImageUrl",target ="profileImageUrl")
     @Mapping(source = "member.age",target ="age")
     @Mapping(source = "member.gender",target ="gender")
+    @Mapping(source = "moim.totalParticipantCount",target = "totalParticipantCount")
+    @Mapping(source = "moim.participantCount",target = "participantCount")
     MoimDto.MoimMemberDto moimMemberToMoimMemberDto(MoimMember moimMember);
 
     @Named("filterParticipants")
@@ -38,6 +40,7 @@ public interface MoimMapper {
                 .map(moimMember -> moimMemberToMoimMemberDto(moimMember))
                 .collect(Collectors.toList());
     }
+
 
 
     @Mapping(source ="member.id",target ="memberId")

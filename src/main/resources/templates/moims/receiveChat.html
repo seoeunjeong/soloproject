@@ -26,7 +26,7 @@
             top: 0;
             justify-content: space-between;
             align-items: center;
-            background-color: #fff;
+            background-color: #fffffff8;
             color: #000000f8;
         }
 
@@ -172,6 +172,11 @@
             border-color: transparent transparent transparent #ffffff;
         }
 
+        .chat-column{
+            display: flex;
+            flex-direction: column;
+        }
+
     </style>
 </head>
 <body>
@@ -181,29 +186,32 @@
 </header>
 <div class="chat-container">
     <div class="chat-messages">
-        <div id="messages" class="chat-column">
-<!--         <div class="send-info">-->
-<!--                <img src="/img/profile2.png">-->
-<!--                <div>-->
-<!--                    <p>양수웅</p>-->
-<!--                    <span class="message send-message">안녕하세요!</span>-->
-<!--                </div>-->
-<!--            </div>-->
-        </div>
-
-
-<!--        <div class="receive-info">-->
-<!--            <img src="/img/profile2.png">-->
-<!--            <div>-->
-<!--                <p>서은정</p>-->
-<!--                <span class="message receive-message">안녕하세요 어떻게 도와드릴까요!</span>-->
-<!--            </div>-->
+<!--        <div id="messages" class="chat-column">-->
+<!--&lt;!&ndash;            <div class="send-info">&ndash;&gt;-->
+<!--&lt;!&ndash;                <img src="/img/profile2.png">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <p>양수웅</p>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span class="message send-message">안녕하세요!</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
 <!--        </div>-->
+
+        <div id="messages" class="chat-column">
+
+            <div class="receive-info">
+            <img src="/img/profile2.png">
+            <div>
+                <p>서은정</p>
+                <span class="message receive-message">안녕하세요 어떻게 도와드릴까요!</span>
+            </div>
+
+            </div>
+        </div>
     </div>
 
     <form class="chat-input" id="message-form">
         <input class="chat-text" id="chat-text" type="text" placeholder="메시지를 입력하세요">
-        <button id="sendButton" type="submit">전송</button>
+        <button type="submit">전송</button>
     </form>
 
 </div>
@@ -211,22 +219,17 @@
 <script th:inline="javascript">
 
     var stompClient = null;
-
-    var roomId = /*[[${roomId}]]*/ null;
-
-    var loginMemberName = /*[[${loginMember.name}]]*/ null;
-
+    var senderName = /*[[${sender.name}]]*/ null;
+    var receiveUserId = /*[[${sender.id}]]*/ null;
     function connect() {
-
         var socket = new SockJS('/chat');
-
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
-
             console.log('Connected: ' + frame);
 
-            stompClient.subscribe('/sub/chatMessage/'+roomId , function (response) {
+
+            stompClient.subscribe('/topic/receiveMessage/'+receiveUserId, function (response) {
                 var messageContent = JSON.parse(response.body);
                 showMessage(messageContent);
             });
@@ -238,35 +241,29 @@
         var content = messageContent.content;
         var sender = messageContent.sender;
 
-        var messageClass = sender === loginMemberName ? 'send-info' : 'receive-info';
-        var message =sender=== loginMemberName ? 'send-message' : 'receive-message';
-
-        $('#messages').append('<div class="' + messageClass + '">' +
+        $('#messages').append('<div class="receive-info">' +
             '<img src="/img/profile2.png">' +
             '<div>' +
             '<p>' + sender + '</p>' +
-            '<span class="message '+message+'">' + content + '</span>' +
+            '<span class="message receive-message">' + content + '</span>' +
             '</div>' +
             '</div>');
     }
 
-        $(function () {
+    $(function () {
+        connect();
 
-            connect();
+        $('#message-form').submit(function (event) {
+            event.preventDefault();
 
-            $('#message-form').submit(function (event) {
-                event.preventDefault();
+            var messageContent = $('#chat-text').val();
 
-                var messageContent = $('#chat-text').val();
-
-                stompClient.send("/pub/chatMessage", {}, JSON.stringify({roomId:roomId,content: messageContent, sender: loginMemberName}));
-                stompClient.send("/pub/alarm",{},JSON.stringify({roomId:roomId,content: messageContent, sender: loginMemberName}));
+            stompClient.send("/app/sendMessage/"+receiveUserId, {}, JSON.stringify({content: messageContent, sender: senderName}));
 
 
-                $('#chat-text').val('');
-            });
+            $('#chat-text').val('');
         });
-    </script>
-
+    });
+</script>
 </body>
 </html>

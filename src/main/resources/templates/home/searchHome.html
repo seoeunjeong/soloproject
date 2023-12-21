@@ -12,6 +12,10 @@
 <section>
   <div class="search-container">
     <form id="search" action="/moims/search" method="post" >
+      <div>
+        <input type="text" class="keyword" name="keyword" placeholder="검색어를 입력하세요"/>
+        <button class="search-button" form="search">검색</button>
+      </div>
       <select class="moimCategory"name="moimCategory">
         <option value=""> 카테고리 선택 </option>
         <option data-image="icon/coffee.png" value="COFFEE">COFFEE</option>
@@ -22,10 +26,6 @@
         <option data-image="icon/travel.png"  value="TRAVEL">TRAVEL</option>
       </select>
       <input type="date" name="startedAt" id="searchDate"/>
-      <div>
-        <input type="text" class="keyword" name="keyword" placeholder="검색어를 입력하세요"/>
-        <button class="search-button" form="search">검색</button>
-      </div>
     </form>
     </div>
   </div>

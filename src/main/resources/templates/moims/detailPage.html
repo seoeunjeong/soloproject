@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" loan="ko">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <title>Moim 정보</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
 
@@ -17,7 +15,7 @@
 
         body {
             font-family: 'Nanum Gothic', serif, sans-serif;
-            background-color: rgba(215, 214, 214, 0.18);
+            background-color: rgba(220, 216, 216, 0.18);
         }
 
         header {
@@ -48,35 +46,10 @@
             font-weight: 800;
         }
 
-        .unLikeButton {
-            padding: 3px 5px;
-            cursor: pointer;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #605e5e;
-            transition: background-color 0.3s, color 0.3s;
-
-        }
-
-        .likeButton {
-            padding: 3px 5px;
-            cursor: pointer;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #fff;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
         .like-count {
-            align-self: flex-start;
-            padding: 3px 3px;
-            font-size: 10px;
-            border: 1px solid rgba(196, 193, 193, 0.92);
-            border-radius: 4px;
+            padding: 20px;
+            font-size: 15px;
             font-weight: bold;
-            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
@@ -92,7 +65,7 @@
         }
 
         .startedAt{
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
         }
 
@@ -152,9 +125,12 @@
 
         .info-container span {
             font-size: 13px;
-            font-weight: lighter;
+            font-weight: bold;
         }
-        .info-container{
+        .info-container p{
+            display: inline-block;
+            font-size: 12px;
+            font-weight: lighter;
 
         }
 
@@ -168,7 +144,7 @@
 
         .participant{
             display: flex;
-            flex-display: row;
+            flex-direction: row;
             align-items: center;
             justify-content: space-between;
             font-size: 14px;
@@ -249,21 +225,32 @@
             padding-bottom: 20px;
             padding-top: 10px;
         }
+        footer img{
+            padding: 5px 5px;
+            margin-left: -20px;
+            margin-right: 20px;
+            cursor: pointer;
+            font-size: 30px;
+            border-radius: 4px;
+            width: 35px;
+            height: 35px;
+        }
 
         .joinButton {
             width: 50%;
-            background-color: #d96a7e;
+            background-color: #206aea;
             border: none;
             border-radius: 50px;
             padding: 12px;
             text-align: center;
             font-size: 17px;
-            color: whitesmoke;
+            color: #FFF;
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s, color 0.3s;
         }
-        .oneToOneButton{
+
+        #oneToOneButton{
             padding: 2px;
             font-size: 13px;
             text-align: center;
@@ -271,8 +258,8 @@
             cursor: pointer;
             outline: none;
             color: #fff;
-            background-color: #d96a7e;
-            border: 2px solid #d96a7e;
+            background-color: #206aea;
+            border: 2px solid #206aea;
             border-radius: 5px;
             transition: background-color 0.3s;
             font-weight: bold;
@@ -280,26 +267,25 @@
     </style>
 </head>
 <body>
+
 <header>
     <a href="/"><</a>
     <span th:text="${moim.title}">모임 정보</span>
-    <p th:if="${likeStatus==true}" class="unLikeButton" id="unLikeButton">❤️</p>
-    <p th:if="${likeStatus==false}" class="likeButton" id="likeButton">❤️</p>
-    <p class="like-count" th:text=|+${moim.likeCount}|></p>
+    <p class="like-count" id="like-count" th:text="|+ ${moim.likeCount}|"></p>
 </header>
+
 <div class="container">
     <div class="title-container">
         <div>
-              <span class="startedAt" th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"
-              >날짜</span>
+            <span class="startedAt" th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}">날짜</span>
             <p class="title" th:text="${moim.title}">모임 제목</p>
         </div>
         <div class="member-container">
             <div class="member">
                 <p>모임장:</p>
-                <img th:src="${moim?.memberProfileImageUrl ?: '/img/profile2.png'}"/>
+                <img th:src="${moim?.memberProfileImageUrl ?: '/img/profile2.png'}" alt="모임장프로필"/>
             </div>
-            <a href="/chat-form" class="oneToOneButton">1:1문의</a>
+            <a id="oneToOneButton" href="#">1:1문의</a>
         </div>
     </div>
 
@@ -309,20 +295,21 @@
     </div>
 
     <div class="info-container">
-        <p class="sum">자세한 위치 정보</p>
-        <span>장소:</span> <span th:text="${moim.placeName}">모임장소</span>
+        <div class="sum">자세한 위치 정보</div>
+        <span>장소:</span><p th:text="${moim.placeName}">모임장소</p>
         <br>
-        <span>주소:</span> <span th:text="${moim.placeAddress}">모임주소</span>
-
-        <p th:if="${error}" th:text="${error}">예외발생</p>
+        <span>주소:</span><p th:text="${moim.placeAddress}">모임주소</p>
+        <br>
+        <span>일시:</span><p th:text="${#temporals.format(moim.startedAt, 'yyyy년/MM월/dd일 (E)')}">모임일시</p>
     </div>
+
+    <p th:if="${error}" th:text="${error}">예외발생</p>
+    <!--모임참여시 업데이트되는 부분-->
     <div class="participant-container">
         <div class="participant">
             <p class="sum">참석자 정보</p>
             <div class="participant-count">
-                <span>참석: </span>
-                <strong th:text="${moim.participantCount}">참여자수</strong
-            ><strong>명/</strong>
+                <span>참석: </span><strong th:text="${moim.participantCount}">참여자수</strong><strong>명 /</strong>
                 <span th:text="${moim.totalParticipantCount}">모집인원</span>
             </div>
         </div>
@@ -333,8 +320,12 @@
                 <p th:text="${participant.name}"></p>
 
                 <div class="profile-info" id="profileInfo">
-                    <div class="profile-info-row"><p style="font-size: 10px">나이: </p><p th:text="${participant.age}">24</p><p>살</p></div>
-                    <div class="profile-info-row"><p style="font-size: 10px">성별: </p><p th:text="${participant.gender == 'F' ? '여성' : (participant.gender == 'M' ? '남성' : '정보없음')}">성별</p></div>
+                    <div class="profile-info-row"><p style="font-size: 10px">나이: </p>
+                        <p th:text="${participant.age}">24</p>
+                        <p>살</p></div>
+                    <div class="profile-info-row"><p style="font-size: 10px">성별: </p>
+                        <p th:text="${participant.gender == 'F' ? '여성' : (participant.gender == 'M' ? '남성' : '정보없음')}">
+                            성별</p></div>
                 </div>
             </div>
         </div>
@@ -342,85 +333,210 @@
 </div>
 
 <footer>
-    <buttont
-            type="button"
-            class="joinButton"
-            id="joinButton"
-            th:text="${joinStatus == false ? '참여' : '참여취소'}"
-            onclick="toggleJoinButton()"
-    >
-        참여
-    </buttont>
-    <!--    비동기작업 하자.-->
+    <img th:src="@{/icon/love.png}" alt="Love Icon" id="likeIcon"/>
+    <button type="button" class="joinButton" id="joinButton">참여</button>
 </footer>
+
 
 <script th:inline="javascript">
 
     var memberId = /*[[${memberId}]]*/ '';
-    var moimId =   /*[[${moim.moimId}]]*/ '';
+    var moimId = /*[[${moim.moimId}]]*/ '';
+    var joinStatus = /*[[${joinStatus}]]*/ false;
 
-    function toggleJoinButton() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // 초기 상태에 따라 버튼 설정
         var button = document.getElementById('joinButton');
 
-        if (button.innerText === '참여') {
-            button.addEventListener('click', function () {
-                var url = '/moims/' + moimId + '/' + memberId;
+        button.innerText = joinStatus ? '참여취소' : '참여';
 
-                fetch(url, {
-                    method: 'POST',
-                })
-                    .then(function () {
-                        button.innerText = '참여취소'; // 비동기 작업이 완료된 후에 텍스트 변경
-                    });
+        button.addEventListener('click', joinStatus ? cancelJoinHandler : joinHandler);
+    });
 
-            })
-        } else {
-            button.addEventListener('click', function () {
-                var url = '/moims/' + moimId + '/' + memberId;
-
-                fetch(url, {
-                    method: 'DELETE',
-                })
-                    .then(function () {
-                        button.innerText = '참여'; // 비동기 작업이 완료된 후에 텍스트 변경
-                    });
-            });
-        }
-    }
-</script>
-
-<script th:inline="javascript">
-    var editButton = document.getElementById('likeButton');
-
-    editButton.addEventListener('click', function () {
-
-        var moimId = /*[[${moim.moimId}]]*/ null;
-        var memberId = /*[[${memberId}]]*/ null;
-
-        var url = '/likes/' + moimId + '/' + memberId;
+    function joinHandler() {
+        var url = '/moims/' + moimId + '/' + memberId;
 
         fetch(url, {
             method: 'POST',
-        });
-    });
-</script>
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function (moimResponseDto) {
+                updateParticipantContainer(moimResponseDto);
+                toggleJoinButton(); // 상태 변경에 따라 버튼 업데이트
+            });
+    }
 
-<script th:inline="javascript">
-
-    var editButton = document.getElementById('unLikeButton');
-
-    editButton.addEventListener('click', function () {
-
-        var moimId = /*[[${moim.moimId}]]*/ null;
-        var memberId = /*[[${memberId}]]*/ null;
-
-        var url = '/likes/' + moimId + '/' + memberId;
-
+    function cancelJoinHandler() {
+        var url = '/moims/' + moimId + '/' + memberId;
         fetch(url, {
             method: 'DELETE',
-        });
-    });
-</script>
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function (moimResponseDto) {
+                updateParticipantContainer(moimResponseDto);
+                toggleJoinButton(); // 상태 변경에 따라 버튼 업데이트
+            });
+    }
 
+    function toggleJoinButton() {
+
+        var button = document.getElementById('joinButton');
+
+        button.removeEventListener('click', joinHandler);
+        button.removeEventListener('click', cancelJoinHandler);
+
+        if (button.innerText === '참여') {
+            button.innerText = '참여취소'
+            button.addEventListener('click', cancelJoinHandler);
+        } else {
+            button.addEventListener('click', joinHandler);
+            button.innerText = '참여'
+        }
+    }
+
+    function updateParticipantContainer(moimResponseDto){
+
+        var participantCountElement = document.querySelector('.participant-count strong');
+        participantCountElement.innerText =moimResponseDto.participantCount;
+
+        // 참석자 목록 업데이트
+        var imageContainer = document.querySelector('.image-container');
+        imageContainer.innerHTML = ''; // 기존 참석자 목록 초기화
+
+       moimResponseDto.participants.forEach(function(participant) {
+            var profileDiv = document.createElement('div');
+            profileDiv.className = 'profile';
+
+            var img = document.createElement('img');
+            img.src = participant.profileImageUrl || '/img/profile2.png';
+
+            var nameP = document.createElement('p');
+            nameP.innerText = participant.name;
+
+            var profileInfoDiv = document.createElement('div');
+            profileInfoDiv.className = 'profile-info';
+
+            var ageRow = document.createElement('div');
+            ageRow.className = 'profile-info-row';
+            ageRow.innerHTML = '<p style="font-size: 10px">나이: </p><p>' + participant.age + '</p><p>살</p>';
+
+            var genderRow = document.createElement('div');
+            genderRow.className = 'profile-info-row';
+            genderRow.innerHTML = '<p style="font-size: 10px">성별: </p><p>' + (participant.gender === 'F' ? '여성' : (participant.gender === 'M' ? '남성' : '정보없음')) + '</p>';
+
+            profileInfoDiv.appendChild(ageRow);
+            profileInfoDiv.appendChild(genderRow);
+
+            profileDiv.appendChild(img);
+            profileDiv.appendChild(nameP);
+            profileDiv.appendChild(profileInfoDiv);
+
+            imageContainer.appendChild(profileDiv);
+        });
+    }
+
+    var likeStatus = /*[[${likeStatus}]]*/ false;
+    var likeIcon = document.getElementById('likeIcon');
+
+    if (likeIcon) {
+        likeIcon.src = likeStatus ? '/icon/heart.png' : '/icon/love.png';
+        likeIcon.alt = 'Love Icon';
+    }
+
+    likeIcon.addEventListener('click', function () {
+        var url = '/likes/' + moimId + '/' + memberId;
+
+        // 클릭 이벤트 발생 후, likeStatus에 따라 요청을 보냄
+        fetch(url, {
+            method: likeStatus ? 'DELETE' : 'POST', // likeStatus에 따라 메서드 변경
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function (response) {
+                updateLikeCount(response);
+                updateLikeIcon(); // likeStatus에 따라 이미지 업데이트
+            })
+            .catch(function (error) {
+                console.error('POST/DELETE 요청 중 오류가 발생했습니다.', error);
+            });
+    });
+
+    function updateLikeIcon() {
+        // likeStatus에 따라 이미지 변경
+        likeStatus = !likeStatus; // 현재 상태를 반전
+        likeIcon.src = likeStatus ? '/icon/heart.png' : '/icon/love.png';
+    }
+
+    function updateLikeCount(likeCount) {
+        var likeCountElement = document.getElementById('like-count');
+        likeCountElement.innerText = '+ ' + likeCount.likeCount;
+    }
+
+
+
+    //
+    // $(document).ready(function() {
+    //
+    //     $("#oneToOneButton").click(function() {
+    //
+    //         var memberId = /*[[${moim.memberId}]]*/ null;
+    //
+    //         $.ajax({
+    //             type: "POST",
+    //             url: "/chatRoom/room?name=" + memberId,
+    //             contentType: "application/json",
+    //             success: function (response) {
+    //                 var roomId = response.roomId;
+    //                 window.location.href = "/chatRoom/chat-form/" + roomId;
+    //             },
+    //             error: function(error) {
+    //                 // 에러가 발생했을 때 처리
+    //                 console.error('에러:', error);
+    //             }
+    //         });
+    //     });
+    // });
+    //
+    //
+    //
+
+
+
+    // var unlikeButton = document.getElementById('unlikeButton');
+    //
+    // unlikeButton.addEventListener('click', function () {
+    //     console.log('Delete button clicked');
+    //
+    //     var url = '/likes/' + memberId + '/' + moimId;
+    //
+    //     fetch(url, {
+    //         method: 'DELETE',
+    //     })
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error('Network response was not ok');
+    //             }
+    //             console.log('Delete request successful');
+    //         })
+    //         .catch(error => {
+    //             console.error('Error deleting:', error);
+    //         });
+    // })
+
+</script>
 </body>
 </html>

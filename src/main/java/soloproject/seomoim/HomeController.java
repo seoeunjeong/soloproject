@@ -59,7 +59,9 @@ public class HomeController {
     }
 
     @GetMapping("/alarm")
-    public String alarmFrom(){
+    public String alarmFrom(@Login String mail,Model model){
+        Member byEmail = memberService.findByEmail(mail);
+        model.addAttribute("memberId",byEmail.getId());
         return "home/alarmHome";
     }
 

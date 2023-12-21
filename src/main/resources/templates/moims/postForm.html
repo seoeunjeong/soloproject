@@ -6,12 +6,14 @@
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
   <title>SEOMOIM</title>
+  <link rel="stylesheet" href="/css/detail.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
     * {
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: 'Nanum Gothic', serif, sans-serif;
     }
@@ -23,23 +25,24 @@
       height: 40px;
       z-index: 1000;
       top: 0;
+      justify-content: space-between;
       align-items: center;
-      background-color: #fffffff8;
-      color: #000000f8;
+      background-color: #fff;
+      color: black;
     }
 
-    header > a {
-      align-items: center;
+    header >a {
       text-decoration: none;
-    }
-    header a span {
       font-size: 17px;
       color: black;
       font-weight: 800;
-      margin: 10px 20px;
     }
-    header a:nth-child(2) {
-      margin: 0 90px;
+    header span {
+      margin: 0 auto;
+      text-decoration: none;
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
     }
 
     .main-container {
@@ -134,7 +137,7 @@
     .btn {
       width: 150px;
       padding: 10px;
-      background-color: #d96a7e;
+      background-color: #206aea;
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -163,7 +166,7 @@
 <body>
 <header>
   <a href="/"><span><</span></a>
-  <a><span>모임 개설</span></a>
+  <span>1:1 채팅</span>
 </header>
 
 <div class="main-container">

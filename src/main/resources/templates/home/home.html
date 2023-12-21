@@ -16,7 +16,8 @@
                     <p class="categry" th:text="${moim.moimCategory}">
                         카테고리명
                     </p>
-                    <p class="dday" th:text="|D- ${moim.DDay}일|">D-Day</p>
+                    <p class="dday" th:if="${moim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                    <p class="dday" th:unless="${moim.DDay eq 0}" style="background-color:green; color: white; font-weight: bold" th:text="|D- ${moim.DDay}일|">D-Day</p>
                     <span class="status" th:text="${moim.moimStatus.status}"></span>
                 </div>
                 <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
@@ -58,7 +59,8 @@
                         <p class="categry" th:text="${todayMoim.moimCategory}">
                             카테고리명
                         </p>
-                        <p class="dday" th:text="|D- ${todayMoim.DDay}일|">D-Day</p>
+                        <p class="dday" th:if="${todayMoim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                        <p class="dday" th:unless="${todayMoim.DDay eq 0}"  th:text="|D- ${todayMoim.DDay}일|">D-Day</p>
                         <span class="status" th:text="${todayMoim.moimStatus.status}"></span>
                     </div>
                     <h3 class="card-title" th:text="${todayMoim.title}">모임 제목 1</h3>

@@ -107,5 +107,18 @@ public class MoimDto {
         private String profileImageUrl;
         private int age;
         private char gender;
+        private Boolean status;
+        private int totalParticipantCount;
+        private int participantCount;
+    }
+
+    @Setter
+    @Getter
+    public static class joinDto{
+        private Long memberId;
+        private boolean Status;
+        private MoimDto.Response moimResponseDto;
+
+
     }
 }

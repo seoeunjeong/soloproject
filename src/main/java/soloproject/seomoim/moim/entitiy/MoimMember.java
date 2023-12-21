@@ -25,8 +25,8 @@ public class MoimMember extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    //테스트에서 사용하기위해 persist 추가
-    @ManyToOne(cascade = CascadeType.PERSIST)
+
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -45,6 +45,11 @@ public class MoimMember extends BaseEntity {
         if (!this.member.getJoinMoims().contains(this)) {
             this.member.getJoinMoims().add(this);
         }
+    }
+    
+    
+    public boolean isCreatedByMember(Member member){
+         return moim.getMember()== member;
     }
 }
 

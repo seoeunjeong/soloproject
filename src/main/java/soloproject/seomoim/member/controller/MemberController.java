@@ -59,6 +59,7 @@ public class MemberController {
                          BindingResult bindingResult,
                          Model model) {
 
+        log.info("sinupDto={}",signup.getEmail());
         if (bindingResult.hasErrors()) {
             return "members/signupForm";
         }

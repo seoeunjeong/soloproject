@@ -23,7 +23,7 @@ public class Moim extends BaseEntity {
     @Column(name = "moim_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -53,7 +53,7 @@ public class Moim extends BaseEntity {
 
     private int likeCount;
 
-    @OneToMany(mappedBy = "moim", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "moim",cascade = CascadeType.ALL)
     private List<MoimMember> participants = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -70,7 +70,6 @@ public class Moim extends BaseEntity {
             this.member.getCreateMoims().add(this);
         }
     }
-
     public void setParticipants(MoimMember moimMember) {
         this.participants.add(moimMember);
         if (moimMember.getMoim() != this) {

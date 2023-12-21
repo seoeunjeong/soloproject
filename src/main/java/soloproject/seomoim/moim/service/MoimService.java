@@ -94,7 +94,6 @@ public class MoimService {
         if(moim.getTotalParticipantCount()==moim.getParticipantCount()){
             throw new BusinessLogicException(ExceptionCode.NOT_JOIN_MOIM);
         }
-
         joinStatus.setStatus(true);
         joinStatus.getMoim().addParticipantCount();
 //        moimMemberRepository.save(joinStatus); 변경감지사용?
@@ -124,9 +123,26 @@ public class MoimService {
         findMoimMember.getMoim().reduceParticipantCount();
     }
 
-    public void deleteMoim(Long moimId){
+    @Transactional
+    public void deleteMoim(String loginMemberEmail,Long moimId){
+        Member loginMember = memberService.findByEmail(loginMemberEmail);
         Moim moim = findMoim(moimId);
-        moimRepository.delete(moim);
+        if (loginMember != moim.getMember()) {
+            throw new IllegalStateException("모임장이 아니면 모임을 삭제 할 수없습니다.");
+        }
+
+        boolean allMoimMembersFalse = moim.getParticipants().stream()
+                .filter(moimMember -> !moimMember.getMember().equals(loginMember)) // loginMember 제외
+                .allMatch(moimMember -> !moimMember.isStatus());
+
+        Optional<MoimMember> byMemberAndMoim = moimMemberRepository.findByMemberAndMoim(loginMember,moim);
+        moimMemberRepository.delete(byMemberAndMoim.get());
+        // Moim을 삭제 조건 확인
+        if (allMoimMembersFalse) {
+            moimRepository.delete(moim);
+        } else {
+            throw new IllegalStateException("참여한멤버가 있으면 모임을 삭제할수 없습니다.");
+        }
     }
 
     public Page<Moim> findAllbyPage(int page, int size) {

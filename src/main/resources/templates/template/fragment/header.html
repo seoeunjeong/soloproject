@@ -11,50 +11,37 @@
         }
 
         header {
-            position: fixed;
             display: flex;
-            justify-content: space-between;
+            position: fixed;
             width: 100%;
+            height: 40px;
+            z-index: 1000;
+            top: 0;
+            justify-content: space-between;
             align-items: center;
             background-color: #fffffff8;
             color: #000000f8;
-            padding: 20px;
-            height: 40px;
         }
 
-        header > a {
-            display: flex;
-            align-items: center;
-        }
-
-        header img {
-            width: 25px;
-            height: 20px;
-            margin-right: 20px;
-        }
-
-        header > a > p {
-            font-size: 15px;
-        }
-
-        header a span {
-            font-size: 17px;
-            font-weight: 700;
-            margin-left: 20px;
-        }
-
-        header a {
+        header >a {
             text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+        header span {
+            margin: 0 auto;
+            text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
         }
     </style>
 </head>
 <body>
 <header th:fragment="header">
-    <a><span>프로필</span></a>
-    <a
-    ><p>로그아웃</p>
-        <img src="/logout.png" alt="logout.png"
-        /></a>
+        <a href="/" id="disconn"><span><</span></a>
+        <span>1:1 채팅</span>
 </header>
 </body>
 </html>

@@ -23,6 +23,8 @@ import java.util.List;
 public class TestDataInit {
 
     private final MemberService memberService;
+    private final MoimService moimService;
+    private final MoimMapper mapper;
 
     @PostConstruct
     public void init() throws Exception {
@@ -42,6 +44,19 @@ public class TestDataInit {
         Member member3 = new Member();
         member3.setRoles(List.of("AUTH_USER"));
         memberService.update(member2Id,member3);
+
+
+        MoimDto.Post post = new MoimDto.Post();
+        post.setMoimCategory(MoimCategory.EXERCISE);
+        post.setStartedAt(LocalDate.now());
+        post.setTitle("안녕하세요 ㅎㅎㅎ");
+        post.setContent("제발 채팅 구현하게 해주세요");
+        post.setPlaceName("고바우");
+        post.setPlaceAddress("서울 구로구 부일로1길 9");
+        post.setTotalParticipantCount(10);
+        Moim moim = mapper.moimPostDtoToMoim(post);
+
+        moimService.createMoim(member2Id,moim);
 
     }
 }

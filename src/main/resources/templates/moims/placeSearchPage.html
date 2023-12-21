@@ -18,32 +18,32 @@
     }
 
     header {
-      position: fixed;
       display: flex;
+      position: fixed;
       width: 100%;
-      align-items: center;
-      background-color: #fffffff8;
-      color: #000000f8;
       height: 40px;
       z-index: 1000;
       top: 0;
-    }
-
-    header > a {
+      justify-content: space-between;
       align-items: center;
-      text-decoration: none;
+      background-color: #fff;
+      color: black;
     }
 
-    header a span {
+    header >a {
+      text-decoration: none;
       font-size: 17px;
       color: black;
       font-weight: 800;
-      margin: 10px 20px;
+    }
+    header span {
+      margin: 0 auto;
+      text-decoration: none;
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
     }
 
-    header a:nth-child(2) {
-      margin: 0 90px;
-    }
 
     .main-container {
       display: flex;
@@ -78,7 +78,7 @@
     .search-button {
       flex: 1;
       padding: 10px;
-      background-color: #d96a7e;
+      background-color: #206aea;
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -112,7 +112,7 @@
 
 <header>
   <a href="/moims/post-form"><span><</span></a>
-  <a><span>장소검색</span></a>
+  <span>장소 검색</span>
 </header>
 
 <div class="main-container">

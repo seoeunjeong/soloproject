@@ -3,16 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>프로필</title>
+    <title>알림</title>
   </head>
-  <style>
-    header a img,
-    header a p {
-      color: #d96a7e;
-      filter: opacity(100%);
-    }
-  </style>
 <body>
+
 <header>
   <a href="/"><span>SEOMOIM</span></a>
   <a href="/member/logout"><p>로그아웃</p>
@@ -20,18 +14,82 @@
     /></a>
 </header>
 <section>
-  <p>알림구현할테야</p>
+  <div class="alarm-container">
+    <div class="alarm-item">
+
+    </div>
+  <div id="messages" class="chat-column">
+  </div>
   <button class="post-but" id="postButton">+</button>
+  </div>
 
   <script th:inline="javascript">
-
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
       window.location.href = '/moims/post-form'
     });
   </script>
-</section>
 
+  <script th:inline="javascript">
+
+    var roomId;
+
+      document.addEventListener('DOMContentLoaded', function () {
+        connect();
+
+        // 정적인 부모 엘리먼트에 이벤트 리스너 추가 (여기서는 body를 사용했습니다)
+        document.body.addEventListener('click', function (event) {
+          var onetoOneButton = event.target.closest('#onetoOne');
+          if (onetoOneButton) {
+            window.location.href = '/chatRoom/chat-form/'+roomId;
+          }
+        });
+      });
+
+  </script>
+
+
+  <script th:inline="javascript">
+    var stompClient = null;
+
+    var memberId = /*[[${memberId}]]*/ null;
+    function connect() {
+      var socket = new SockJS('/chat');
+      stompClient = Stomp.over(socket);
+
+      stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        stompClient.send('/app/connect',{},JSON.stringify({
+          receiveId: memberId
+        }));
+
+
+        stompClient.subscribe('/sub/alarm', function (response) {
+          var messageContent = JSON.parse(response.body);
+          handleReceivedMessage(messageContent);
+        });
+      });
+    }
+
+
+    function handleReceivedMessage(message) {
+
+      var content = message.content;
+      var sender = message.sender;
+      roomId = message.roomId;
+
+      $('.alarm-item').append(
+             '<p>'+sender+'님 메세지가도착했습니다.</p>'+
+              '<button id="onetoOne">확인</button>'
+      )
+    }
+  </script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</section>
 
 </body>
 </html>

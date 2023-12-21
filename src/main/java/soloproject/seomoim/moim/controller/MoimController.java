@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -92,6 +93,7 @@ public class MoimController {
 
     @GetMapping("/place-search-page")
     public String searchPageForm() {
+
         return "moims/placeSearchPage";
     }
 
@@ -136,13 +138,11 @@ public class MoimController {
                                  Model model) {
         Moim moim = moimService.findMoim(moimId);
 
-        model.addAttribute("moim", moim);
+        MoimDto.Response moimToResponseDto = mapper.moimToResponseDto(moim);
+        model.addAttribute("moim", moimToResponseDto);
 
-        return "moims/editForm";
+        return "moims/editDetailPage";
     }
-
-
-
 
     @PostMapping("/{moim-id}")
     public String updateMoim(@PathVariable("moim-id") Long moimId,
@@ -155,27 +155,51 @@ public class MoimController {
     }
 
 
+//    todo Moim삭제할때 MOIMMEMBER 있으면 삭제 불가능 cash
+//     moimMember에 외래키를 가지고있는행이있으면 삭제불가능!
+//    todo 모임장 위임기능!
+//    todo 편집 기능!
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}")
-    public void deleteMoim(@PathVariable("moim-id") Long moimId) {
+    public String deleteMoim(@PathVariable("moim-id") Long moimId,
+                           @Login String loginMemberEmail){
+        moimService.deleteMoim(loginMemberEmail,moimId);
 
-        moimService.deleteMoim(moimId);
+        return "redirect:/profile";
     }
 
 
-    @ResponseStatus(HttpStatus.OK)
+
     @PostMapping("/{moim-id}/{member-id}")
-    public void joinMoim(@PathVariable("moim-id") Long moimId,
-                         @PathVariable("member-id") Long memberId) throws Exception {
-       moimService.joinMoim(moimId, memberId);
+    @ResponseBody
+    public ResponseEntity joinMoim(@PathVariable("moim-id") Long moimId,
+                                   @PathVariable("member-id") Long memberId,
+                                   Model model) throws Exception {
+
+        MoimMember moimMember = moimService.joinMoim(moimId, memberId);
+        Moim moim = moimService.findMoim(moimId);
+
+        MoimDto.joinDto joinDto = new MoimDto.joinDto();
+        joinDto.setMemberId(memberId);
+        joinDto.setStatus(true);
+        joinDto.setMoimResponseDto(mapper.moimToResponseDto(moim));
+        return new ResponseEntity<>(mapper.moimToResponseDto(moim),HttpStatus.OK);
     }
 
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+
     @DeleteMapping("/{moim-id}/{member-id}")
-    public void notJoinMoim(@PathVariable("moim-id") Long moimId,
+    @ResponseBody
+    public ResponseEntity notJoinMoim(@PathVariable("moim-id") Long moimId,
                             @PathVariable("member-id") Long memberId) {
         moimService.cancelJoinMoim(moimId, memberId);
+        Moim moim = moimService.findMoim(moimId);
+        MoimDto.joinDto joinDto = new MoimDto.joinDto();
+        joinDto.setMemberId(memberId);
+        joinDto.setStatus(false);
+        joinDto.setMoimResponseDto(mapper.moimToResponseDto(moim));
+        return new ResponseEntity<>(mapper.moimToResponseDto(moim),HttpStatus.OK);
     }
 
 

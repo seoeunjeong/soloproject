@@ -3,6 +3,7 @@ package soloproject.seomoim.member.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.member.dto.MemberDto.CreateMoimsDto;
 import soloproject.seomoim.member.entity.Member;
@@ -24,6 +25,7 @@ public interface MemberMapper {
 
     @Mapping(source = "profileImage.profileImageUrl", target = "profileImageUrl")
     @Mapping(target = "joinMoims", qualifiedByName = "filterJoins")
+    @Mapping(target = "likeMoims", qualifiedByName = "filterLikeMoims")
     ResponseDto memberToMemberResponseDto(Member member);
 
     List<CreateMoimsDto> createMoimsToCreateMoimsDto(List<Moim> createMoims);
@@ -45,10 +47,17 @@ public interface MemberMapper {
 
 
     @Named("filterJoins")
-    default List<MoimMemberDto> filterParticipants(List<MoimMember> moimMembers) {
+    default List<MemberDto.MoimMemberDto> filterJoinMoims(List<MoimMember> moimMembers){
         return moimMembers.stream()
-                .filter(MoimMember::isStatus)
-                .map(this::moimMemberToMoimMemberDto)
+                .filter(moimMember->moimMember.isStatus())
+                .map(moimMember -> moimMemberToMoimMemberDto(moimMember))
+                .collect(Collectors.toList());
+    }
+    @Named("filterLikeMoims")
+    default List<LikeMoimDto> filterLikeMoims(List<LikeMoim> likeMoims) {
+        return likeMoims.stream()
+                .filter(LikeMoim::isStatus)
+                .map(this::likeMoimToLikeMoimDto)
                 .collect(Collectors.toList());
     }
 

@@ -50,7 +50,7 @@ body {
 }
 input:focus {
   outline: none;
-  border-bottom: 2px solid #d96a7e;
+  border-bottom: 2px solid #206aea;
 }
 
 .container p {
@@ -72,9 +72,10 @@ input:focus {
   width: 100vw;
   border: none;
   height: 45px;
-  background-color: #d96a7e;
+  background-color: #206aea;
   color: #fff;
   font-size: 18px;
+  font-weight: bold;
 }
 
 footer {

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import soloproject.seomoim.chat.ChatRoom;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.profileImage.ProfileImage;
 import soloproject.seomoim.utils.BaseEntity;
