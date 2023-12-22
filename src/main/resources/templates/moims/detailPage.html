@@ -488,54 +488,29 @@
 
 
 
-    //
-    // $(document).ready(function() {
-    //
-    //     $("#oneToOneButton").click(function() {
-    //
-    //         var memberId = /*[[${moim.memberId}]]*/ null;
-    //
-    //         $.ajax({
-    //             type: "POST",
-    //             url: "/chatRoom/room?name=" + memberId,
-    //             contentType: "application/json",
-    //             success: function (response) {
-    //                 var roomId = response.roomId;
-    //                 window.location.href = "/chatRoom/chat-form/" + roomId;
-    //             },
-    //             error: function(error) {
-    //                 // 에러가 발생했을 때 처리
-    //                 console.error('에러:', error);
-    //             }
-    //         });
-    //     });
-    // });
-    //
-    //
-    //
 
+    $(document).ready(function() {
 
+        $("#oneToOneButton").click(function() {
 
-    // var unlikeButton = document.getElementById('unlikeButton');
-    //
-    // unlikeButton.addEventListener('click', function () {
-    //     console.log('Delete button clicked');
-    //
-    //     var url = '/likes/' + memberId + '/' + moimId;
-    //
-    //     fetch(url, {
-    //         method: 'DELETE',
-    //     })
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 throw new Error('Network response was not ok');
-    //             }
-    //             console.log('Delete request successful');
-    //         })
-    //         .catch(error => {
-    //             console.error('Error deleting:', error);
-    //         });
-    // })
+            var memberId = /*[[${moim.memberId}]]*/ null;
+
+            $.ajax({
+                type: "POST",
+                url: "/chatRoom/room?name=" + memberId,
+                contentType: "application/json",
+                success: function (response) {
+                    var roomId = response.roomId;
+                    window.location.href = "/chatRoom/chat-form/" + roomId;
+                },
+                error: function(error) {
+                    // 에러가 발생했을 때 처리
+                    console.error('에러:', error);
+                }
+            });
+        });
+    });
+
 
 </script>
 </body>

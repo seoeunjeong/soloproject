@@ -46,9 +46,9 @@
 
         .chat-container {
             margin: 50px 0px;
-            height: 100vw;
+            height: 100vh;
             padding: 20px;
-            background-color: #fdeaea;
+            background-color: #BFD1D9;
         }
 
         .chat-messages{
@@ -56,37 +56,6 @@
             flex-direction: column;
         }
 
-
-        .chat-input{
-            width: calc(100% - 60px);
-            display: flex;
-            flex-direction: row;
-            position: fixed;
-            bottom: 0;
-            padding: 10px;
-        }
-
-        .chat-text{
-            width: calc(100% - 70px);
-            height: 40px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 5px;
-            margin-bottom: 10px;
-        }
-
-        button {
-            padding: 5px;
-            background-color: #d96a7e;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 60px;
-            height: 40px;
-            font-size: 15px;
-            font-weight: bold;
-        }
 
         .message {
             margin-bottom: 10px;
@@ -172,13 +141,51 @@
             border-color: transparent transparent transparent #ffffff;
         }
 
+
+        .chat-input{
+            width: calc(100% - 60px);
+            display: flex;
+            flex-direction: row;
+            position: fixed;
+            bottom: 0;
+            padding: 10px;
+        }
+
+        .chat-text{
+            width: calc(100% - 70px);
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 5px;
+            margin-bottom: 10px;
+            padding: 0px 10px;
+        }
+
+        .chat-text:focus {
+            outline: none;
+        }
+        button {
+            padding: 5px;
+            background-color: white;
+            color: #969595;
+            border: 1px solid #969595;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 60px;
+            height: 40px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
+
 <header>
     <a href="/" id="disconn"><span><</span></a>
     <span>1:1 채팅</span>
 </header>
+
 <div class="chat-container">
     <div class="chat-messages">
         <div id="messages" class="chat-column">
@@ -205,8 +212,8 @@
         <input class="chat-text" id="chat-text" type="text" placeholder="메시지를 입력하세요">
         <button id="sendButton" type="submit">전송</button>
     </form>
-
 </div>
+
 
 <script th:inline="javascript">
 

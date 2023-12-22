@@ -45,6 +45,33 @@
             color: black;
             font-weight: 800;
         }
+
+        .total-container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .total-container .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-bottom: 1px solid #a9a9a9;
+            font-size: 15px;
+            width: 360px;
+            height: 140px;
+            background-color: #fff;
+            padding: 15px;
+        }
+        .total-container a{
+            text-decoration: none;
+        }
+
+        .total-container .card .participant-detail{
+            display: inline-block;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
@@ -52,42 +79,127 @@
     <a href="/"><</a>
     <span>전체 모임</span>
 </header>
-<div class="result-container">
-    <div th:each="moim:${moims?.data}">
-        <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
-                <div>
-                    <p class="categry" th:text="${moim.moimCategory}">
-                        카테고리명
-                    </p>
-                    <p class="dday">D-Day</p>
-                </div>
-                <h3 class="card-title" th:text="${moim.title}">모임 제목 </h3>
-                <h6 class="card-content" th:text="${moim.content}">모임 내용</h6>
-                <p class="card-text">
-                    <strong>장소 |</strong>
-                    <span th:text="${moim.placeName}">위치 정보</span><br/>
-                    <strong>일시 |</strong>
-                    <span
-                            th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd')}"
-                    >일시 및 시간</span
-                    ><br/>
-                </p>
-<!--                <div class="participant-container">-->
-<!--                    <div class="participant" th:each="people:${moim.getParticipants()}">-->
-<!--                        <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />-->
-<!--                        <img th:unless="${people.profileImageUrl}" src="/img/profile2.png" />-->
 
-<!--                    </div>-->
-<!--                    <div class="participant-detail">-->
-<!--                        <span>참여자 </span>-->
-<!--                        <strong th:text="${moim.participantCount}">0명</strong>-->
-<!--                        <strong>/</strong-->
-<!--                        ><span th:text="${moim.totalParticipantCount}"-->
-<!--                    >전체참여자수</span>-->
-<!--                    </div>-->
-<!--                </div>-->
-        </a>
+    <div class="total-container" id="moim-container">
+
     </div>
+
+<script>
+    let page = 1; // 다음 페이지
+    const size = 4; // 한 페이지에 표시할 항목 수
+    let loading = false; // 중복 로딩 방지 플래그
+
+    window.addEventListener('scroll', function () {
+        console.log('Scroll event triggered');
+        if (isScrolledToBottom() && !loading) {
+            loading = true;
+            showLoadingIndicator();
+            fetchMoims();
+        }
+    });
+
+    function showLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'block';
+    }
+
+    function hideLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'none';
+    }
+
+    function isScrolledToBottom() {
+        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    }
+
+    function fetchMoims() {
+
+        fetch("/moims/all?page=" + page + "&size=" + size)
+            .then(response => response.json())
+            .then(data => {
+                if (data.data.length > 0) {
+                    appendDataToDOM(data.data);
+                    page++;
+                    if (page > data.pageInfo.totalPages) {
+                        console.log('더 이상 요청할 페이지가 없습니다.');
+                        return;
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching moims:', error))
+            .finally(() => {
+                loading = false; // 로딩이 끝나면 플래그를 해제합니다.
+                hideLoadingIndicator();
+            });
+    }
+
+    function appendDataToDOM(data) {
+        const moimContainer = document.getElementById('moim-container');
+        data.forEach(moim => {
+            const newCard = createCardElement(moim);
+            moimContainer.appendChild(newCard);
+        });
+    }
+
+
+    function createCardElement(moim) {
+        const card = document.createElement('div');
+        card.classList.add('card');
+
+        // 서버에서 계산된 D-Day 정보를 가져와 사용
+        const dDayText = moim.dday === 0 ? 'today' : `D- ${moim.dday}일`;
+        console.log(moim);
+
+        const moimStatusText = moim.moimStatus ? moim.moimStatus : '상태 정보 없음';
+
+// 카드의 내용을 동적으로 생성합니다.
+        card.innerHTML = `
+    <a href="/moims/${moim.moimId}">
+        <div>
+            <p class="categry">${moim.moimCategory}</p>
+            <p class="dday" style="background-color: ${moim.DDay === 0 ? 'crimson' : 'green'}; color: white; font-weight: bold">
+                ${dDayText}
+            </p>
+            <span class="status">${moimStatusText}</span>
+        </div>
+        <h3 class="card-title">${moim.title}</h3>
+        <p class="card-text">
+            <strong>장소 |</strong>
+            <span>${moim.placeName}</span><br/>
+            <strong>일시 |</strong>
+            <span>${moim.startedAt}</span><br/>
+        </p>
+        <div class="participant-container">
+            <div class="participant">
+                ${moim.participants.map(person => `
+                <img src="${person.profileImageUrl ? person.profileImageUrl : '/img/profile2.png'}" />
+                `).join('')}
+            </div>
+            <div class="participant-detail">
+                <span>참여자 </span>
+                <strong>${moim.participantCount}</strong>
+                <strong>/</strong>
+                <span>${moim.totalParticipantCount}</span>
+            </div>
+        </div>
+    </a>
+`;
+        return card;
+    }
+    fetchMoims();
+
+
+    const anchorElement = card.querySelector('a');
+    anchorElement.addEventListener('click', function () {
+        window.location.href = anchorElement.getAttribute('href');
+    });
+
+</script>
+
+<!-- 추가된 부분: 로딩 인디케이터 -->
+<div id="loading-indicator" class="loading-indicator" style="display: none;">
+    Loading...
 </div>
+
 </body>
 </html>

@@ -262,6 +262,7 @@
     <div class="field-error" th:errors="*{placeName}">
       모임위치 오류
     </div>
+      <p th:if="${error}" th:text="${error}">예외발생</p>
 
 
       <input type="hidden" name="memberId" th:value="${memberId}"/>

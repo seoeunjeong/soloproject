@@ -203,17 +203,21 @@ public class MoimController {
     }
 
 
-
+    @GetMapping("/allPage")
+    public String allPage() {
+        return "moims/total";
+    }
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")
-    public String findAll(@RequestParam(defaultValue = "1") int page,
-                          @RequestParam(defaultValue = "10") int size,
-                          Model model) {
+    @ResponseBody
+    public ResponseEntity findAll(@RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "10") int size,
+                                  Model model) {
         Page<Moim> pageMoims = moimService.findAllbyPage(page - 1, size);
         List<Moim> moims = pageMoims.getContent();
         PageResponseDto<MoimDto.Response> pageResponseDto = new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims);
-        model.addAttribute("moims", pageResponseDto);
-        return "moims/total";
+        return new ResponseEntity(pageResponseDto,HttpStatus.OK);
+
     }
 
     @PostMapping("/search")

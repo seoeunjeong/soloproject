@@ -7,7 +7,7 @@
         /></a>
 </header>
 <section>
-    <div class="total-title"><h4>전체 모임</h4><a href="moims/all">전체보기 ></a></div>
+    <div class="total-title"><h4>전체 모임</h4><a href="moims/allPage">전체보기 ></a></div>
     <div class="total-card-container">
     <div th:each="moim:${moims?.data}">
         <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
