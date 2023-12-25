@@ -2,9 +2,10 @@ package soloproject.seomoim.moim.dto.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-public class PastLocalDateValidator implements ConstraintValidator<PastDate, LocalDate> {
+public class PastLocalDateValidator implements ConstraintValidator<PastDate, LocalDateTime> {
 
     @Override
     public void initialize(PastDate constraintAnnotation) {
@@ -12,10 +13,13 @@ public class PastLocalDateValidator implements ConstraintValidator<PastDate, Loc
     }
 
     @Override
-    public boolean isValid(LocalDate startedAt, ConstraintValidatorContext context) {
-        LocalDate now = LocalDate.now();
+    public boolean isValid(LocalDateTime dateTime, ConstraintValidatorContext context) {
+        if (dateTime == null) {
+            return false;
+        }
+        LocalDateTime now = LocalDateTime.now();
 
-        return startedAt.isEqual(now) || startedAt.isAfter(now);
+        return  dateTime.truncatedTo(ChronoUnit.MINUTES).isAfter(now.truncatedTo(ChronoUnit.MINUTES));
     }
 
 }

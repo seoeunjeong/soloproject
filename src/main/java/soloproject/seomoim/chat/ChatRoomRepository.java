@@ -1,27 +1,16 @@
 package soloproject.seomoim.chat;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import soloproject.seomoim.member.entity.Member;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
 
-@Repository
-public class ChatRoomRepository {
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    private Map<String, ChatRoom> chatRoomMap;
+    @Query("SELECT c FROM ChatRoom c JOIN c.members m WHERE m = :member")
+    Optional<ChatRoom> findByMember(@Param("member") Member member);
 
-    @PostConstruct
-    private void init() {
-        chatRoomMap = new LinkedHashMap<>();
-    }
-
-    public ChatRoom findRoomById(String id) {
-        return chatRoomMap.get(id);
-    }
-
-    public ChatRoom createChatRoom(String name) {
-        ChatRoom chatRoom = ChatRoom.create(name);
-        chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
-        return chatRoom;
-    }
 }

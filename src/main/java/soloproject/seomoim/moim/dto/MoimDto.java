@@ -8,15 +8,12 @@ import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.entitiy.MoimStatus;
 
 import javax.validation.constraints.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MoimDto {
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @Data
+    @Getter @Setter
     public static class Post{
 
         @NotNull
@@ -33,9 +30,9 @@ public class MoimDto {
         private int totalParticipantCount;
 
         @NotNull(message = "모임일 지정은 필수입니다.")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         @PastDate
-        private LocalDate startedAt;
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        private LocalDateTime startedAt;
 
         @NotEmpty(message = "주소는 필수 입력 값 입니다.")
         private String placeName;
@@ -47,8 +44,7 @@ public class MoimDto {
 
     }
 
-    @Getter
-    @Setter
+    @Getter @Setter
     public static class Update{
 
         @NotBlank(message = "모임 제목은 필수값입니다.")
@@ -61,9 +57,10 @@ public class MoimDto {
         @Max(value = 15, message = "모임참여자수는 15명까지만 늘릴수있습니다.")
         private int totalParticipantCount;
 
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         @PastDate
-        private LocalDate startedAt;
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        private LocalDateTime startedAt;
+
         @NotEmpty(message = "주소는 필수 입력 값 입니다.")
         private String placeName;
 
@@ -76,16 +73,15 @@ public class MoimDto {
 
     }
 
-    @Getter
-    @Setter
+    @Getter @Setter
     public static class Response{
         private Long moimId;
         private Long memberId;
         private String memberProfileImageUrl;
         private String title;
         private String content;
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        private LocalDate startedAt;
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        private LocalDateTime startedAt;
         private int dDay;
         private String placeName;
         private String placeAddress;
@@ -99,8 +95,7 @@ public class MoimDto {
 
 
     }
-    @Builder
-    @Getter
+    @Getter @Setter
     public static class MoimMemberDto{
         private Long memberId;
         private String name;
@@ -112,9 +107,8 @@ public class MoimDto {
         private int participantCount;
     }
 
-    @Setter
-    @Getter
-    public static class joinDto{
+    @Setter @Getter
+    public static class joinDto {
         private Long memberId;
         private boolean Status;
         private MoimDto.Response moimResponseDto;

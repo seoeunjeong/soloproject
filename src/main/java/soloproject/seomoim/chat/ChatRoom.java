@@ -2,24 +2,44 @@ package soloproject.seomoim.chat;
 
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.member.entity.Member;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-
-@Setter
+@Entity
 @Getter
+@Setter
 public class ChatRoom {
-    private String roomId; //구독할것!
-    private String name; //방이름 모임장
 
-    private List<Message> messages =new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_id")
+    private Long id;
 
-    public static ChatRoom create(String name){
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.roomId = UUID.randomUUID().toString();
-        chatRoom.name=name;
-        return chatRoom;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "member_chatRoom",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private List<Member> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "chatRoom")
+    private List<ChatMessage> messages = new ArrayList<>();
+
+    //연관관계 주인이 아닌쪽 연관관계 편의 메소드로 데이터 넣어주기 ㅎㅎㅎㅎ
+    public void addMember(Member member) {
+        this.members.add(member);
+        member.getChatRooms().add(this);
     }
+
+    public static class Dto{
+        @Setter
+        @Getter
+        private Long roomId;
+    }
+
 }
+

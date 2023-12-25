@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter

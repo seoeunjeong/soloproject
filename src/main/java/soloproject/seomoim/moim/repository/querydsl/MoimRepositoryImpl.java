@@ -11,6 +11,7 @@ import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -50,8 +51,10 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
         return keyword != null ? moimTitleKeyword(keyword).or(moimContentKeyword(keyword)) : null;
     }
 
-    private BooleanExpression moimStartedAt(LocalDate startedAt) {
-        return startedAt != null ? moim.startedAt.eq(startedAt) : null;
+    private BooleanExpression moimStartedAt(LocalDate searchDay) {
+        LocalDateTime fromDay = searchDay.atStartOfDay();
+        LocalDateTime toDay = searchDay.atTime(23, 59, 59, 999999999);
+        return searchDay != null ? moim.startedAt.between(fromDay,toDay) : null;
     }
 
     private BooleanExpression moimCategory(MoimCategory moimCategory) {

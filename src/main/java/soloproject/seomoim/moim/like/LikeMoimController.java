@@ -28,7 +28,7 @@ public class LikeMoimController {
     @DeleteMapping("/{moim-Id}/{member-Id}")
     public ResponseEntity deleteLike(@PathVariable("moim-Id") Long moimId,
                                      @PathVariable("member-Id") Long memberId) {
-        likeMoimService.cancelLike(memberId, moimId);
+        likeMoimService.cancelLike(moimId, memberId);
         Moim moim = moimService.findMoim(moimId);
         return new ResponseEntity<>(mapper.moimToResponseDto(moim), HttpStatus.OK);
     }

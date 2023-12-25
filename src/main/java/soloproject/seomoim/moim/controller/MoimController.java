@@ -205,8 +205,9 @@ public class MoimController {
 
     @GetMapping("/allPage")
     public String allPage() {
-        return "moims/total";
+        return "moims/totalMoimPage";
     }
+
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")
     @ResponseBody

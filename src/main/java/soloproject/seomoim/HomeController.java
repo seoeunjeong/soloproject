@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import soloproject.seomoim.chat.ChatRoom;
+import soloproject.seomoim.chat.ChatRoomRepository;
 import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
@@ -18,6 +20,7 @@ import soloproject.seomoim.utils.PageResponseDto;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class HomeController {
     private final MemberService memberService;
     private final MemberMapper mapper;
     private final MoimMapper moimMapper;
-
+    private final ChatRoomRepository chatClassRepository;
 
     @GetMapping("/")
     public String home(@Login String email, Model model) {
@@ -60,8 +63,15 @@ public class HomeController {
 
     @GetMapping("/alarm")
     public String alarmFrom(@Login String mail,Model model){
-        Member byEmail = memberService.findByEmail(mail);
-        model.addAttribute("memberId",byEmail.getId());
+        Member loginMember = memberService.findByEmail(mail);
+        model.addAttribute("memberId",loginMember.getId());
+
+        List<ChatRoom> chatRooms = loginMember.getChatRooms();
+        List<Long> chatRoomIds = chatRooms.stream().map(ChatRoom::getId)
+                .collect(Collectors.toList());
+
+        model.addAttribute("chatRoomIds", chatRoomIds);
+        model.addAttribute("roomId",chatRooms);
         return "home/alarmHome";
     }
 

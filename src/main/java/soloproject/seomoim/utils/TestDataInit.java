@@ -48,7 +48,7 @@ public class TestDataInit {
 
         MoimDto.Post post = new MoimDto.Post();
         post.setMoimCategory(MoimCategory.EXERCISE);
-        post.setStartedAt(LocalDate.now());
+        post.setStartedAt(LocalDateTime.now());
         post.setTitle("안녕하세요 ㅎㅎㅎ");
         post.setContent("제발 채팅 구현하게 해주세요");
         post.setPlaceName("고바우");

@@ -45,7 +45,7 @@ public class SecurityConfiguration {
                         .antMatchers("/moims/post/**").hasRole("AUTH_USER")
                         .antMatchers("/moims/post-form").hasRole("AUTH_USER")
                         .antMatchers("/").hasAnyRole("USER", "AUTH_USER")
-                        .antMatchers("/chatRoom/**","/chat-form","/img/**", "/css/**","/auth/google","/login-form", "/signup-form",
+                        .antMatchers("/chat/**","/img/**", "/css/**","/auth/google","/login-form", "/signup-form",
                                 "/email/**", "/moims/place-search-page","/moims/search/**").permitAll()
                         .antMatchers("/members").permitAll()
                         .anyRequest().authenticated());

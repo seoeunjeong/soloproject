@@ -300,7 +300,7 @@
         <br>
         <span>주소:</span><p th:text="${moim.placeAddress}">모임주소</p>
         <br>
-        <span>일시:</span><p th:text="${#temporals.format(moim.startedAt, 'yyyy년/MM월/dd일 (E)')}">모임일시</p>
+        <span>일시:</span><p th:text="${#temporals.format(moim.startedAt, 'yyyy년/MM월/dd일 (E) a HH:mm')}">모임일시</p>
     </div>
 
     <p th:if="${error}" th:text="${error}">예외발생</p>
@@ -493,15 +493,15 @@
 
         $("#oneToOneButton").click(function() {
 
-            var memberId = /*[[${moim.memberId}]]*/ null;
-
+            var receiverId = /*[[${moim.memberId}]]*/ null;
+            var memberId = /*[[${memberId}]]*/ '';
             $.ajax({
                 type: "POST",
-                url: "/chatRoom/room?name=" + memberId,
+                url: "/chat/room?receiver=" + receiverId+"&sender="+memberId,
                 contentType: "application/json",
                 success: function (response) {
                     var roomId = response.roomId;
-                    window.location.href = "/chatRoom/chat-form/" + roomId;
+                    window.location.href = "/chat/chat-form/" + roomId+"/"+receiverId;
                 },
                 error: function(error) {
                     // 에러가 발생했을 때 처리

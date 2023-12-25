@@ -78,7 +78,7 @@ public class MemberDto {
     public static class LikeMoimDto {
         private Long id;
         private String title;
-        private LocalDate startedAt;
+        private LocalDateTime startedAt;
     }
 
     @Getter
@@ -86,7 +86,7 @@ public class MemberDto {
     public static class MoimMemberDto {
         private Long id;
         private String title;
-        private LocalDate startedAt;
+        private LocalDateTime startedAt;
     }
 
     @Getter
@@ -94,7 +94,7 @@ public class MemberDto {
     public static class CreateMoimsDto {
         private Long id;
         private String title;
-        private LocalDate startedAt;
+        private LocalDateTime startedAt;
     }
 }
 

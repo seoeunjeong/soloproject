@@ -46,9 +46,10 @@
 
         .chat-container {
             margin: 50px 0px;
-            height: 100vh;
+            height: calc(100vh - 90px);
             padding: 20px;
             background-color: #BFD1D9;
+            overflow-y: auto
         }
 
         .chat-messages{
@@ -189,6 +190,29 @@
 <div class="chat-container">
     <div class="chat-messages">
         <div id="messages" class="chat-column">
+            <!-- Chat messages for each message in the list -->
+            <div th:each="message : ${allChat}">
+                <!-- Sender's message -->
+                <div th:if="${message.sender.id == loginMemberId}" class="send-info">
+                    <img th:src="@{/img/profile2.png}" alt="Sender's profile image">
+                    <div>
+                        <p th:text="${message.sender.name}"></p>
+                        <span class="message send-message" th:text="${message.content}"></span>
+                    </div>
+                </div>
+
+                <!-- Receiver's message -->
+                <div th:if="${message.sender.id != loginMemberId}" class="receive-info">
+                    <img th:src="@{/img/profile2.png}" alt="Receiver's profile image">
+                    <div>
+                        <p th:text="${message.sender.name}"></p>
+                        <span class="message receive-message" th:text="${message.content}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--        <div id="messages" class="chat-column">-->
 <!--         <div class="send-info">-->
 <!--                <img src="/img/profile2.png">-->
 <!--                <div>-->
@@ -196,7 +220,7 @@
 <!--                    <span class="message send-message">안녕하세요!</span>-->
 <!--                </div>-->
 <!--            </div>-->
-        </div>
+<!--        </div>-->
 
 
 <!--        <div class="receive-info">-->
@@ -206,12 +230,14 @@
 <!--                <span class="message receive-message">안녕하세요 어떻게 도와드릴까요!</span>-->
 <!--            </div>-->
 <!--        </div>-->
-    </div>
+<!--    </div>-->
 
+    <footer>
     <form class="chat-input" id="message-form">
         <input class="chat-text" id="chat-text" type="text" placeholder="메시지를 입력하세요">
         <button id="sendButton" type="submit">전송</button>
     </form>
+    </footer>
 </div>
 
 
@@ -219,9 +245,11 @@
 
     var stompClient = null;
 
+    var receiverId = /*[[${receiverId}]]*/ null;
+
     var roomId = /*[[${roomId}]]*/ null;
 
-    var loginMemberName = /*[[${loginMember.name}]]*/ null;
+    var loginMemberId = /*[[${loginMemberId}]]*/ null;
 
     function connect() {
 
@@ -243,15 +271,20 @@
     function showMessage(messageContent) {
 
         var content = messageContent.content;
-        var sender = messageContent.sender;
 
-        var messageClass = sender === loginMemberName ? 'send-info' : 'receive-info';
-        var message =sender=== loginMemberName ? 'send-message' : 'receive-message';
+        var senderName = messageContent.senderName;
+
+        var senderId = messageContent.senderId;
+
+        var loginMemberId = /*[[${loginMemberId}]]*/ null;
+
+        var messageClass = senderId === loginMemberId ? 'send-info' : 'receive-info';
+        var message =senderId=== loginMemberId ? 'send-message' : 'receive-message';
 
         $('#messages').append('<div class="' + messageClass + '">' +
             '<img src="/img/profile2.png">' +
             '<div>' +
-            '<p>' + sender + '</p>' +
+            '<p>' + senderName + '</p>' +
             '<span class="message '+message+'">' + content + '</span>' +
             '</div>' +
             '</div>');
@@ -266,14 +299,11 @@
 
                 var messageContent = $('#chat-text').val();
 
-                stompClient.send("/pub/chatMessage", {}, JSON.stringify({roomId:roomId,content: messageContent, sender: loginMemberName}));
-                stompClient.send("/pub/alarm",{},JSON.stringify({roomId:roomId,content: messageContent, sender: loginMemberName}));
-
+                stompClient.send("/pub/chatMessage", {}, JSON.stringify({roomId:roomId,content: messageContent,sender:loginMemberId,receiver:receiverId}));
 
                 $('#chat-text').val('');
             });
         });
-    </script>
-
+</script>
 </body>
 </html>

@@ -480,14 +480,49 @@ hr {
     margin-left: auto;
 }
 
-.alarm-container{
+.chat-container{
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    height: 1000px;
-    overflow-y: auto;
+    flex-direction: row;
+    align-items: center;
 }
-.alarm-item{
-    font-size: 20px;
+
+.alarm-item a {
+    text-decoration: none;
+}
+.chat-item{
+    display: flex;
+    width: 230px;
+    flex-direction: column;
+}
+.chat-item span{
+    margin-bottom: 10px;
+    font-weight: bold;
+    display: inline-block;
+    color: #000;
+}
+.chat-item p{
+   color: #605f5f;
+}
+
+.chat-container img {
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 20px;
+
+}
+.chat-info{
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    text-align: right;
+}
+.chat-info p:first-child {
+    margin-bottom: 10px;
+    color: #605f5f;
+}
+.chat-info p:nth-child(2) {
+    color: #fa0b0b;
 }
 

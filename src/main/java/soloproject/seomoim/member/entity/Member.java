@@ -1,6 +1,5 @@
 package soloproject.seomoim.member.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -63,6 +62,10 @@ public class Member extends BaseEntity {
     //멤버는 여러 모임을 좋아요 추가할수있다.
     @OneToMany(mappedBy = "member")
     private List<LikeMoim> likeMoims = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "members")
+    private List<ChatRoom> chatRooms= new ArrayList<>();
+
 
 
     //연관관계 편의 메소드

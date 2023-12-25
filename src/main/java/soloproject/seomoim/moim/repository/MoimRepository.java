@@ -18,8 +18,7 @@ public interface MoimRepository extends JpaRepository<Moim,Long> , MoimRepositor
     /* memberId 로 회원이 만든 모임 list 조회*/
     List<Moim> findMoimsByMember(Member member);
 
-    List<Moim> findByStartedAt(LocalDate today);
-
+    List<Moim> findByStartedAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
     @Query("SELECT m From Moim m WHERE m.likeCount >:likeCount ORDER BY m.likeCount DESC")
     List<Moim> findByLikeCountGreaterThan(@Param("likeCount") int likeCount, Pageable pageable);
 }

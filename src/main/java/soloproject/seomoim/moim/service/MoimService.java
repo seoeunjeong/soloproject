@@ -156,8 +156,9 @@ public class MoimService {
 
 
     public List<Moim> findTodayMoims(){
-        LocalDate today = LocalDate.now();
-        return moimRepository.findByStartedAt(today);
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        return moimRepository.findByStartedAtBetween(startOfDay,endOfDay);
     }
 
     public List<Moim> findPopularMoims() {

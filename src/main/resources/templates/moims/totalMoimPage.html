@@ -27,8 +27,8 @@
             top: 0;
             justify-content: space-between;
             align-items: center;
-            background-color: #fffffff8;
-            color: #000000f8;
+            background-color: #fff;
+            color: black;
         }
 
         header >a {
@@ -36,11 +36,10 @@
             font-size: 17px;
             color: black;
             font-weight: 800;
-            padding: 20px;
         }
-
         header span {
             margin: 0 auto;
+            text-decoration: none;
             font-size: 17px;
             color: black;
             font-weight: 800;
@@ -53,16 +52,15 @@
             margin-top: 40px;
         }
 
-        .total-container .card {
+        .card {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             border-bottom: 1px solid #a9a9a9;
             font-size: 15px;
             width: 360px;
             height: 140px;
             background-color: #fff;
-            padding: 15px;
         }
         .total-container a{
             text-decoration: none;
@@ -72,13 +70,15 @@
             display: inline-block;
             margin-left: auto;
         }
+
     </style>
 </head>
 <body>
 <header>
-    <a href="/"><</a>
-    <span>전체 모임</span>
+    <a href="/"><span><</span></a>
+    <span>전체모임</span>
 </header>
+
 
     <div class="total-container" id="moim-container">
 
@@ -146,18 +146,29 @@
         const card = document.createElement('div');
         card.classList.add('card');
 
-        // 서버에서 계산된 D-Day 정보를 가져와 사용
         const dDayText = moim.dday === 0 ? 'today' : `D- ${moim.dday}일`;
-        console.log(moim);
 
         const moimStatusText = moim.moimStatus ? moim.moimStatus : '상태 정보 없음';
 
-// 카드의 내용을 동적으로 생성합니다.
+        var moimStartedAt = new Date(moim.startedAt);
+
+        var formatter = new Intl.DateTimeFormat('ko-KR', {
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
+            weekday: 'long',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+
+        var startedAt = formatter.format(moimStartedAt)
+
         card.innerHTML = `
     <a href="/moims/${moim.moimId}">
         <div>
             <p class="categry">${moim.moimCategory}</p>
-            <p class="dday" style="background-color: ${moim.DDay === 0 ? 'crimson' : 'green'}; color: white; font-weight: bold">
+            <p class="dday" style="background-color: ${dDayText === 'today' ? 'crimson' : 'green'}; color: white; font-weight: bold">
                 ${dDayText}
             </p>
             <span class="status">${moimStatusText}</span>
@@ -165,9 +176,9 @@
         <h3 class="card-title">${moim.title}</h3>
         <p class="card-text">
             <strong>장소 |</strong>
-            <span>${moim.placeName}</span><br/>
+            <span>${moim.placeAddress}</span><br/>
             <strong>일시 |</strong>
-            <span>${moim.startedAt}</span><br/>
+            <span>${startedAt}</span><br/>
         </p>
         <div class="participant-container">
             <div class="participant">
@@ -186,6 +197,7 @@
 `;
         return card;
     }
+
     fetchMoims();
 
 
