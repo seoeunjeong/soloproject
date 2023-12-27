@@ -34,6 +34,7 @@ public class KakaoAddressSearchService {
         URI uri = kakaoUriBuilderService.buildUriForAddressSearch(address);
 
         HttpHeaders httpHeaders = new HttpHeaders();
+
         httpHeaders.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
 
         HttpEntity httpEntity = new HttpEntity(httpHeaders);

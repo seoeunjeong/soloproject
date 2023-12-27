@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class PastLocalDateValidator implements ConstraintValidator<PastDate, LocalDateTime> {
+public class PastDateValidator implements ConstraintValidator<PastDate, LocalDateTime> {
 
     @Override
     public void initialize(PastDate constraintAnnotation) {

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PastLocalDateValidator.class)
+@Constraint(validatedBy = PastDateValidator.class)
 public @interface PastDate {
     String message() default "날짜는 현재 날짜 이후만 등록 가능 합니다.";
     Class<?>[] groups() default {};

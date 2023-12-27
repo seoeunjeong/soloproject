@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.member.loginCheck.Login;
+import soloproject.seomoim.moim.service.LatestViewService;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.moim.like.LikeMoimService;
 import soloproject.seomoim.member.entity.Member;
@@ -31,6 +32,7 @@ import soloproject.seomoim.utils.PageResponseDto;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +42,6 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/moims")
-@Validated
 public class MoimController {
 
     private final MoimService moimService;
@@ -49,31 +50,27 @@ public class MoimController {
     private final DistanceService distanceService;
     private final LikeMoimService likeMoimService;
     private final ObjectMapper objectMapper;
+    private static final String COOKIE_DATA = "cookieDto";
+    private final LatestViewService latestViewService;
 
-    @GetMapping("/post-form")
-    public String postMoimForm(@RequestParam(value = "place_name", required = false) String placeName,
+    @GetMapping("/post")
+    public String moimPostForm(@RequestParam(value = "place_name", required = false) String placeName,
                                @RequestParam(value = "place_address", required = false) String placeAddress,
-                               HttpServletRequest request, HttpServletResponse response, Model model) throws JsonProcessingException {
+                               HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {
+        MoimDto.Post post = new MoimDto.Post();
+        MoimDto.Post cookieDate = readCookie(COOKIE_DATA, MoimDto.Post.class, request, response);
 
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("myCookie")) {
-                String decode = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
-                MoimDto.Post cookieDate = objectMapper.readValue(decode, MoimDto.Post.class);
-                cookieDate.setPlaceName(placeName);
-                cookieDate.setPlaceAddress(placeAddress);
-                model.addAttribute("post", cookieDate);
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
-                return "moims/postForm";
-            }
+        if (cookieDate != null) {
+            cookieDate.setPlaceName(placeName);
+            cookieDate.setPlaceAddress(placeAddress);
+            post = cookieDate;
         }
-        MoimDto.Post placePost = new MoimDto.Post();
+
         if (placeAddress != null && placeName != null) {
-            placePost.setPlaceName(placeName);
-            placePost.setPlaceAddress(placeAddress);
+            post.setPlaceName(placeName);
+            post.setPlaceAddress(placeAddress);
         }
-        model.addAttribute("post", placePost);
+        model.addAttribute("post", post);
 
         return "moims/postForm";
     }
@@ -81,14 +78,93 @@ public class MoimController {
 
     @PostMapping("/post")
     public String postMoim(@Validated @ModelAttribute MoimDto.Post post,
-                           BindingResult bindingResult) throws Exception {
+                           BindingResult bindingResult, Model model) {
+
         if (bindingResult.hasErrors()) {
             return "moims/postForm";
         }
+        try {
+            Moim moim = mapper.moimPostDtoToMoim(post);
+            Long moimId = moimService.createMoim(post.getMemberId(), moim);
+            return "redirect:/moims/" + moimId;
 
-        Moim moim = mapper.moimPostDtoToMoim(post);
-        Long moimId = moimService.createMoim(post.getMemberId(), moim);
-        return "redirect:/moims/" + moimId;
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "moims/postForm";
+        }
+    }
+
+
+    @GetMapping("/{moim-id}")
+    public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
+                                 @Login String email, Model model) {
+        Moim moim = moimService.findMoim(moimId);
+
+        model.addAttribute("moim", mapper.moimToResponseDto(moim));
+
+        Member loginMember = memberService.findByEmail(email);
+        MoimMember joinStatus = moimService.checkJoin(loginMember, moim);
+        LikeMoim likeMoim = likeMoimService.checkLike(loginMember, moim);
+        model.addAttribute("likeStatus", likeMoim.isStatus());
+        model.addAttribute("joinStatus",joinStatus.isStatus());
+
+        latestViewService.addLatestPostForMember(loginMember.getId(),mapper.moimToResponseDto(moim));
+
+        return "moims/detailPage";
+    }
+
+
+    @GetMapping("/edit-page/{moim-id}")
+    public String moimEditPage(@PathVariable("moim-id") Long moimId, Model model) {
+        Moim moim = moimService.findMoim(moimId);
+        MoimDto.Response moimToResponseDto = mapper.moimToResponseDto(moim);
+        model.addAttribute("moim", moimToResponseDto);
+        return "moims/editPage";
+    }
+
+    @GetMapping("/edit/{moim-id}")
+    public String moimEditForm(@PathVariable("moim-id") Long moimId,
+                               @RequestParam(value = "place_name", required = false) String placeName,
+                               @RequestParam(value = "place_address", required = false) String placeAddress,
+                               HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {
+
+        Moim moim = moimService.findMoim(moimId);
+        MoimDto.Update updateDto = mapper.moimToMoimUpdateDto(moim);
+
+        MoimDto.Update cookieDate = readCookie(COOKIE_DATA, MoimDto.Update.class, request, response);
+
+        if (cookieDate != null) {
+            cookieDate.setPlaceName(placeName);
+            cookieDate.setPlaceAddress(placeAddress);
+            cookieDate.setMoimId(moimId);
+            model.addAttribute("update", cookieDate);
+            return "moims/editForm";
+        }
+        if (placeAddress != null && placeName != null) {
+            updateDto.setPlaceName(placeName);
+            updateDto.setPlaceAddress(placeAddress);
+        }
+        model.addAttribute("update", updateDto);
+        return "moims/editForm";
+    }
+
+
+    @PostMapping("/edit/{moim-id}")
+    public String updateMoim(@PathVariable("moim-id") Long moimId,
+                             @Validated @ModelAttribute MoimDto.Update update,
+                             BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            return "moims/editForm";
+        }
+        try {
+            Moim moim = mapper.moimUpdateDtoToMoim(update);
+            moimService.updateMoim(moimId, moim);
+            return "redirect:/moims/edit-page/" + update.getMoimId();
+        } catch (Exception e) {
+            model.addAttribute("error", "모임 수정 중 오류가 발생했습니다: " + e.getMessage());
+            return "moims/editForm";
+        }
     }
 
     @GetMapping("/place-search-page")
@@ -97,87 +173,23 @@ public class MoimController {
         return "moims/placeSearchPage";
     }
 
-//  todo! 모임등록시 장소검색 페이지로 이동할때 데이터값 유지
-    @PostMapping("/cookieData")
-    public void addressSearchPage(@ModelAttribute MoimDto.Post post,
-                                  HttpServletResponse response) {
 
-        String encodePostDto = null;
-        try {
-            String postDto = objectMapper.writeValueAsString(post);
-            encodePostDto = URLEncoder.encode(postDto, StandardCharsets.UTF_8);
-        } catch (JsonProcessingException e) {
-            log.info("error={}", e.getMessage());
-        }
-        Cookie cookie = new Cookie("myCookie", encodePostDto);
-        response.addCookie(cookie);
-    }
-
-
-    @GetMapping("/{moim-id}")
-    public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
-                                @Login String email, Model model) {
-        Moim moim = moimService.findMoim(moimId);
-        model.addAttribute("moim", mapper.moimToResponseDto(moim));
-
-        Member findMember = memberService.findByEmail(email);
-        MoimMember joinStatus = moimService.checkJoin(findMember, moim);
-        LikeMoim likeMoim = likeMoimService.checkLike(findMember, moim);;
-        model.addAttribute("likeStatus", likeMoim.isStatus());
-        model.addAttribute("joinStatus",joinStatus.isStatus());
-
-        return "moims/detailPage";
-    }
-
-
-
-
-
-    @GetMapping("/update-form/{moim-id}")
-    public String updateMoimForm(@PathVariable("moim-id") Long moimId,
-                                 Model model) {
-        Moim moim = moimService.findMoim(moimId);
-
-        MoimDto.Response moimToResponseDto = mapper.moimToResponseDto(moim);
-        model.addAttribute("moim", moimToResponseDto);
-
-        return "moims/editDetailPage";
-    }
-
-    @PostMapping("/{moim-id}")
-    public String updateMoim(@PathVariable("moim-id") Long moimId,
-                             @ModelAttribute MoimDto.Update updateRequest) {
-        Moim moim = mapper.moimUpdateDtoToMoim(updateRequest);
-        moimService.updateMoim(moimId, moim);
-
-        return "redirect:/moims/" + moimId;
-
-    }
-
-
-//    todo Moim삭제할때 MOIMMEMBER 있으면 삭제 불가능 cash
-//     moimMember에 외래키를 가지고있는행이있으면 삭제불가능!
 //    todo 모임장 위임기능!
-//    todo 편집 기능!
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}")
-    public String deleteMoim(@PathVariable("moim-id") Long moimId,
+    public void deleteMoim(@PathVariable("moim-id") Long moimId,
                            @Login String loginMemberEmail){
         moimService.deleteMoim(loginMemberEmail,moimId);
-
-        return "redirect:/profile";
     }
-
 
 
     @PostMapping("/{moim-id}/{member-id}")
     @ResponseBody
-    public ResponseEntity joinMoim(@PathVariable("moim-id") Long moimId,
-                                   @PathVariable("member-id") Long memberId,
-                                   Model model) throws Exception {
+    public ResponseEntity<MoimDto.Response> joinMoim(@PathVariable("moim-id") Long moimId,
+                                   @PathVariable("member-id") Long memberId) {
 
-        MoimMember moimMember = moimService.joinMoim(moimId, memberId);
+        moimService.joinMoim(moimId, memberId);
         Moim moim = moimService.findMoim(moimId);
 
         MoimDto.joinDto joinDto = new MoimDto.joinDto();
@@ -187,11 +199,9 @@ public class MoimController {
         return new ResponseEntity<>(mapper.moimToResponseDto(moim),HttpStatus.OK);
     }
 
-
-
     @DeleteMapping("/{moim-id}/{member-id}")
     @ResponseBody
-    public ResponseEntity notJoinMoim(@PathVariable("moim-id") Long moimId,
+    public ResponseEntity<MoimDto.Response> notJoinMoim(@PathVariable("moim-id") Long moimId,
                             @PathVariable("member-id") Long memberId) {
         moimService.cancelJoinMoim(moimId, memberId);
         Moim moim = moimService.findMoim(moimId);
@@ -205,19 +215,18 @@ public class MoimController {
 
     @GetMapping("/allPage")
     public String allPage() {
-        return "moims/totalMoimPage";
+        return "moims/totalPage";
     }
 
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")
     @ResponseBody
-    public ResponseEntity findAll(@RequestParam(defaultValue = "1") int page,
-                                  @RequestParam(defaultValue = "10") int size,
-                                  Model model) {
-        Page<Moim> pageMoims = moimService.findAllbyPage(page - 1, size);
+    public ResponseEntity<PageResponseDto<MoimDto.Response>> findAll(@RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "10") int size) {
+        Page<Moim> pageMoims = moimService.findAllByPage(page - 1, size);
         List<Moim> moims = pageMoims.getContent();
         PageResponseDto<MoimDto.Response> pageResponseDto = new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims);
-        return new ResponseEntity(pageResponseDto,HttpStatus.OK);
+        return new ResponseEntity<>(pageResponseDto,HttpStatus.OK);
 
     }
 
@@ -226,11 +235,11 @@ public class MoimController {
                                   @RequestParam(defaultValue = "1") int page,
                                   @RequestParam(defaultValue = "10") int size,
                                   Model model) {
-        Page<Moim> pageMoims = moimService.findAllbySearch(moimSearchDto, page - 1, size);
+        Page<Moim> pageMoims = moimService.findAllBySearch(moimSearchDto, page - 1, size);
         List<Moim> moims = pageMoims.getContent();
         PageResponseDto<MoimDto.Response> pageResponseDto = new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims);
         model.addAttribute("moims", pageResponseDto);
-        return "home/searchHome";
+        return "home/search";
     }
 
 
@@ -259,12 +268,12 @@ public class MoimController {
     //인기있는모임
     @GetMapping("/popular")
     public List<Moim> getPopularMoims() {
+
         return moimService.findPopularMoims();
     }
 
 
 
-    //모든요청에 데이터 추가
     @ModelAttribute("moimCategorys")
     public MoimCategory[] moimCategorys() {
         return MoimCategory.values();
@@ -276,4 +285,36 @@ public class MoimController {
         return loginMember.getId();
     }
 
+    //todo! 모임등록.수정시 장소검색 페이지로 이동-> 쿠키에 데이터값 유지
+    @PostMapping("/set-cookie")
+    public void createCookie(@ModelAttribute MoimDto.CookieDto cookieDto,
+                             HttpServletResponse response) {
+        if (cookieDto != null) {
+            String encodeCookieDto = null;
+            try {
+                String stringCookieDto = objectMapper.writeValueAsString(cookieDto);
+                encodeCookieDto = URLEncoder.encode(stringCookieDto, StandardCharsets.UTF_8);
+            } catch (JsonProcessingException e) {
+                log.error("JSON 처리 오류: {}", e.getMessage(), e);
+            }
+            Cookie cookie = new Cookie(COOKIE_DATA, encodeCookieDto);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        }
+    }
+
+    private <T> T readCookie(String cookieName, Class<T> clazz, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(cookieName)) {
+                String decode = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
+                T cookieData = objectMapper.readValue(decode, clazz);
+                cookie.setPath("/");
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+                return cookieData;
+            }
+        }
+        return null;
+    }
 }

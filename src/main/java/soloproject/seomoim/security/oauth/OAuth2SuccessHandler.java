@@ -2,22 +2,17 @@ package soloproject.seomoim.security.oauth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.profileImage.ProfileImage;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -35,7 +30,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final MemberRepository memberRepository;
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException{
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         // 새로운 권한을 추가하거나 기존 권한을 변경
@@ -58,17 +53,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
 
-        String email = (String) oauth2User.getAttribute("email");
-        String name = (String) oauth2User.getAttribute("name");
-        String picture = (String) oauth2User.getAttribute("picture");
+        String email = oauth2User.getAttribute("email");
+        String name = oauth2User.getAttribute("name");
+        String picture = oauth2User.getAttribute("picture");
 
-        log.info("email={}", email.toString());
-        log.info("name={}", name.toString());
-        log.info("picture={}", picture.toString());
 
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
 
-        if (!optionalMember.isPresent()) {
+        if (optionalMember.isEmpty()) {
             Member memberDto = createMemberDto(email, name, picture);
             memberRepository.save(memberDto);
         }else{

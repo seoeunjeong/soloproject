@@ -9,20 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.KakaoApi.dto.DocumentDto;
 import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
 import soloproject.seomoim.KakaoApi.service.KakaoAddressSearchService;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ClientRequestException;
-import soloproject.seomoim.exception.ExceptionCode;
+import soloproject.seomoim.advice.exception.BusinessLogicException;
+import soloproject.seomoim.advice.exception.ClientRequestException;
+import soloproject.seomoim.advice.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.repository.MemberRepository;
-import soloproject.seomoim.moim.entitiy.Moim;
-import soloproject.seomoim.moim.entitiy.MoimMember;
-import soloproject.seomoim.moim.repository.MoimMemberRepository;
-import soloproject.seomoim.moim.repository.MoimRepository;
 import soloproject.seomoim.security.FormLogin.CustomAuthorityUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +29,6 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
     private final KakaoAddressSearchService kakaoAddressSearchService;
-    private final MoimMemberRepository moimMemberRepository;
-    private final MoimRepository moimRepository;
 
     @Transactional
     public Long signup(Member member) {
@@ -62,25 +55,26 @@ public class MemberService {
         Member findmember = findMember(memberId);
 
         Optional.ofNullable(member.getPassword())
-                .ifPresent(password -> findmember.getPassword());
+                .ifPresent(findmember::setPassword);
         Optional.ofNullable(member.getName())
-                .ifPresent(name -> findmember.setName(name));
+                .ifPresent(findmember::setName);
         Optional.ofNullable(member.getAge())
-                .ifPresent(age -> findmember.setAge(age));
+                .ifPresent(findmember::setAge);
         Optional.ofNullable(member.getGender())
-                .ifPresent(gender -> findmember.setGender(gender));
-
+                .ifPresent(findmember::setGender);
         Optional.ofNullable(member.getRoles())
                 .filter(roles -> !roles.isEmpty())
-                .ifPresent(roles -> findmember.setRoles(roles));
+                .ifPresent(findmember::setRoles);
 
         /*빈 문자열 들어온다*/
         if (member.getAddress() != null && !member.getAddress().equals("")) {
             KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(member.getAddress());
             DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
+            log.info("documentDto={}",documentDto.toString());
             findmember.setAddress(member.getAddress());
             findmember.setLatitude(documentDto.getLatitude());
             findmember.setLongitude(documentDto.getLongitude());
+            findmember.setAddressDong(documentDto.getRegion3DepthName());
         }
     }
 
@@ -88,16 +82,6 @@ public class MemberService {
     public void delete(Long memberId){
         Member member = findMember(memberId);
         memberRepository.delete(member);
-    }
-
-    /*회원이 자신이 참여한 모임 조회*/
-    public List<Moim> findParticipationMoims(Long memberId){
-        List<MoimMember> participationMoims = moimMemberRepository.findJoinMoims(memberId);
-        List<Moim> moims = participationMoims.stream()
-                .map(moimMember -> moimMember.getMoim().getId())
-                .map(moimId -> moimRepository.findById(moimId).orElse(null))
-                .collect(Collectors.toList());
-        return moims;
     }
 
 
@@ -120,11 +104,22 @@ public class MemberService {
         }
     }
 
+/*
     //회원 정보와 함께 참여한 모임 조회
 //    public Member findMemberAndfindParticipationMoim(Long memberId){
 //        Member findMember = memberRepository.findByIdAndParticipationMoims(memberId);
 //        return findMember;
 
 //    }
+//    회원이 자신이 참여한 모임 조회
+//    public List<Moim> findParticipationMoims(Long memberId){
+//        List<MoimMember> participationMoims = moimMemberRepository.findJoinMoims(memberId);
+//        List<Moim> moims = participationMoims.stream()
+//                .map(moimMember -> moimMember.getMoim().getId())
+//                .map(moimId -> moimRepository.findById(moimId).orElse(null))
+//                .collect(Collectors.toList());
+//        return moims;
+//    }
+*/
 
 }

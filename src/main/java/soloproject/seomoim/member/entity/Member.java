@@ -44,6 +44,8 @@ public class Member extends BaseEntity {
 
     private double longitude;
 
+    private String addressDong;
+
     @OneToOne(mappedBy = "member",cascade = CascadeType.ALL)
     private ProfileImage profileImage;
 

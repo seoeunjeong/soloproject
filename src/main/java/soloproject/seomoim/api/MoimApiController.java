@@ -33,7 +33,7 @@ public class MoimApiController {
     public ResponseEntity findSearchMoims(@ModelAttribute MoimSearchDto moimSearchDto,
                                           @RequestParam(defaultValue = "1") int page,
                                           @RequestParam(defaultValue = "10") int size) {
-        Page<Moim> pageMoims = moimService.findAllbySearch(moimSearchDto, page - 1, size);
+        Page<Moim> pageMoims = moimService.findAllBySearch(moimSearchDto, page - 1, size);
         List<Moim> moims = pageMoims.getContent();
         return new ResponseEntity<>(new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims), HttpStatus.OK);
     }

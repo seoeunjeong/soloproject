@@ -44,9 +44,10 @@
             font-weight: 800;
         }
 
+
         .chat-container {
-            margin: 50px 0px;
-            height: calc(100vh - 90px);
+            margin: 40px 0px;
+            height: 100vh;
             padding: 20px;
             background-color: #BFD1D9;
             overflow-y: auto
@@ -190,11 +191,11 @@
 <div class="chat-container">
     <div class="chat-messages">
         <div id="messages" class="chat-column">
-            <!-- Chat messages for each message in the list -->
             <div th:each="message : ${allChat}">
                 <!-- Sender's message -->
                 <div th:if="${message.sender.id == loginMemberId}" class="send-info">
-                    <img th:src="@{/img/profile2.png}" alt="Sender's profile image">
+                    <img th:if="${message.sender?.profileImage?.profileImageUrl}" th:src="${message.sender?.profileImage?.profileImageUrl}" />
+                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="img/profile2.png" alt="sender's profile image" />
                     <div>
                         <p th:text="${message.sender.name}"></p>
                         <span class="message send-message" th:text="${message.content}"></span>
@@ -203,7 +204,8 @@
 
                 <!-- Receiver's message -->
                 <div th:if="${message.sender.id != loginMemberId}" class="receive-info">
-                    <img th:src="@{/img/profile2.png}" alt="Receiver's profile image">
+                    <img th:if="${message.sender?.profileImage?.profileImageUrl}" th:src="${message.sender?.profileImage?.profileImageUrl}" />
+                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="img/profile2.png" alt="Receiver's profile image" />
                     <div>
                         <p th:text="${message.sender.name}"></p>
                         <span class="message receive-message" th:text="${message.content}"></span>

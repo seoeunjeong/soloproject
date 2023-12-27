@@ -1,11 +1,11 @@
-package soloproject.seomoim.exception;
+package soloproject.seomoim.advice.exception;
 
 import lombok.Getter;
 
-//todo! advice 예외처리 정리
-@Getter
+
 public class BusinessLogicException extends RuntimeException{
 
+    @Getter
     private ExceptionCode exceptionCode;
 
     public BusinessLogicException(ExceptionCode exceptionCode) {

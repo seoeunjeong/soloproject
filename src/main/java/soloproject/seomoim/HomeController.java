@@ -12,6 +12,7 @@ import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.moim.service.LatestViewService;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.mapper.MoimMapper;
@@ -20,6 +21,7 @@ import soloproject.seomoim.utils.PageResponseDto;
 
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,6 +34,7 @@ public class HomeController {
     private final MemberMapper mapper;
     private final MoimMapper moimMapper;
     private final ChatRoomRepository chatClassRepository;
+    private final LatestViewService latestViewService;
 
     @GetMapping("/")
     public String home(@Login String email, Model model) {
@@ -39,7 +42,7 @@ public class HomeController {
         Long id = memberService.findByEmail(email).getId();
         model.addAttribute("memberId", id);
 
-        Page<Moim> allbyPage = moimService.findAllbyPage(0, 12);
+        Page<Moim> allbyPage = moimService.findAllByPage(0, 12);
         List<Moim> moims = allbyPage.getContent();
         PageResponseDto<MoimDto.Response> responseDto = new PageResponseDto<>(moimMapper.moimsToResponseDtos(moims), allbyPage);
         List<Moim> popularMoims = moimService.findPopularMoims();
@@ -57,8 +60,9 @@ public class HomeController {
     public String profileFrom(@Login String email,Model model) {
         Member member = memberService.findByEmail(email);
         model.addAttribute("member", mapper.memberToMemberResponseDto(member));
-
-        return "home/profileHome";
+        Set<Object> latestView = latestViewService.getLatestPostsForMember(member.getId(), 5);
+        model.addAttribute("latest",latestView);
+        return "home/profile";
     }
 
     @GetMapping("/alarm")
@@ -72,12 +76,12 @@ public class HomeController {
 
         model.addAttribute("chatRoomIds", chatRoomIds);
         model.addAttribute("roomId",chatRooms);
-        return "home/alarmHome";
+        return "home/alarm";
     }
 
     @GetMapping("/search")
     public String searchFrom(){
-        return "home/searchHome";
+        return "home/search";
     }
 
 

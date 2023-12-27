@@ -111,7 +111,7 @@
 <body>
 
 <header>
-  <a href="/moims/post-form"><span><</span></a>
+  <a href="#" onclick="goBack()"><span><</span></a>
   <span>장소 검색</span>
 </header>
 
@@ -193,7 +193,19 @@
     }
 
     function redirectToPreviousPage(name, address) {
-      var newUrl = "/moims/post-form?place_name=" + encodeURIComponent(name) + "&place_address=" + encodeURIComponent(address);
+
+      const refererValue = document.referrer;
+
+      // Referer URL을 URL 객체로 파싱
+      const refererUrl = new URL(refererValue);
+
+      // URL 객체에서 쿼리 문자열을 제외한 기본 URL을 얻음
+      const baseUrl = refererUrl.origin + refererUrl.pathname;
+
+      // 새로운 URL을 생성
+      const newUrl = baseUrl + "?place_name=" + encodeURIComponent(name) + "&place_address=" + encodeURIComponent(address);
+
+      // 페이지 이동을 수행
       window.location.href = newUrl;
     }
 
@@ -223,6 +235,10 @@
     }
 
   });
+
+  function goBack() {
+    window.history.back();
+  }
 
 </script>
 </body>

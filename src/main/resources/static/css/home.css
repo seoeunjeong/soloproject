@@ -423,6 +423,35 @@
     height: 100px;
 }
 
+.latest-container .latestMoim{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #b2b2b2;
+    height: 80px;
+    width: 90px;
+    border-radius: 20px;
+    padding: 5px 5px;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.latest-container a{
+    text-decoration: none;
+}
+
+.latestMoim p{
+    font-size: 15px;
+    color: black;
+}
+
+.latestMoim span{
+    font-size: 13px;
+    font-weight: 600;
+    color: black;
+}
+
+
 hr {
     width: 100%;
     margin: 5px 0px;

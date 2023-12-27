@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.utils.BaseEntity;
 
 import javax.persistence.*;
@@ -32,7 +33,7 @@ public class Moim extends BaseEntity {
 
     private String content;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startedAt;
 
     private int dDay;
@@ -49,6 +50,8 @@ public class Moim extends BaseEntity {
 
     private double longitude;
 
+    private String addressDong;
+
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 
@@ -56,6 +59,10 @@ public class Moim extends BaseEntity {
 
     @OneToMany(mappedBy = "moim",cascade = CascadeType.ALL)
     private List<MoimMember> participants = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "moim",cascade = CascadeType.ALL)
+    private List<LikeMoim> likeMoims = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private MoimStatus moimStatus = MoimStatus.MOIM_OPEN;

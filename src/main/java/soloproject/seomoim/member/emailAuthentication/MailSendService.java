@@ -3,8 +3,8 @@ package soloproject.seomoim.member.emailAuthentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ExceptionCode;
+import soloproject.seomoim.advice.exception.BusinessLogicException;
+import soloproject.seomoim.advice.exception.ExceptionCode;
 import soloproject.seomoim.utils.RedisUtil;
 
 import javax.mail.MessagingException;

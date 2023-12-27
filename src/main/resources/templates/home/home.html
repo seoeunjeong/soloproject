@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html th:replace="~{layout/layoutForm::layout (~{::header},~{::section})}">
+<html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
 <header>
     <a href="/"><span>SEOMOIM</span></a>
     <a href="/member/logout"><p>로그아웃</p>
@@ -143,7 +143,7 @@
     // var memberId = /*[[${memberId}]]*/ '';
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
-        window.location.href='/moims/post-form'
+        window.location.href='/moims/post'
     });
 </script>
 </section>

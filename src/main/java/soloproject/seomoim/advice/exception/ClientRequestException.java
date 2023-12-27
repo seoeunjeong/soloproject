@@ -1,4 +1,4 @@
-package soloproject.seomoim.exception;
+package soloproject.seomoim.advice.exception;
 
 public class ClientRequestException extends RuntimeException {
     private ExceptionCode exceptionCode;

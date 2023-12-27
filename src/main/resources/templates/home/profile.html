@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:replace="~{layout/layoutForm::layout (~{::header},~{::section})}">
+<html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
 <header>
   <a href="/"><span>프로필</span></a>
   <a href="/member/logout"><p>로그아웃</p>
@@ -40,7 +40,7 @@
         <p th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}" style="font-size: 10px; font-weight: bold;"></p>
         <p th:text="${moim.title}"></p>
       </div>
-      <a th:href="@{/moims/update-form/{moimId}(moimId=${moim.id})}">관리</a>
+      <a th:href="@{/moims/edit-page/{moimId}(moimId=${moim.id})}">관리</a>
     </div>
   </div>
   <h3>참여한 모임</h3>
@@ -69,7 +69,15 @@
   </div>
   <h3>최근본 <span style="font-size:15px">o_o </span>모임</h3>
   <div class="latest-container">
-    <p th:if="${member.likeMoims.isEmpty()}" style="color: #948f8f; font-size: 15px;">최근 본 모임이 아직 없어요.</p>
+    <p th:if="${latest.isEmpty()}" style="color: #948f8f; font-size: 15px;">최근 본 모임이 아직 없어요.</p>
+    <div th:each="moim:${latest}">
+      <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
+        <div class="latestMoim">
+          <p th:text="${moim.title}"></p>
+          <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
+        </div>
+      </a>
+    </div>
   </div>
 
   <script th:inline="javascript">

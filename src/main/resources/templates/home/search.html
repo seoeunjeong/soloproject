@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:replace="~{layout/layoutForm::layout (~{::header},~{::section})}">
+<html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -74,7 +74,7 @@
 
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
-      window.location.href = '/moims/post-form'
+      window.location.href = '/moims/post'
     });
   </script>
 

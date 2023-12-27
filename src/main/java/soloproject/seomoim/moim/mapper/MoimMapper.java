@@ -18,6 +18,9 @@ public interface MoimMapper {
 
     Moim moimUpdateDtoToMoim(MoimDto.Update updateDto);
 
+    @Mapping(source ="id",target ="moimId")
+    MoimDto.Update moimToMoimUpdateDto(Moim moim);
+
     @Mapping(source ="member.id",target ="memberId")
     @Mapping(source = "member.profileImage.profileImageUrl",target ="memberProfileImageUrl")
     @Mapping(source = "id",target = "moimId")
@@ -36,8 +39,8 @@ public interface MoimMapper {
     @Named("filterParticipants")
     default List<MoimDto.MoimMemberDto> filterParticipants(List<MoimMember> moimMembers){
         return moimMembers.stream()
-                .filter(moimMember->moimMember.isStatus())
-                .map(moimMember -> moimMemberToMoimMemberDto(moimMember))
+                .filter(MoimMember::isStatus)
+                .map(this::moimMemberToMoimMemberDto)
                 .collect(Collectors.toList());
     }
 

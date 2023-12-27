@@ -6,7 +6,6 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.utils.BaseEntity;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

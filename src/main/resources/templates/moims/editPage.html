@@ -49,38 +49,15 @@
             font-weight: 800;
         }
 
-        .unLikeButton {
-            padding: 3px 5px;
-            cursor: pointer;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #605e5e;
-            transition: background-color 0.3s, color 0.3s;
-
-        }
-
-        .likeButton {
-            padding: 3px 5px;
-            cursor: pointer;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #fff;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
         .like-count {
-            align-self: flex-start;
-            padding: 3px 3px;
-            font-size: 10px;
-            border: 1px solid rgba(196, 193, 193, 0.92);
-            border-radius: 4px;
+            padding: 20px;
+            font-size: 15px;
             font-weight: bold;
-            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
+            display: flex;
+            flex-direction: column;
             margin: 60px 20px;
         }
 
@@ -153,9 +130,12 @@
 
         .info-container span {
             font-size: 13px;
-            font-weight: lighter;
+            font-weight: bold;
         }
-        .info-container{
+        .info-container p{
+            display: inline-block;
+            font-size: 12px;
+            font-weight: lighter;
 
         }
 
@@ -237,6 +217,11 @@
             font-size: 15px;
         }
 
+        .like-count {
+            padding: 20px;
+            font-size: 15px;
+            font-weight: bold;
+        }
 
         footer {
             justify-content: center;
@@ -249,6 +234,19 @@
             bottom: 0;
             padding-bottom: 20px;
             padding-top: 10px;
+        }
+
+        .editButton{
+            margin-left: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: #fdfdfd;
+            color: gray;
+            border: 1px solid gray;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .deleteButton {
@@ -268,12 +266,13 @@
 </head>
 <body>
 <header>
-    <a href="/"><</a>
+    <a href="/profile"><</a>
     <span th:text="${moim.title}">모임 정보</span>
-    <p class="like-count" th:text=|+${moim.likeCount}|></p>
+    <p class="like-count" th:text="|+ ${moim.likeCount}|"></p>
 </header>
+
 <div class="container">
-    <p>편집</p>
+    <button class="editButton" id="editButton">편집</button>
     <div class="title-container">
         <div>
               <span class="startedAt" th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"
@@ -294,13 +293,14 @@
     </div>
 
     <div class="info-container">
-        <p class="sum">자세한 위치 정보</p>
-        <span>장소:</span> <span th:text="${moim.placeName}">모임장소</span>
+        <div class="sum">자세한 위치 정보</div>
+        <span>장소:</span><p th:text="${moim.placeName}">모임장소</p>
         <br>
-        <span>주소:</span> <span th:text="${moim.placeAddress}">모임주소</span>
-
-        <p th:if="${error}" th:text="${error}">예외발생</p>
+        <span>주소:</span><p th:text="${moim.placeAddress}">모임주소</p>
+        <br>
+        <span>일시:</span><p th:text="${#temporals.format(moim.startedAt, 'yyyy년/MM월/dd일 (E) a HH:mm')}">모임일시</p>
     </div>
+
     <div class="participant-container">
         <div class="participant">
             <p class="sum">참석자 정보</p>
@@ -333,23 +333,32 @@
 <script th:inline="javascript">
 
     document.getElementById('deleteButton').addEventListener('click', function () {
-
         var moimIdToDelete = /*[[${moim.moimId}]]*/ null;
-
         fetch("/moims/" + moimIdToDelete, {
             method: 'DELETE'
         })
             .then(response => {
                 if (response.status === 204) {
                     alert('모임이 삭제되었습니다.');
+                    window.location.href = "/profile"
                 } else {
-                    console.error('Failed to delete moim. Status code: ' + response.status);
+                    response.json().then(response => {
+                        alert('모임 삭제 중 예외 발생: ' + response.message);
+                    });
                 }
             })
             .catch(error => {
-                console.error('Error deleting moim:', error);
+                console.error('모임삭제중예외발생:', error);
             });
     });
+
+    var editButton = document.getElementById('editButton');
+    editButton.addEventListener('click', function () {
+        var moimIdToEdit = /*[[${moim.moimId}]]*/ null;
+        window.location.href = '/moims/edit/' + moimIdToEdit;
+
+    });
+
 
 </script>
 

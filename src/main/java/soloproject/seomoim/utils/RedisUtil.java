@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisUtil {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String,String> redisTemplate;
 
     public void set(String email, String authNumber, int minutes) {
         redisTemplate.opsForValue().set(email, authNumber, minutes, TimeUnit.MINUTES);
@@ -20,12 +20,5 @@ public class RedisUtil {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public boolean delete(String key) {
-        return redisTemplate.delete(key);
-    }
-
-    public boolean hasKey(String key) {
-        return redisTemplate.hasKey(key);
-    }
 
 }

@@ -1,11 +1,11 @@
-package soloproject.seomoim.exception;
+package soloproject.seomoim.advice.exception;
 
 import lombok.Getter;
-@Getter
+
 public enum ExceptionCode {
 
     MEMBER_NOT_FOUND(404,"회원을 찾을 수 없습니다"),
-    ALREADY_EXISTS_ID(400,"이미 존재하는 ID 입니다."),
+    ALREADY_EXISTS_ID(409,"이미 존재하는 ID 입니다."),
     NOT_EXISTS_MOIM(404,"존재하지않는 모임입니다."),
     ALREADY_JOIN_MOIM(400,"이미 참여한 모임입니다."),
     NOT_JOIN_MOIM(400,"모임인원이 가득차 참여 할수 없습니다"),
@@ -16,7 +16,10 @@ public enum ExceptionCode {
     CERTIFICATION_FAIL(400,"이메일 인증이 실패했습니다"),
     PASSWORD_MISMATCH(400,"비밀번호 확인이 불일치합니다.");
 
+    @Getter
     private final int status;
+
+    @Getter
     private final String message;
 
     ExceptionCode(int status, String message) {

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import soloproject.seomoim.exception.BusinessLogicException;
-import soloproject.seomoim.exception.ClientRequestException;
+import soloproject.seomoim.advice.exception.BusinessLogicException;
+import soloproject.seomoim.advice.exception.ClientRequestException;
 import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
@@ -36,7 +36,6 @@ public class MemberController {
     private final MemberService memberService;
     private final ProfileImageUploadService profileImageUploadService;
     private final MemberMapper mapper;
-
     private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
     @GetMapping("/login-form")

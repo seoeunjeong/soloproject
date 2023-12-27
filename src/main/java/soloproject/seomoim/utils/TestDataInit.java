@@ -12,7 +12,6 @@ import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.service.MoimService;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,13 +26,13 @@ public class TestDataInit {
     private final MoimMapper mapper;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init(){
         Member member = new Member();
         member.setEmail("dmswjd4015@naver.com");
         member.setPassword("dkssud1!");
         member.setConfirmPassword("dkssud1!");
         member.setName("서은정");
-        Long id = memberService.signup(member);
+        memberService.signup(member);
 
         Member member2 = new Member();
         member2.setEmail("2juillet.acc@gmail.com");

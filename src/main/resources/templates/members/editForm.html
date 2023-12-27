@@ -18,13 +18,11 @@
   <div class="editForm-container">
   <form id="edit" th:action="@{'/members/'+ ${member.id}}" method="post" enctype="multipart/form-data">
     <div class="image-container">
-
       <input type="file" id="fileInput" name="profileImage" style="display: none" />
       <img th:if="${member?.profileImage?.profileImageUrl}" th:src="${member?.profileImage?.profileImageUrl}"
            alt="Click to Upload" class="uploadImage"/>
-      <img th:unless="${member?.profileImage?.profileImageUrl}" src="/img/profile2.png" alt="Click to Upload"
+      <img th:unless="${member?.profileImage?.profileImageUrl}" src="/img/profile.png" alt="Click to Upload"
               class="uploadImage"/>
-      <img class="camera" src="/img/camera.png"/>
       <button type="button" class="button" onclick="cancelFileSelection()">취소</button>
     </div>
     <hr />
