@@ -1,6 +1,7 @@
-package soloproject.seomoim.chat;
+package soloproject.seomoim.chat.message;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import soloproject.seomoim.chat.room.ChatRoom;
 
 import java.util.List;
 

@@ -48,11 +48,11 @@ public class TestDataInit {
         MoimDto.Post post = new MoimDto.Post();
         post.setMoimCategory(MoimCategory.EXERCISE);
         post.setStartedAt(LocalDateTime.now());
-        post.setTitle("안녕하세요 ㅎㅎㅎ");
-        post.setContent("제발 채팅 구현하게 해주세요");
+        post.setTitle("고기먹구싶어요");
+        post.setContent("삼겹살 한우 차돌박이 ㅎㅎㅎㅎㅎ");
         post.setPlaceName("고바우");
         post.setPlaceAddress("서울 구로구 부일로1길 9");
-        post.setTotalParticipantCount(10);
+        post.setTotalParticipantCount(5);
         Moim moim = mapper.moimPostDtoToMoim(post);
 
         moimService.createMoim(member2Id,moim);

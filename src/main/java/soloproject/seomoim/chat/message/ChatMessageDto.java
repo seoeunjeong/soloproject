@@ -1,4 +1,4 @@
-package soloproject.seomoim.chat;
+package soloproject.seomoim.chat.message;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,11 +20,13 @@ public class ChatMessageDto {
     @Getter
     @Setter
     public static class Response{
+        private Long messageId;
         private Long roomId;
         private String senderProfileUrl;
         private String senderName;
         private Long senderId;
-        private LocalDateTime createdAt;
         private String content;
+        private boolean readStatus;
+        private LocalDateTime createdAt;
     }
 }

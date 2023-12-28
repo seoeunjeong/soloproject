@@ -1,7 +1,8 @@
-package soloproject.seomoim.chat;
+package soloproject.seomoim.chat.message;
 
 import lombok.Getter;
 import lombok.Setter;
+import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.utils.BaseEntity;
 
@@ -17,14 +18,13 @@ public class ChatMessage extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id",nullable = false)
-    private Member receiver;
-
-    @ManyToOne
-    @JoinColumn(name = "sender_id" ,nullable = false)
+    @JoinColumn(name = "sender_id", nullable = false)
     private Member sender;
 
     private String content;
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean readStatus = false;
 
     @ManyToOne
     @JoinColumn(name = "room_id")

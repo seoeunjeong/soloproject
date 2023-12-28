@@ -250,11 +250,10 @@
                 contentType: "application/json",
                 success: function (response) {
                     var roomId = response.roomId;
-                    window.location.href = "/chat/chat-form/" + roomId+"/"+receiverId;
+                    window.location.href = "/chat/chat-form/" + roomId;
                 },
-                error: function(error) {
-                    // 에러가 발생했을 때 처리
-                    console.error('에러:', error);
+                error: function(response) {
+                    alert(response.responseJSON.message);
                 }
             });
         });

@@ -3,7 +3,7 @@ package soloproject.seomoim.member.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import soloproject.seomoim.chat.ChatRoom;
+import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.profileImage.ProfileImage;
 import soloproject.seomoim.utils.BaseEntity;
@@ -65,8 +65,11 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<LikeMoim> likeMoims = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "members")
-    private List<ChatRoom> chatRooms= new ArrayList<>();
+    @OneToMany(mappedBy = "ownerMember")
+    private List<ChatRoom> ownerRooms= new ArrayList<>();
+
+    @OneToMany(mappedBy = "requestMember")
+    private List<ChatRoom> requestRooms= new ArrayList<>();
 
 
 

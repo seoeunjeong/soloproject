@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import soloproject.seomoim.chat.ChatRoom;
-import soloproject.seomoim.chat.ChatRoomRepository;
+import soloproject.seomoim.chat.room.ChatRoom;
+import soloproject.seomoim.chat.room.ChatRoomRepository;
 import soloproject.seomoim.member.loginCheck.Login;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
@@ -33,7 +33,7 @@ public class HomeController {
     private final MemberService memberService;
     private final MemberMapper mapper;
     private final MoimMapper moimMapper;
-    private final ChatRoomRepository chatClassRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final LatestViewService latestViewService;
 
     @GetMapping("/")
@@ -65,18 +65,20 @@ public class HomeController {
         return "home/profile";
     }
 
-    @GetMapping("/alarm")
-    public String alarmFrom(@Login String mail,Model model){
+    @GetMapping("/chat")
+    public String alarmFrom(@Login String mail, Model model) {
         Member loginMember = memberService.findByEmail(mail);
-        model.addAttribute("memberId",loginMember.getId());
+        model.addAttribute("memberId", loginMember.getId());
 
-        List<ChatRoom> chatRooms = loginMember.getChatRooms();
-        List<Long> chatRoomIds = chatRooms.stream().map(ChatRoom::getId)
+        List<ChatRoom> allChatRoom = chatRoomRepository.findByMember(loginMember);
+
+        List<Long> chatRoomIds = allChatRoom.stream().map(ChatRoom::getId)
                 .collect(Collectors.toList());
-
+        log.info("chatRoomIds={}",chatRoomIds);
+        log.info("allChatRoom={}",allChatRoom);
+        model.addAttribute("chatRooms",allChatRoom);
         model.addAttribute("chatRoomIds", chatRoomIds);
-        model.addAttribute("roomId",chatRooms);
-        return "home/alarm";
+        return "/home/chat";
     }
 
     @GetMapping("/search")

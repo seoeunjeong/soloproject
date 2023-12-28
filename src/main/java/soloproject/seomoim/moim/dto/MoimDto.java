@@ -128,7 +128,7 @@ public class MoimDto {
         private Long memberId;
         private String title;
         private String content;
-        private int totalParticipantCount;
+        private Integer totalParticipantCount;
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         private LocalDateTime startedAt;
         private String placeName;

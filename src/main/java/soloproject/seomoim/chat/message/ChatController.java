@@ -1,15 +1,22 @@
-package soloproject.seomoim.chat;
+package soloproject.seomoim.chat.message;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import soloproject.seomoim.chat.room.ChatRoom;
+import soloproject.seomoim.chat.room.ChatRoomRepository;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 
 @Controller
@@ -23,19 +30,17 @@ public class ChatController {
 
     @MessageMapping("/chatMessage")
     public void sendMessage(@RequestBody ChatMessageDto.Post message) {;
-        Long roomId = message.getRoomId();
         ChatMessage chatMessage = new ChatMessage();
-        Member receiverMember = memberService.findMember(message.getReceiver());
-        chatMessage.setReceiver(receiverMember);
         Member senderMember = memberService.findMember(message.getSender());
         chatMessage.setSender(senderMember);
 
-        ChatRoom findRoom = chatRoomRepository.findById(roomId)
+        ChatRoom findRoom = chatRoomRepository.findById(message.getRoomId())
                 .orElseThrow(() -> new IllegalStateException("존재하지않는 채팅방입니다"));
 
         chatMessage.setContent(message.getContent());
         chatMessage.setChatRoom(findRoom);
-        chatMessageRepository.save(chatMessage);
+        chatMessage.setReadStatus(false);
+        ChatMessage saveMessage = chatMessageRepository.save(chatMessage);
 
         ChatMessageDto.Response response = new ChatMessageDto.Response();
 
@@ -45,11 +50,30 @@ public class ChatController {
         }
         response.setSenderName(senderMember.getName());
         response.setSenderId(senderMember.getId());
-        response.setCreatedAt(message.getCreatedAt());
+        response.setCreatedAt(LocalDateTime.now());
         response.setContent(message.getContent());
         response.setRoomId(findRoom.getId());
+        response.setMessageId(saveMessage.getId());
 
-        messagingTemplate.convertAndSend("/sub/chatMessage/" +message.getRoomId(), response);
+        messagingTemplate.convertAndSend("/chatMessage/"+message.getRoomId(),response);
     }
 
+
+    @MessageMapping("/mark-as-read/{messageId}")
+    public void markAsRead(@DestinationVariable Long messageId) {
+        ChatMessage chatMessage = chatMessageRepository.findById(messageId).orElseThrow(() -> new IllegalStateException("존재하지않는메시지"));
+        chatMessage.setReadStatus(true);
+        chatMessageRepository.save(chatMessage);
+        ReadStatusDto readStatusDto = new ReadStatusDto();
+        readStatusDto.setMessageId(messageId);
+        readStatusDto.setReadStatus(true);
+        messagingTemplate.convertAndSend("/check-read",readStatusDto);
+    }
+
+    @Getter @Setter
+    private static class ReadStatusDto{
+        private Long messageId;
+        private boolean readStatus;
+
+    }
 }

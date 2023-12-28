@@ -46,7 +46,7 @@
 
 
         .chat-container {
-            margin: 40px 0px;
+            margin: 40px 0px 60px 0px;
             height: 100vh;
             padding: 20px;
             background-color: #BFD1D9;
@@ -58,23 +58,21 @@
             flex-direction: column;
         }
 
-
-        .message {
-            margin-bottom: 10px;
-        }
         .receive-info{
             display: flex;
             flex-direction: row;
+            align-content: flex-end;
             margin-bottom: 13px;
         }
         .receive-info >img{
             width: 30px;
             height: 30px;
             margin-right: 5px;
+            border-radius: 50px;
         }
         .receive-info p{
             font-size: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .receive-info span{
             font-size: 13px;
@@ -112,10 +110,11 @@
             width: 30px;
             height: 30px;
             margin-left: 5px;
+            border-radius: 50px;
         }
         .send-info p{
             font-size: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             direction: rtl;
         }
         .send-info span{
@@ -159,7 +158,6 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             margin-right: 5px;
-            margin-bottom: 10px;
             padding: 0px 10px;
         }
 
@@ -179,6 +177,26 @@
             font-weight: bold;
         }
 
+        .bottom{
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+        }
+
+        .receive-info .time{
+            font-size: 12px;
+        }
+
+        .send-info .time{
+            font-size: 12px;
+        }
+
+        .receive-bottom{
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: flex-end;
+        }
+
     </style>
 </head>
 <body>
@@ -191,48 +209,42 @@
 <div class="chat-container">
     <div class="chat-messages">
         <div id="messages" class="chat-column">
+
+
             <div th:each="message : ${allChat}">
                 <!-- Sender's message -->
                 <div th:if="${message.sender.id == loginMemberId}" class="send-info">
                     <img th:if="${message.sender?.profileImage?.profileImageUrl}" th:src="${message.sender?.profileImage?.profileImageUrl}" />
-                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="img/profile2.png" alt="sender's profile image" />
+                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="/img/profile2.png" alt="sender's profile image" />
                     <div>
                         <p th:text="${message.sender.name}"></p>
-                        <span class="message send-message" th:text="${message.content}"></span>
+                        <div class="bottom">
+                            <span class="time" th:if="${message.isReadStatus()}">읽음</span>
+                            <span class="time" th:unless="${message.isReadStatus()}">읽지 않음</span>
+                            <span class="time" th:text="${#temporals.format(message.createdAt,'a hh:mm')}">오후 00:00 </span>
+                            <span class="message send-message" th:text="${message.content}"></span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Receiver's message -->
                 <div th:if="${message.sender.id != loginMemberId}" class="receive-info">
                     <img th:if="${message.sender?.profileImage?.profileImageUrl}" th:src="${message.sender?.profileImage?.profileImageUrl}" />
-                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="img/profile2.png" alt="Receiver's profile image" />
+                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="/img/profile2.png" alt="Receiver's profile image" />
                     <div>
                         <p th:text="${message.sender.name}"></p>
-                        <span class="message receive-message" th:text="${message.content}"></span>
+                        <div class="receive-bottom">
+                            <span class="time" th:if="${message.isReadStatus()}">읽음</span>
+                            <span class="time" th:unless="${message.isReadStatus()}">읽지 않음</span>
+                            <span class="time"
+                                  th:text="${#temporals.format(message.createdAt,'a hh:mm')}">오후 00:00 </span>
+                            <span class="message receive-message" th:text="${message.content}"></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<!--        <div id="messages" class="chat-column">-->
-<!--         <div class="send-info">-->
-<!--                <img src="/img/profile2.png">-->
-<!--                <div>-->
-<!--                    <p>양수웅</p>-->
-<!--                    <span class="message send-message">안녕하세요!</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-
-<!--        <div class="receive-info">-->
-<!--            <img src="/img/profile2.png">-->
-<!--            <div>-->
-<!--                <p>서은정</p>-->
-<!--                <span class="message receive-message">안녕하세요 어떻게 도와드릴까요!</span>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 
     <footer>
     <form class="chat-input" id="message-form">
@@ -246,8 +258,6 @@
 <script th:inline="javascript">
 
     var stompClient = null;
-
-    var receiverId = /*[[${receiverId}]]*/ null;
 
     var roomId = /*[[${roomId}]]*/ null;
 
@@ -263,49 +273,95 @@
 
             console.log('Connected: ' + frame);
 
-            stompClient.subscribe('/sub/chatMessage/'+roomId , function (response) {
+            stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
                 var messageContent = JSON.parse(response.body);
                 showMessage(messageContent);
+                markMessageAsRead(messageContent.messageId);
+            });
+
+            stompClient.subscribe('/sub/check-read/' + messageId, function (response) {
+                var response = JSON.parse(response);
+                if (response.status) {
+                    updateReadStatus(true);
+                }
             });
         });
     }
 
+    function updateReadStatus(isRead) {
+        var readStatusElement = document.querySelector('.time'); // 해당 엘리먼트를 선택합니다.
+        if (readStatusElement) {
+            readStatusElement.textContent = isRead ? '읽음' : '읽지 않음'; // 상태에 따라 내용을 변경합니다.
+        }
+    }
+
+    var loginMemberId;
+    var senderId;
     function showMessage(messageContent) {
 
         var content = messageContent.content;
 
         var senderName = messageContent.senderName;
 
-        var senderId = messageContent.senderId;
+        senderId= messageContent.senderId;
 
-        var loginMemberId = /*[[${loginMemberId}]]*/ null;
+        loginMemberId = /*[[${loginMemberId}]]*/ null;
+
+        var createdAt = new Date(messageContent.createdAt);
+
+        var formatter = new Intl.DateTimeFormat('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        var datetime = formatter.format(createdAt);
+
 
         var messageClass = senderId === loginMemberId ? 'send-info' : 'receive-info';
-        var message =senderId=== loginMemberId ? 'send-message' : 'receive-message';
+
+        var message = senderId === loginMemberId ? 'send-message' : 'receive-message';
+
+        var bottom = senderId === loginMemberId ? 'bottom' : 'receive-bottom';
 
         $('#messages').append('<div class="' + messageClass + '">' +
             '<img src="/img/profile2.png">' +
             '<div>' +
             '<p>' + senderName + '</p>' +
-            '<span class="message '+message+'">' + content + '</span>' +
-            '</div>' +
-            '</div>');
+            '<div class="'+bottom+'">'+
+                '<span class="time">읽음</span>'+
+                '<span class="time">'+datetime+'</span>'+
+                '<span class="message ' + message + '">' + content + '</span>'+
+            '</div></div></div>');
+
     }
 
-        $(function () {
+    function markMessageAsRead(messageId) {
+        if(loginMemberId != senderId)
+            // 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
+            stompClient.send('/pub/mark-as-read/' + messageId, {}, '');
+    }
 
-            connect();
 
-            $('#message-form').submit(function (event) {
-                event.preventDefault();
+    $(function () {
 
-                var messageContent = $('#chat-text').val();
+        connect();
 
-                stompClient.send("/pub/chatMessage", {}, JSON.stringify({roomId:roomId,content: messageContent,sender:loginMemberId,receiver:receiverId}));
+        $('#message-form').submit(function (event) {
+            event.preventDefault();
 
-                $('#chat-text').val('');
-            });
+            var messageContent = $('#chat-text').val();
+
+            stompClient.send("/pub/chatMessage", {}, JSON.stringify({
+                roomId: roomId,
+                content: messageContent,
+                sender: loginMemberId
+            }));
+
+            $('#chat-text').val('');
         });
+    });
+
 </script>
 </body>
 </html>
