@@ -71,7 +71,6 @@ public interface MemberMapper {
             return likeMoimDto;
         }
     }
-
 }
 
 

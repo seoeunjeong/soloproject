@@ -3,6 +3,8 @@ package soloproject.seomoim.moim.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
+import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface MoimMapper {
 
-    @Mapping(source = "memberId",target = "member.id")
+    @Mapping(source ="memberId",target="member.id")
     Moim moimPostDtoToMoim(MoimDto.Post postDto);
 
     Moim moimUpdateDtoToMoim(MoimDto.Update updateDto);
@@ -51,4 +53,6 @@ public interface MoimMapper {
     @Mapping(source = "id",target = "moimId")
     @Mapping(target = "participants", qualifiedByName = "filterParticipants")
     List<MoimDto.Response> moimsToResponseDtos(List<Moim> moims);
+
+
 }

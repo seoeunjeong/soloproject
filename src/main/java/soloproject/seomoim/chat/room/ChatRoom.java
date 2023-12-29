@@ -19,14 +19,6 @@ public class ChatRoom {
     @Column(name = "room_id")
     private Long id;
 
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "member_chatRoom",
-//            joinColumns = @JoinColumn(name = "room_id"),
-//            inverseJoinColumns = @JoinColumn(name = "member_id")
-//    )
-//    private List<Member> members = new ArrayList<>();
-//
     @ManyToOne
     @JoinColumn(name = "ownerMember_id")
     private Member ownerMember;

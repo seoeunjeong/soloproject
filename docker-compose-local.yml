@@ -16,6 +16,7 @@ services:
     image: seoeunjeong/seomoim-database
     volumes:
       - ./database/config:/etc/mysql/conf.d
+#      - ./database/init:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=1111
       - MYSQL_DATABASE=seomoim

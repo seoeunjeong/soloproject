@@ -43,14 +43,20 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
+	//sql문
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
-	testImplementation 'junit:junit:4.13.1'
 
-	compileOnly 'org.projectlombok:lombok'
+	//mapper
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-	runtimeOnly 'com.h2database:h2'
+
+	implementation 'org.projectlombok:lombok:1.18.22'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	//test에서 lombok사용
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor'org.projectlombok:lombok'
 
 	//이메일 인증 발송을 위해 추가
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -58,21 +64,18 @@ dependencies {
 	//redis 사용을 위해 추가
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	//test에서 lombok사용
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-//	구글 스토리지 사용
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+	//프로필이미지 구글 스토리지 사용
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
 
-
+	//1:1채팅 웹소켓 사용
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 }

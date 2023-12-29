@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -220,7 +220,7 @@
                         <p th:text="${message.sender.name}"></p>
                         <div class="bottom">
                             <span class="time" th:if="${message.isReadStatus()}">읽음</span>
-                            <span class="time" th:unless="${message.isReadStatus()}">읽지 않음</span>
+                            <span class="time" th:unless="${message.isReadStatus()}">안읽음</span>
                             <span class="time" th:text="${#temporals.format(message.createdAt,'a hh:mm')}">오후 00:00 </span>
                             <span class="message send-message" th:text="${message.content}"></span>
                         </div>
@@ -234,8 +234,8 @@
                     <div>
                         <p th:text="${message.sender.name}"></p>
                         <div class="receive-bottom">
-                            <span class="time" th:if="${message.isReadStatus()}">읽음</span>
-                            <span class="time" th:unless="${message.isReadStatus()}">읽지 않음</span>
+<!--                            <span class="time" th:if="${message.isReadStatus()}">읽음 </span>-->
+<!--                            <span class="time" th:unless="${message.isReadStatus()}">읽지않음 </span>-->
                             <span class="time"
                                   th:text="${#temporals.format(message.createdAt,'a hh:mm')}">오후 00:00 </span>
                             <span class="message receive-message" th:text="${message.content}"></span>
@@ -263,6 +263,8 @@
 
     var loginMemberId = /*[[${loginMemberId}]]*/ null;
 
+    var messageIds=/*[[${massageIds}]]*/
+
     function connect() {
 
         var socket = new SockJS('/chat');
@@ -279,20 +281,24 @@
                 markMessageAsRead(messageContent.messageId);
             });
 
-            stompClient.subscribe('/sub/check-read/' + messageId, function (response) {
-                var response = JSON.parse(response);
-                if (response.status) {
+            stompClient.subscribe('/sub/check-read', function (statusResponse) {
+                var statusResponse = JSON.parse(statusResponse.body);
+                if (statusResponse.status) {
                     updateReadStatus(true);
                 }
             });
         });
     }
 
-    function updateReadStatus(isRead) {
-        var readStatusElement = document.querySelector('.time'); // 해당 엘리먼트를 선택합니다.
-        if (readStatusElement) {
-            readStatusElement.textContent = isRead ? '읽음' : '읽지 않음'; // 상태에 따라 내용을 변경합니다.
-        }
+    function markMessageAsRead(messageId) {
+        if(loginMemberId != senderId)
+            // 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
+            stompClient.send('/pub/mark-as-read/' + messageId, {}, JSON.stringify({ messageIds: messageIds }));
+    }
+
+    function markReadDB() {
+        if(loginMemberId != senderId)
+            stompClient.send('/pub/mark-as-read/', {}, JSON.stringify({ messageIds: messageIds }));
     }
 
     var loginMemberId;
@@ -317,6 +323,8 @@
 
         var datetime = formatter.format(createdAt);
 
+        var readStatus = messageContent.readStatus ?'읽음':'안읽음';
+
 
         var messageClass = senderId === loginMemberId ? 'send-info' : 'receive-info';
 
@@ -324,23 +332,43 @@
 
         var bottom = senderId === loginMemberId ? 'bottom' : 'receive-bottom';
 
-        $('#messages').append('<div class="' + messageClass + '">' +
+
+        var messageHtml ='<div class="' + messageClass + '">' +
             '<img src="/img/profile2.png">' +
             '<div>' +
             '<p>' + senderName + '</p>' +
             '<div class="'+bottom+'">'+
-                '<span class="time">읽음</span>'+
+                '<span class="time" class="status">'+readStatus+'</span>'+
                 '<span class="time">'+datetime+'</span>'+
                 '<span class="message ' + message + '">' + content + '</span>'+
-            '</div></div></div>');
+            '</div></div></div>';
 
+        // 받은 메시지일 경우 readStatus 부분을 추가하지 않음
+        if (senderId !== loginMemberId) {
+            messageHtml = ('<div class="' + messageClass + '">' +
+                '<img src="/img/profile2.png">' +
+                '<div>' +
+                '<p>' + senderName + '</p>' +
+                '<div class="'+bottom+'">'+
+                '<span class="time">'+datetime+'</span>'+
+                '<span class="message ' + message + '">' + content + '</span>'+
+                '</div></div></div>');
+        }
+
+        $('#messages').append(messageHtml);
+
+        if (senderId !== loginMemberId) {
+            updateReadStatus(readStatus);
+        }
     }
 
-    function markMessageAsRead(messageId) {
-        if(loginMemberId != senderId)
-            // 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
-            stompClient.send('/pub/mark-as-read/' + messageId, {}, '');
+    function updateReadStatus(isRead) {
+        var readStatusElement = $('.status'); // 해당 클래스를 가진 엘리먼트를 선택합니다.
+        if (readStatusElement.length > 0) {
+            readStatusElement.text(isRead ? '읽음' : '안읽음'); // 상태에 따라 내용을 변경합니다.
+        }
     }
+
 
 
     $(function () {
@@ -359,6 +387,7 @@
             }));
 
             $('#chat-text').val('');
+
         });
     });
 

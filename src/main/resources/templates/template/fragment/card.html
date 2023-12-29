@@ -1,4 +1,4 @@
-<div class="card-container" id="moimList">
+<div th:fragment="card" class="card-container" id="moimList">
     <div th:each="moim:${moims}">
         <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
             <div class="card">

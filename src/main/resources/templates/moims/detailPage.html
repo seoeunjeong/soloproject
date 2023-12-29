@@ -55,7 +55,7 @@
         <div class="image-container">
             <div class="profile" th:each="participant:${moim.participants}">
                 <img th:if="${participant?.profileImageUrl}" th:src="${participant?.profileImageUrl}"/>
-                <img th:unless="${participant?.profileImageUrl}" src="/img/profile2.png"/>
+                <img th:unless="${participant?.profileImageUrl}" src="/img/unnamed.png"/>
                 <p th:text="${participant.name}"></p>
 
                 <div class="profile-info" id="profileInfo">
@@ -72,7 +72,7 @@
 </div>
 
 <footer>
-    <img th:src="@{/icon/love.png}" alt="Love Icon" id="likeIcon"/>
+    <img th:src="@{/img/love.png}" alt="Love Icon" id="likeIcon"/>
     <button type="button" class="joinButton" id="joinButton">참여</button>
 </footer>
 
@@ -202,7 +202,7 @@
     var likeIcon = document.getElementById('likeIcon');
 
     if (likeIcon) {
-        likeIcon.src = likeStatus ? '/icon/heart.png' : '/icon/love.png';
+        likeIcon.src = likeStatus ? '/img/heart.png' : '/img/love.png';
         likeIcon.alt = 'Love Icon';
     }
 
@@ -229,7 +229,7 @@
 
     function updateLikeIcon() {
         likeStatus = !likeStatus;
-        likeIcon.src = likeStatus ? '/icon/heart.png' : '/icon/love.png';
+        likeIcon.src = likeStatus ? '/img/heart.png' : '/img/love.png';
     }
 
     function updateLikeCount(response) {

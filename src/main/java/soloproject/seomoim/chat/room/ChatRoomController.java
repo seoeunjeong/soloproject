@@ -15,6 +15,7 @@ import soloproject.seomoim.member.service.MemberService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -68,9 +69,11 @@ public class ChatRoomController {
         model.addAttribute("roomId",roomId);
         Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
         List<ChatMessage> allMessage = chatMessageRepository.findByChatRoom(chatRoom.get());
-//        allMessage.forEach(message -> message.setReadStatus(true));
-//        chatMessageRepository.saveAll(allMessage);
+        List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())
+                .collect(Collectors.toList());
+        chatMessageRepository.saveAll(allMessage);
         model.addAttribute("allChat",allMessage);
+        model.addAttribute("massageIds",messageIds);
         return "/moims/chatRoom";
     }
 

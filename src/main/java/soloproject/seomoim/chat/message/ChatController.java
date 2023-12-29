@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -55,19 +57,29 @@ public class ChatController {
         response.setRoomId(findRoom.getId());
         response.setMessageId(saveMessage.getId());
 
-        messagingTemplate.convertAndSend("/chatMessage/"+message.getRoomId(),response);
+        messagingTemplate.convertAndSend("/sub/chatMessage/"+message.getRoomId(),response);
     }
 
 
     @MessageMapping("/mark-as-read/{messageId}")
-    public void markAsRead(@DestinationVariable Long messageId) {
+    public void markAsRead(@DestinationVariable Long messageId,
+                           @Payload MarkAsReadRequest request) {
+        List<Long> messageIds = request.getMessageIds();
+
+        for(Long chatMessageId : messageIds){
+            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
+                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
+            chatMessage.setReadStatus(true);
+            chatMessageRepository.save(chatMessage);
+        }
         ChatMessage chatMessage = chatMessageRepository.findById(messageId).orElseThrow(() -> new IllegalStateException("존재하지않는메시지"));
         chatMessage.setReadStatus(true);
         chatMessageRepository.save(chatMessage);
         ReadStatusDto readStatusDto = new ReadStatusDto();
         readStatusDto.setMessageId(messageId);
         readStatusDto.setReadStatus(true);
-        messagingTemplate.convertAndSend("/check-read",readStatusDto);
+
+        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
     }
 
     @Getter @Setter
@@ -75,5 +87,24 @@ public class ChatController {
         private Long messageId;
         private boolean readStatus;
 
+    }
+
+    @Setter@Getter
+    private static class MarkAsReadRequest {
+        private List<Long> messageIds;
+    }
+
+
+    @MessageMapping("/mark-as-read")
+    public void markAsRead(@Payload MarkAsReadRequest request) {
+        List<Long> messageIds = request.getMessageIds();
+
+        for(Long chatMessageId : messageIds){
+            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
+                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
+            chatMessage.setReadStatus(true);
+            chatMessageRepository.save(chatMessage);
+        }
+        messagingTemplate.convertAndSend("/sub/check-read",true);
     }
 }

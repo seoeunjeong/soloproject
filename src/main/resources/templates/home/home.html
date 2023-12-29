@@ -34,7 +34,7 @@
                     <div class="participant">
                 <div th:each="people:${moim.getParticipants()}">
                     <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
-                    <img th:unless="${people?.profileImageUrl}" src="img/profile2.png" />
+                    <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
                 </div>
                     </div>
                 <div class="participant-detail">
@@ -77,7 +77,7 @@
                         <div class="participant">
                         <div th:each="people:${todayMoim.participants}">
                             <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
-                            <img th:unless="${people?.profileImageUrl}" src="img/profile2.png" />
+                            <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
 
                         </div>
                         </div>
@@ -121,7 +121,7 @@
                         <div class="participant">
                         <div th:each="people:${popularMoim.Participants}">
                             <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
-                            <img th:unless="${people?.profileImageUrl}" src="/img/profile2.png" />
+                            <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
                         </div>
                         </div>
                         <div class="participant-detail">
