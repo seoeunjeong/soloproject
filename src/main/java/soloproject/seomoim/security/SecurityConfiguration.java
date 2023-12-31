@@ -13,9 +13,13 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.security.oauth.OAuth2SuccessHandler;
 
+import java.util.Arrays;
 
 
 @Configuration
@@ -35,6 +39,8 @@ public class SecurityConfiguration {
         http
                 .headers(headers -> headers.frameOptions().sameOrigin())
                 .csrf().disable()
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
                 .formLogin(login -> login
                         .loginPage("/login-form")
                         .loginProcessingUrl("/process_login")
@@ -53,6 +59,20 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        var configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://ec2-3-34-5-186.ap-northeast-2.compute.amazonaws.com"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("access", "refresh"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
 
     @Bean
