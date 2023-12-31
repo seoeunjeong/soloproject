@@ -105,3 +105,9 @@ compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝
+
+
+//jar 파일명 알아보기 쉽게 변경
+bootJar{
+	archiveFileName="app.jar"
+}
