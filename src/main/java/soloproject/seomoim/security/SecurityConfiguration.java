@@ -55,6 +55,7 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.GET, "/moims/**").permitAll()
                         .antMatchers(HttpMethod.POST, "/moims/**").hasRole("AUTH_USER")
                         .antMatchers("/members").permitAll()
+                        .antMatchers("/chat/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
@@ -66,8 +67,6 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(Arrays.asList("http://ec2-3-34-5-186.ap-northeast-2.compute.amazonaws.com"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("access", "refresh"));
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

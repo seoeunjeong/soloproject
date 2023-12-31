@@ -64,17 +64,18 @@ public class ChatRoomController {
     @GetMapping("/chat-form/{room-id}")
     public String chatRoom(@PathVariable("room-id") Long roomId,
                            @AuthenticationdUser String email, Model model) {
-        Member loginMember = memberService.findByEmail(email);
-        model.addAttribute("loginMemberId",loginMember.getId());
-        model.addAttribute("roomId",roomId);
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
-        List<ChatMessage> allMessage = chatMessageRepository.findByChatRoom(chatRoom.get());
-        List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())
-                .collect(Collectors.toList());
-        chatMessageRepository.saveAll(allMessage);
-        model.addAttribute("allChat",allMessage);
-        model.addAttribute("massageIds",messageIds);
-        return "/moims/chatRoom";
+            Member loginMember = memberService.findByEmail(email);
+            model.addAttribute("loginMemberId", loginMember.getId());
+            model.addAttribute("roomId", roomId);
+            Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
+            List<ChatMessage> allMessage = chatMessageRepository.findByChatRoom(chatRoom.get());
+            List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())
+                    .collect(Collectors.toList());
+            chatMessageRepository.saveAll(allMessage);
+            model.addAttribute("allChat", allMessage);
+            model.addAttribute("massageIds", messageIds);
+
+        return "moims/chatRoom";
     }
 
     // 특정 채팅방 조회

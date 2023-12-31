@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.chat.room.ChatRoomRepository;
@@ -29,6 +30,7 @@ public class ChatController {
     private final MemberService memberService;
 
     @MessageMapping("/chatMessage")
+    @Transactional
     public void sendMessage(@RequestBody ChatMessageDto.Post message) {
         ChatMessage chatMessage = new ChatMessage();
         Member senderMember = memberService.findMember(message.getSender());
@@ -36,9 +38,8 @@ public class ChatController {
 
         ChatRoom findRoom = chatRoomRepository.findById(message.getRoomId())
                 .orElseThrow(() -> new IllegalStateException("존재하지않는 채팅방입니다"));
-
-        chatMessage.setContent(message.getContent());
         chatMessage.setChatRoom(findRoom);
+        chatMessage.setContent(message.getContent());
         chatMessage.setReadStatus(false);
         ChatMessage saveMessage = chatMessageRepository.save(chatMessage);
 
