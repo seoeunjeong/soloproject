@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.chat.message.ChatMessage;
 import soloproject.seomoim.chat.message.ChatMessageRepository;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.loginCheck.Login;
+import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
 import soloproject.seomoim.member.service.MemberService;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public class ChatRoomController {
     // 채팅방 입장 화면
     @GetMapping("/chat-form/{room-id}")
     public String chatRoom(@PathVariable("room-id") Long roomId,
-                           @Login String email,Model model) {
+                           @AuthenticationdUser String email, Model model) {
         Member loginMember = memberService.findByEmail(email);
         model.addAttribute("loginMemberId",loginMember.getId());
         model.addAttribute("roomId",roomId);

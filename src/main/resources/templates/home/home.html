@@ -100,14 +100,17 @@
             <a th:href="@{/moims/{moimId}(moimId=${popularMoim.moimId})}">
                 <div class="card">
                     <div>
-                        <p class="categry" th:text="${popularMoim.moimCategory}">
-                            카테고리명
-                        </p>
-                        <p class="dday" th:text="|D- ${popularMoim.DDay}일|">D-Day</p>
-                        <span class="status" th:text="${popularMoim.moimStatus.status}"></span>
-
-                    </div>
-                    <h3 class="card-title" th:text="${popularMoim?.title}">모임 제목 1</h3>
+                        <div>
+                            <p class="popular-like" th:text="|❤ ${popularMoim.likeCount}명이 모임을 좋아해요 ❤|">좋아요 수</p>
+                        </div>
+                    <p class="categry" th:text="${popularMoim.moimCategory}">
+                        카테고리명
+                    </p>
+                    <p class="dday" th:if="${popularMoim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                    <p class="dday" th:unless="${popularMoim.DDay eq 0}"  th:text="|D- ${popularMoim.DDay}일|">D-Day</p>
+                    <span class="status" th:text="${popularMoim.moimStatus.status}"></span>
+                </div>
+                        <h3 class="card-title" th:text="${popularMoim?.title}">모임 제목 1</h3>
                     <p class="card-text">
                         <strong>장소 |</strong>
                         <span th:text="${popularMoim.placeAddress}">위치 정보</span><br/>
@@ -140,12 +143,12 @@
 <button class="post-but" id="postButton">+</button>
 
 <script th:inline="javascript">
-    // var memberId = /*[[${memberId}]]*/ '';
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
         window.location.href='/moims/post'
     });
 </script>
+
 </section>
 </body>
 </html>

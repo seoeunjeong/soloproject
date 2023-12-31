@@ -263,7 +263,7 @@
       <div class="field-error" th:errors="*{placeName}">
         모임위치 오류
       </div>
-      <input type="hidden" name="memberId" th:value="${memberId}"/>
+      <input type="hidden" name="memberId" th:value="${loginMemberId}"/>
     </div>
     <button type="submit" class="btn" form="update-form">모임수정</button>
   </form>

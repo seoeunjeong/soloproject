@@ -50,8 +50,9 @@
             flex-direction: column;
             align-items: center;
             margin-top: 40px;
+            height: 100vh;
+            overflow-y: scroll;
         }
-
         .card {
             display: flex;
             flex-direction: column;
@@ -78,16 +79,17 @@
     <a href="/"><span><</span></a>
     <span>전체모임</span>
 </header>
+<div class="total-container" id="moim-container">
 
-
-    <div class="total-container" id="moim-container">
-
-    </div>
+</div>
 
 <script>
+
     let page = 1;
-    const size = 4;
+    const size = 5;
     let loading = false; // 중복 로딩 방지 플래그
+
+    fetchMoims();
 
     window.addEventListener('scroll', function () {
         console.log('Scroll event triggered');
@@ -98,6 +100,10 @@
         }
     });
 
+    function isScrolledToBottom() {
+        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    }
+
     function showLoadingIndicator() {
         const loadingIndicator = document.getElementById('loading-indicator');
         loadingIndicator.style.display = 'block';
@@ -106,10 +112,6 @@
     function hideLoadingIndicator() {
         const loadingIndicator = document.getElementById('loading-indicator');
         loadingIndicator.style.display = 'none';
-    }
-
-    function isScrolledToBottom() {
-        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
     }
 
     function fetchMoims() {
@@ -122,13 +124,13 @@
                     page++;
                     if (page > data.pageInfo.totalPages) {
                         console.log('더 이상 요청할 페이지가 없습니다.');
+                        loading = false;
                         return;
                     }
                 }
             })
-            .catch(error => console.error('Error fetching moims:', error))
+            .catch(error => console.error('모임 조회 예외 발생:', error))
             .finally(() => {
-                loading = false; // 로딩이 끝나면 플래그를 해제
                 hideLoadingIndicator();
             });
     }
@@ -144,6 +146,7 @@
 
     function createCardElement(moim) {
         const card = document.createElement('div');
+
         card.classList.add('card');
 
         const dDayText = moim.dday === 0 ? 'today' : `D- ${moim.dday}일`;
@@ -198,17 +201,14 @@
         return card;
     }
 
-    fetchMoims();
 
-
-    const anchorElement = card.querySelector('a');
-    anchorElement.addEventListener('click', function () {
-        window.location.href = anchorElement.getAttribute('href');
+    let pageNavigation = card.querySelector('a');
+    pageNavigation.addEventListener('click', function () {
+        window.location.href = pageNavigation.getAttribute('href');
     });
 
 </script>
 
-<!-- 추가된 부분: 로딩 인디케이터 -->
 <div id="loading-indicator" class="loading-indicator" style="display: none;">
     Loading...
 </div>

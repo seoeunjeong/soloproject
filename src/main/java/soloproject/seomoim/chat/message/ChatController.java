@@ -9,7 +9,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.chat.room.ChatRoomRepository;
@@ -18,7 +17,6 @@ import soloproject.seomoim.member.service.MemberService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Controller
@@ -31,7 +29,7 @@ public class ChatController {
     private final MemberService memberService;
 
     @MessageMapping("/chatMessage")
-    public void sendMessage(@RequestBody ChatMessageDto.Post message) {;
+    public void sendMessage(@RequestBody ChatMessageDto.Post message) {
         ChatMessage chatMessage = new ChatMessage();
         Member senderMember = memberService.findMember(message.getSender());
         chatMessage.setSender(senderMember);

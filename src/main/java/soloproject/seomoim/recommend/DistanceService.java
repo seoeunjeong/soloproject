@@ -29,6 +29,7 @@ public class DistanceService {
                 .collect(Collectors.toList());
     }
 
+
     //위도와 경도를 이용해 거리를 구하는 메소드
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         lat1 = Math.toRadians(lat1);

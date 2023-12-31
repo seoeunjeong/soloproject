@@ -46,13 +46,13 @@ dependencies {
 	//sql문
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 
-	//mapper
-	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-
 	implementation 'org.projectlombok:lombok:1.18.22'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	//mapstruct
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
 	//test에서 lombok사용
 	testCompileOnly 'org.projectlombok:lombok'
@@ -77,6 +77,10 @@ dependencies {
 
 	//1:1채팅 웹소켓 사용
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	//spring retry사용
+	implementation 'org.springframework.retry:spring-retry'
+
 
 }
 

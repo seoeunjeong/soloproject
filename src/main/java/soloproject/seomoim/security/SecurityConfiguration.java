@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -42,11 +43,11 @@ public class SecurityConfiguration {
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(new OAuth2SuccessHandler(memberRepository)))
                 .authorizeHttpRequests(authorize -> authorize
+                        .antMatchers("/img/**", "/css/**","/auth/google","/login-form", "/signup-form",
+                                "/email/**","/moims/search/**").permitAll()
                         .antMatchers("/moims/post/**").hasRole("AUTH_USER")
-                        .antMatchers("/moims/post-form").hasRole("AUTH_USER")
-                        .antMatchers("/").hasAnyRole("USER", "AUTH_USER")
-                        .antMatchers("/chat/**","/img/**", "/css/**","/auth/google","/login-form", "/signup-form",
-                                "/email/**", "/moims/place-search-page","/moims/search/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/moims/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/moims/**").hasRole("AUTH_USER")
                         .antMatchers("/members").permitAll()
                         .anyRequest().authenticated());
 
@@ -56,6 +57,7 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 

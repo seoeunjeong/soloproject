@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import soloproject.seomoim.member.loginCheck.Login;
+import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
 import soloproject.seomoim.moim.service.LatestViewService;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.moim.like.LikeMoimService;
@@ -47,12 +48,19 @@ public class MoimController {
     private final MoimService moimService;
     private final MoimMapper mapper;
     private final MemberService memberService;
-    private final DistanceService distanceService;
     private final LikeMoimService likeMoimService;
     private final ObjectMapper objectMapper;
     private static final String COOKIE_DATA = "cookieDto";
     private final LatestViewService latestViewService;
+    private final DistanceService distanceService;
 
+
+    @Value("${kakao.maps.appKey}")
+    private String kakaoMapsAppKey;
+
+
+
+    //    todo 모임장 위임기능!
     @GetMapping("/post")
     public String moimPostForm(@RequestParam(value = "place_name", required = false) String placeName,
                                @RequestParam(value = "place_address", required = false) String placeAddress,
@@ -97,7 +105,7 @@ public class MoimController {
 
     @GetMapping("/{moim-id}")
     public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
-                                 @Login String email, Model model) {
+                                 @AuthenticationdUser String email, Model model) {
         Moim moim = moimService.findMoim(moimId);
 
         model.addAttribute("moim", mapper.moimToResponseDto(moim));
@@ -148,7 +156,6 @@ public class MoimController {
         return "moims/editForm";
     }
 
-
     @PostMapping("/edit/{moim-id}")
     public String updateMoim(@PathVariable("moim-id") Long moimId,
                              @Validated @ModelAttribute MoimDto.Update update,
@@ -161,6 +168,7 @@ public class MoimController {
             Moim moim = mapper.moimUpdateDtoToMoim(update);
             moimService.updateMoim(moimId, moim);
             return "redirect:/moims/edit-page/" + update.getMoimId();
+
         } catch (Exception e) {
             model.addAttribute("error", "모임 수정 중 오류가 발생했습니다: " + e.getMessage());
             return "moims/editForm";
@@ -168,19 +176,18 @@ public class MoimController {
     }
 
     @GetMapping("/place-search-page")
-    public String searchPageForm() {
+    public String searchPageForm(Model model) {
+        model.addAttribute("kakaoMapsAppKey", kakaoMapsAppKey);
 
         return "moims/placeSearchPage";
     }
 
 
-//    todo 모임장 위임기능!
-
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}")
     public void deleteMoim(@PathVariable("moim-id") Long moimId,
-                           @Login String loginMemberEmail){
-        moimService.deleteMoim(loginMemberEmail,moimId);
+                           @AuthenticationdUser String email) {
+        moimService.deleteMoim(email, moimId);
     }
 
 
@@ -218,6 +225,7 @@ public class MoimController {
         return "moims/totalPage";
     }
 
+
     /*전체모임조회(페이지네이션,생성일기준 내림차순 정렬)*/
     @GetMapping("/all")
     @ResponseBody
@@ -239,6 +247,7 @@ public class MoimController {
         List<Moim> moims = pageMoims.getContent();
         PageResponseDto<MoimDto.Response> pageResponseDto = new PageResponseDto<>(mapper.moimsToResponseDtos(moims), pageMoims);
         model.addAttribute("moims", pageResponseDto);
+        model.addAttribute("moimSearchDto",moimSearchDto);
         return "home/search";
     }
 
@@ -258,32 +267,19 @@ public class MoimController {
     }
 
 
-    //오늘모임
+
     @GetMapping("/today")
     public List<Moim> getTodayMoims() {
         return moimService.findTodayMoims();
 
     }
 
-    //인기있는모임
     @GetMapping("/popular")
     public List<Moim> getPopularMoims() {
-
         return moimService.findPopularMoims();
     }
 
 
-
-    @ModelAttribute("moimCategorys")
-    public MoimCategory[] moimCategorys() {
-        return MoimCategory.values();
-    }
-
-    @ModelAttribute("memberId")
-    public Long loginMember(@Login String email){
-        Member loginMember = memberService.findByEmail(email);
-        return loginMember.getId();
-    }
 
     //todo! 모임등록.수정시 장소검색 페이지로 이동-> 쿠키에 데이터값 유지
     @PostMapping("/set-cookie")
@@ -316,5 +312,16 @@ public class MoimController {
             }
         }
         return null;
+    }
+
+    @ModelAttribute("moimCategorys")
+    public MoimCategory[] moimCategorys() {
+        return MoimCategory.values();
+    }
+
+    @ModelAttribute("loginMemberId")
+    public Long loginMember(@AuthenticationdUser String email){
+        Member loginMember = memberService.findByEmail(email);
+        return loginMember.getId();
     }
 }

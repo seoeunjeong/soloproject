@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <title>프로필</title>
   </head>
 <body>
@@ -11,12 +12,12 @@
 </header>
 <section>
   <div class="search-container">
-    <form id="search" action="/moims/search" method="post" >
+    <form id="search" action="/moims/search" method="post" th:object="${moimSearchDto}" >
       <div>
-        <input type="text" class="keyword" name="keyword" placeholder="검색어를 입력하세요"/>
+        <input type="text" class="keyword"  th:field="*{keyword}" placeholder="검색어를 입력하세요"/>
         <button class="search-button" form="search">검색</button>
       </div>
-      <select class="moimCategory"name="moimCategory">
+      <select class="moimCategory" th:field="*{moimCategory}">
         <option value=""> 카테고리 선택 </option>
         <option data-image="icon/coffee.png" value="COFFEE">COFFEE</option>
         <option data-image="icon/drink.png" value="DRINK">DRINK</option>
@@ -25,11 +26,13 @@
         <option data-image="icon/study.png" value="STUDY">STUDY</option>
         <option data-image="icon/travel.png"  value="TRAVEL">TRAVEL</option>
       </select>
-      <input type="date" name="startedAt" id="searchDate"/>
+      <input type="date" id="searchDate" th:field="*{startedAt}"/>
     </form>
-    </div>
+  </div>
   </div>
   <div class="result-container">
+    <p th:if="${moims == null}">모임을 검색할 수 있어요:)</p>
+    <div th:if="${moims != null and moims.data.isEmpty()}">아직 검색한 조건의 모임이 없어요 '-'</div>
       <div th:each="moim:${moims?.data}">
         <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
           <div class="card">
@@ -75,13 +78,11 @@
     <button class="post-but" id="postButton">+</button>
 
   <script th:inline="javascript">
-
     const postButton = document.getElementById('postButton');
     postButton.addEventListener('click', function () {
       window.location.href = '/moims/post'
     });
   </script>
-
 
 </section>
 </body>

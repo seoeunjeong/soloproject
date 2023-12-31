@@ -16,10 +16,10 @@ services:
     image: seoeunjeong/seomoim-database
     volumes:
       - ./database/config:/etc/mysql/conf.d
-#      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/init:/docker-entrypoint-initdb.d
     environment:
-      - MYSQL_ROOT_PASSWORD=1111
       - MYSQL_DATABASE=seomoim
-      - TZ=Asia/Seoul
+      - MYSQL_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - TZ= Asia/Seoul
     ports:
       - "3306:3306"

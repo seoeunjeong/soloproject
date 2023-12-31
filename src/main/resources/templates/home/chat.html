@@ -14,9 +14,10 @@
 </header>
 
 <section>
+    <p th:if="${chatRooms.isEmpty()}">생성된 채팅방이 아직 없어요 :)</p>
     <div th:each="chatRoom:${chatRooms}" class="alarm-item">
         <a th:href="@{/chat/chat-form/{roomId}(roomId=${chatRoom.id})}">
-            <div th:if="${memberId == chatRoom.ownerMember.id}">
+            <div th:if="${loginMemberId == chatRoom.ownerMember.id}">
                 <div class="chat-container">
                     <img th:if="${chatRoom?.requestMember?.profileImage?.profileImageUrl}"
                          th:src="${chatRoom?.requestMember?.profileImage?.profileImageUrl}">
@@ -32,7 +33,7 @@
                 </div>
             </div>
 
-            <div th:if="${memberId == chatRoom.requestMember.id}">
+            <div th:if="${loginMemberId == chatRoom.requestMember.id}">
                 <div class="chat-container">
                     <img th:if="${chatRoom?.ownerMember?.profileImage?.profileImageUrl}"
                          th:src="${chatRoom.ownerMember?.profileImage?.profileImageUrl}">
@@ -48,91 +49,88 @@
                 </div>
             </div>
         </a>
+
         <button class="post-but" id="postButton">+</button>
     </div>
 
-
-
-
     <script th:inline="javascript">
-    //     var stompClient = null;
-    //     var memberId = /*[[${memberId}]]*/ null;
-    //     var chatRoomIds = /*[[${#strings.arrayJoin(chatRoomIds, ',') }]]*/ null;
-    //
-    //     function connect() {
-    //         var socket = new SockJS('/chat');
-    //
-    //         stompClient = Stomp.over(socket);
-    //
-    //         stompClient.connect({}, function (frame) {
-    //             console.log('Connected: ' + frame);
-    //
-    //             var roomIdArray = chatRoomIds.split(',');
-    //
-    //             roomIdArray.forEach(function (roomId) {
-    //                 stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
-    //                     var messageContent = JSON.parse(response.body);
-    //                     handleReceivedMessage(messageContent);
-    //                 });
-    //             });
-    //         });
-    //     }
-    //
-    //     var senderName;
-    //     var roomId;
-    //     var content
-    //     var createdAt;
-    //     var senderId;
-    //
-    //     function handleReceivedMessage(message) {
-    //         console.log('받은 메시지:', message);
-    //         content = message.content;
-    //         senderId = message.senderId;
-    //         senderName = message.senderName;
-    //         createdAt = new Date(message.createdAt).toLocaleString('ko-KR', {
-    //             hour: '2-digit',
-    //             minute: '2-digit',
-    //             hour12: true
-    //         });
-    //         roomId = message.roomId;
-    //
-    //         var newChatItem = `
-    // <a href="/chat/chat-form/${roomId}/${senderId}">
-    //   <div class="chat-container">
-    //     <img src="/img/profile2.png">
-    //     <div class="chat-item">
-    //       <span>${senderName}</span>
-    //       <p>${content}</p>
-    //     </div>
-    //     <div class="chat-info">
-    //       <p>${createdAt}</p>
-    //       <p>1개</p>
-    //     </div>
-    //   </div>
-    // </a>`;
-    //
-    //         console.log('newChatItem:', newChatItem);
-    //
-    //         // Append the new chat item to the '.alarm-item'
-    //         $('.alarm-item').append(newChatItem);
-    //
-    //     }
-    //
-    //
-    //     document.addEventListener('DOMContentLoaded', function () {
-    //         connect();
-    //     });
-
-
         const postButton = document.getElementById('postButton');
         postButton.addEventListener('click', function () {
             window.location.href = '/moims/post'
         });
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </section>
-
 </body>
 </html>
+
+<!--&lt;!&ndash;채팅목록에서 받아야할 알림들!&ndash;&gt;-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>-->
+<!--//     var stompClient = null;-->
+<!--//     var memberId = /*[[${memberId}]]*/ null;-->
+<!--//     var chatRoomIds = /*[[${#strings.arrayJoin(chatRoomIds, ',') }]]*/ null;-->
+<!--//-->
+<!--//     function connect() {-->
+<!--//         var socket = new SockJS('/chat');-->
+<!--//-->
+<!--//         stompClient = Stomp.over(socket);-->
+<!--//-->
+<!--//         stompClient.connect({}, function (frame) {-->
+<!--//             console.log('Connected: ' + frame);-->
+<!--//-->
+<!--//             var roomIdArray = chatRoomIds.split(',');-->
+<!--//-->
+<!--//             roomIdArray.forEach(function (roomId) {-->
+<!--//                 stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {-->
+<!--//                     var messageContent = JSON.parse(response.body);-->
+<!--//                     handleReceivedMessage(messageContent);-->
+<!--//                 });-->
+<!--//             });-->
+<!--//         });-->
+<!--//     }-->
+<!--//-->
+<!--//     var senderName;-->
+<!--//     var roomId;-->
+<!--//     var content-->
+<!--//     var createdAt;-->
+<!--//     var senderId;-->
+<!--//-->
+<!--//     function handleReceivedMessage(message) {-->
+<!--//         console.log('받은 메시지:', message);-->
+<!--//         content = message.content;-->
+<!--//         senderId = message.senderId;-->
+<!--//         senderName = message.senderName;-->
+<!--//         createdAt = new Date(message.createdAt).toLocaleString('ko-KR', {-->
+<!--//             hour: '2-digit',-->
+<!--//             minute: '2-digit',-->
+<!--//             hour12: true-->
+<!--//         });-->
+<!--//         roomId = message.roomId;-->
+<!--//-->
+<!--//         var newChatItem = `-->
+<!--// <a href="/chat/chat-form/${roomId}/${senderId}">-->
+<!--    //   <div class="chat-container">-->
+<!--    //     <img src="/img/profile2.png">-->
+<!--    //     <div class="chat-item">-->
+<!--    //       <span>${senderName}</span>-->
+<!--    //       <p>${content}</p>-->
+<!--    //     </div>-->
+<!--    //     <div class="chat-info">-->
+<!--    //       <p>${createdAt}</p>-->
+<!--    //       <p>1개</p>-->
+<!--    //     </div>-->
+<!--    //   </div>-->
+<!--    // </a>`;-->
+<!--//-->
+<!--//         console.log('newChatItem:', newChatItem);-->
+<!--//-->
+<!--//         // Append the new chat item to the '.alarm-item'-->
+<!--//         $('.alarm-item').append(newChatItem);-->
+<!--//-->
+<!--//     }-->
+<!--//-->
+<!--//-->
+<!--//     document.addEventListener('DOMContentLoaded', function () {-->
+<!--//         connect();-->
+<!--//     });-->

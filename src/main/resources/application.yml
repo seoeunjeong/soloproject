@@ -1,9 +1,9 @@
 spring:
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/seomoim?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     host: localhost
     port: 6379
@@ -11,6 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+      dialect: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
         format_sql: true
@@ -19,7 +20,7 @@ spring:
 
   #javaMailSenderBean
   mail:
-    host: smtp.gmail.comq
+    host: smtp.gmail.com
     port: 587
     username: ${SPRING_MAIL_USERNAME}
     password: ${SPRING_MAIL_PASSWORD}
@@ -67,9 +68,16 @@ mail:
 kakao:
   api:
     key: ${KAKAO_REST_API_KEY}
+  maps:
+    appKey: ${KAKAO_APP_KEY}
 
 cloud:
   bucket: ${CLOUD_BUCKET_NAME}
+
+
+
+
+
 
 
 

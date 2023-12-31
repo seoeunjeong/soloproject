@@ -18,6 +18,7 @@
     border-radius: 10%;
     padding: 15px;
     margin-bottom: 5px;
+    margin-right: 10px;
 }
 .today-card-container{
     display: flex;
@@ -39,6 +40,7 @@
     background-color: #fff;
     border-radius: 10%;
     padding: 15px;
+    margin-right: 10px;
 }
 
 .popular-card-container{
@@ -62,7 +64,16 @@
     background-color: #fff;
     border-radius: 10%;
     padding: 15px;
+    margin-right: 10px;
 }
+.popular-card-container .popular-like{
+    background-color: white;
+    color: red;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 .division{
     position: relative;
     left: 50%;
@@ -112,10 +123,11 @@
 }
 .dday {
     display: inline-block;
-    background-color: rgb(233, 248, 78);
+    background-color: crimson;
     border: none;
     font-size: 10px;
-    color: black;
+    font-weight: bold;
+    color: white;
     border-radius: 5px;
     padding: 5px;
 }
@@ -187,8 +199,9 @@
 .search-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 100%;
-    height: 100px;
+    height: 100%;
 }
 
 .search-container input{
@@ -315,7 +328,7 @@
 .create-container {
     display: flex;
     flex-direction: column;
-    height: 140px;
+    height: 200px;
     margin-top: 20px;
 }
 .create-container h3{
@@ -323,14 +336,18 @@
 }
 .create-container .createdMoim{
     margin-bottom:8px;
+    background-color: #fff;
+    border-bottom: 1px solid #a9a9a9;
     display: flex;
-    flex-direction: row;
+    flex-direction: row;;
     justify-content: space-between;
+    align-content: center;
+    padding: 5px 5px;
 
 }
 .create-container p{
     font-size: 18px;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
 }
 
 .create-container a{
@@ -338,6 +355,7 @@
     color: #206aea;
     font-weight: bold;
     align-self: flex-end;
+    margin-bottom: 5px;
 }
 
 .join-container{
@@ -352,7 +370,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border: 1px solid #b2b2b2;
+    background-color: #fff;
+    border: 1px solid #a9a9a9 ;
     height: 80px;
     width: 90px;
     border-radius: 20px;
@@ -389,7 +408,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border: 1px solid #b2b2b2;
+    background-color: #fff;
+    border: 1px solid #a9a9a9 ;
     height: 80px;
     width: 90px;
     border-radius: 20px;
@@ -427,7 +447,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border: 1px solid #b2b2b2;
+    background-color: #fff;
+    border: 1px solid #a9a9a9 ;
     height: 80px;
     width: 90px;
     border-radius: 20px;
@@ -449,6 +470,31 @@
     font-size: 13px;
     font-weight: 600;
     color: black;
+}
+
+.nearBy-container {
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    margin: 20px 0px;
+    height: 180px;
+}
+.nearBy-container .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-bottom: 1px solid #a9a9a9;
+    font-size: 15px;
+    width: 240px;
+    height: 140px;
+    background-color: #fff;
+    border-radius: 10%;
+    padding: 15px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+.nearBy-container a{
+    text-decoration: none;
 }
 
 
@@ -482,15 +528,17 @@ hr {
     border-radius: 10px;
     color: #818181;
 }
-.result-container{
+.result-container {
     display: flex;
     margin-top: 20px;
     flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
-    height: 1000px;
-    overflow-y: auto;
+    height: 100vh;
+    overflow-y: scroll;
+
 }
+
 
 .result-container .card {
     display: flex;

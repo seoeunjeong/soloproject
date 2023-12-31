@@ -26,7 +26,6 @@ public class LikeMoim {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(columnDefinition = "TINYINT(1)")
     private boolean status;
 
 }

@@ -91,7 +91,7 @@ CREATE TABLE chat_message (
                               created_at DATETIME(6),
                               last_modified_at DATETIME(6),
                               content VARCHAR(255),
-                              read_status TINYINT(1),
+                              read_status BOOLEAN,
                               room_id BIGINT,
                               sender_id BIGINT NOT NULL,
                               PRIMARY KEY (message_id),

@@ -150,13 +150,6 @@ header span {
     color: gray;
 }
 
-
-
-
-
-
-
-
 .editForm-container{
     display: flex;
     flex-direction: column;
@@ -246,6 +239,13 @@ header span {
     border-color: #206aea;
 }
 
+.alert{
+    align-self: center;
+    margin-top: 30px;
+    font-weight: bold;
+    color: #206aea;
+}
+
 /*.btn {*/
 /*    width: 100px;*/
 /*    padding: 10px;*/
@@ -259,8 +259,3 @@ header span {
 /*    margin-top: 50px;*/
 /*    font-weight: bold;*/
 /*}*/
-.alert{
-    position: relative;
-    margin-top: 30px;
-    font-weight: bold;
-}

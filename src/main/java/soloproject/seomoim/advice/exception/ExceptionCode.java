@@ -6,7 +6,7 @@ public enum ExceptionCode {
 
     MEMBER_NOT_FOUND(404,"회원을 찾을 수 없습니다"),
     ALREADY_EXISTS_ID(409,"이미 존재하는 ID 입니다."),
-    NOT_EXISTS_MOIM(404,"존재하지않는 모임입니다."),
+    NOT_EXISTS_MOIM(404,"존재하지 않는 모임입니다."),
     ALREADY_JOIN_MOIM(400,"이미 참여한 모임입니다."),
     NOT_JOIN_MOIM(400,"모임인원이 가득차 참여 할수 없습니다"),
     NOT_ALLOW(400,"아이디 또는 비밀번호가 일치하지 않습니다."),

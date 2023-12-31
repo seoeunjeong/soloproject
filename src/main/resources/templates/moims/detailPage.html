@@ -9,7 +9,7 @@
 </head>
 <body>
 <header>
-    <a href="#" onclick="goBack()"><</a>
+    <a href="/"><</a>
     <span th:text="${moim.title}">모임 제목</span>
     <p class="like-count" id="like-count" th:text="|+ ${moim.likeCount}|">좋아요 수</p>
 </header>
@@ -79,11 +79,18 @@
 
 <script th:inline="javascript">
 
-    var memberId = /*[[${memberId}]]*/ '';
+
+    window.onerror = function (message, source, lineno, colno, error) {
+        alert(error.message)
+        return true;
+    };
+
+    var memberId = /*[[${loginMemberId}]]*/ '';
     var moimId = /*[[${moim.moimId}]]*/ '';
     var joinStatus = /*[[${joinStatus}]]*/ false;
 
     document.addEventListener('DOMContentLoaded', function () {
+
         // 초기 상태에 따라 버튼 설정
         var button = document.getElementById('joinButton');
 
@@ -100,14 +107,17 @@
         })
             .then(function (response) {
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        alert("모임 참여는 인증 회원만 가능합니다.");
+                    }
                     throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(function (response) {
-                updateParticipantContainer(response);
-                toggleJoinButton(); // 상태 변경에 따라 버튼 업데이트
-            });
+                  }
+                    return response.json();
+                })
+                .then(function (response) {
+                    updateParticipantContainer(response);
+                    toggleJoinButton(); // 상태 변경에 따라 버튼 업데이트
+                });
     }
 
     function cancelJoinHandler() {
@@ -164,7 +174,7 @@
             profileDiv.className = 'profile';
 
             var img = document.createElement('img');
-            img.src = participant.profileImageUrl || '/img/profile2.png';
+            img.src = participant.profileImageUrl || '/img/unnamed.png';
 
             var nameP = document.createElement('p');
             nameP.innerText = participant.name;
@@ -243,7 +253,7 @@
         $("#oneToOneButton").click(function() {
 
             var receiverId = /*[[${moim.memberId}]]*/ null;
-            var memberId = /*[[${memberId}]]*/ '';
+            var memberId = /*[[${loginMemberId}]]*/ '';
             $.ajax({
                 type: "POST",
                 url: "/chat/room?receiver=" + receiverId+"&sender="+memberId,
@@ -259,9 +269,6 @@
         });
     });
 
-    function goBack() {
-        window.history.back();
-    }
 
 </script>
 </body>

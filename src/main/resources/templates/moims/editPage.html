@@ -314,7 +314,7 @@
         <div class="image-container">
             <div class="profile" th:each="participant:${moim.participants}">
                 <img th:if="${participant?.profileImageUrl}" th:src="${participant?.profileImageUrl}"/>
-                <img th:unless="${participant?.profileImageUrl}" src="/img/profile2.png"/>
+                <img th:unless="${participant?.profileImageUrl}" src="/img/unnamed.png"/>
                 <p th:text="${participant?.name}"></p>
 
                 <div class="profile-info" id="profileInfo">
@@ -333,7 +333,9 @@
 <script th:inline="javascript">
 
     document.getElementById('deleteButton').addEventListener('click', function () {
+
         var moimIdToDelete = /*[[${moim.moimId}]]*/ null;
+
         fetch("/moims/" + moimIdToDelete, {
             method: 'DELETE'
         })

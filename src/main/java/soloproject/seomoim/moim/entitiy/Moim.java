@@ -1,5 +1,6 @@
 package soloproject.seomoim.moim.entitiy;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;

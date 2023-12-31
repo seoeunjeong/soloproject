@@ -125,7 +125,9 @@
     <ul id="placesList"></ul>
   </div>
 </div>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5e763cd3e0c61f4dc0a7068fb9052bbd&libraries=services"></script>
+
+<script th:src="'//dapi.kakao.com/v2/maps/sdk.js?appkey='+ ${kakaoMapsAppKey} + '&libraries=services'"></script>
+</head>
 <script th:inline="javascript">
 
   jQuery(document).ready(function($) {

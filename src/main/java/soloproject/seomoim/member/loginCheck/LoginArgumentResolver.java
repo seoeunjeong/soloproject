@@ -13,7 +13,7 @@ import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Login.class);
+        boolean hasLoginAnnotation = parameter.hasParameterAnnotation(AuthenticationdUser.class);
         boolean hasMemberType = String.class.isAssignableFrom(parameter.getParameterType());
 
         return hasLoginAnnotation && hasMemberType;

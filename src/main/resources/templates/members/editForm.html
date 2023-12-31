@@ -59,8 +59,7 @@
               id="address_kakao"
               name="address"
               th:value="${member.address}"
-              placeholder="주소"
-              required
+              placeholder="가까운 모임을 추천해 드릴게요 :)"
               readonly
       />
       </div>
@@ -74,7 +73,7 @@
     </div>
   </form>
     <div class="alert" th:class="alert" th:if="${status ==true}">
-      <p th:text="|프로필 변경이 완료되었습니다|">성공</p>
+      <p th:text="|프로필 변경 완료|">성공</p>
     </div>
     <button type="submit" class="btn" form="edit">수정</button>
 

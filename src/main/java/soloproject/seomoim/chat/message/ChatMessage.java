@@ -23,12 +23,17 @@ public class ChatMessage extends BaseEntity {
 
     private String content;
 
-    @Column(columnDefinition = "TINYINT(1)")
+
     private boolean readStatus = false;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
+
+    public void setChatRoom(ChatRoom chatRoom){
+        this.chatRoom=chatRoom;
+        chatRoom.getMessages().add(this);
+    }
 
 }
 

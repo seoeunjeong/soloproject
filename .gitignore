@@ -36,6 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-src/main/resources/application.yml
-
 .env
+
+third-impact-407104-07e059ead5a3.json

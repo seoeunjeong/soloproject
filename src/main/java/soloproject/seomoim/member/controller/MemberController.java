@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.advice.exception.BusinessLogicException;
 import soloproject.seomoim.advice.exception.ClientRequestException;
-import soloproject.seomoim.member.loginCheck.Login;
+import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
@@ -77,7 +77,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/edit_form")
-    public String myPageEditFrom(@Login String email,
+    public String myPageEditFrom(@AuthenticationdUser String email,
                                  @RequestParam(required = false) Boolean status,
                                  Model model) {
         Member member = memberService.findByEmail(email);

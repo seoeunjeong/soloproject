@@ -1,6 +1,7 @@
 package soloproject.seomoim.moim.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,12 +22,14 @@ import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.moim.repository.MoimRepository;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MoimService {
 
     private final MoimRepository moimRepository;
@@ -73,7 +76,14 @@ public class MoimService {
         Optional.ofNullable(moim.getPlaceAddress())
                 .ifPresent(placeAddress->{
                     findMoim.setPlaceAddress(placeAddress);
-                    DocumentDto documentDto = kakaoAddressSearchService.requestAddressSearch(placeAddress).getDocumentDtoList().get(0);
+                    DocumentDto documentDto= null;
+                    try{
+                        documentDto = kakaoAddressSearchService.requestAddressSearch(placeAddress).getDocumentDtoList().get(0);
+                    }catch (Exception e){
+                        log.error(e.getMessage());
+                    }
+                    findMoim.setLongitude(documentDto.getLongitude());
+                    findMoim.setLatitude(documentDto.getLatitude());
                     findMoim.setAddressDong(documentDto.getRegion3DepthName());
                 });
         Optional.ofNullable(moim.getMoimCategory())
@@ -159,14 +169,13 @@ public class MoimService {
     }
 
 
-    public List<Moim> findTodayMoims(){
-        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-        return moimRepository.findByStartedAtBetween(startOfDay,endOfDay);
+    public List<Moim> findTodayMoims() {
+        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);
+        return moimRepository.findByStartedAtBetween(startOfDay, endOfDay);
     }
-
     public List<Moim> findPopularMoims() {
-        return moimRepository.findByLikeCountGreaterThan(2,PageRequest.of(0,5));
+        return moimRepository.findLikeCountTop5(PageRequest.of(0, 5));
     }
 
     public Moim findMoim(Long moimId) {
