@@ -15,6 +15,7 @@
         }
         body {
             font-family: 'Nanum Gothic', serif, sans-serif;
+            zoom: 0;
         }
 
         header {
@@ -22,20 +23,17 @@
             position: fixed;
             width: 100%;
             height: 40px;
-            z-index: 1000;
             top: 0;
-            justify-content: space-between;
             align-items: center;
             background-color: #fff;
-            color: #000000f8;
+            color: black;
+            z-index: 1000;
         }
 
         header >a {
             text-decoration: none;
-            font-size: 17px;
-            color: black;
-            font-weight: 800;
         }
+
         header span {
             margin: 0 auto;
             text-decoration: none;
@@ -43,14 +41,19 @@
             color: black;
             font-weight: 800;
         }
-
+        header p{
+            margin: 0 auto;
+            font-size: 15px;
+            color: black;
+            font-weight: 600;
+        }
 
         .chat-container {
             margin: 40px 0px 60px 0px;
-            height: 100vh;
-            padding: 20px;
+            padding: 5px;
             background-color: #BFD1D9;
-            overflow-y: auto
+            height: calc(100vh - 110px);
+            overflow-y: scroll;
         }
 
         .chat-messages{
@@ -95,7 +98,6 @@
             border-style: solid;
             border-color: transparent #ffffff transparent transparent;
         }
-
         .chat-column{
             display: flex;
             flex-direction: column;
@@ -141,42 +143,6 @@
             border-style: solid;
             border-color: transparent transparent transparent #ffffff;
         }
-
-
-        .chat-input{
-            width: calc(100% - 60px);
-            display: flex;
-            flex-direction: row;
-            position: fixed;
-            bottom: 0;
-            padding: 10px;
-        }
-
-        .chat-text{
-            width: calc(100% - 70px);
-            height: 40px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 5px;
-            padding: 0px 10px;
-        }
-
-        .chat-text:focus {
-            outline: none;
-        }
-        button {
-            padding: 5px;
-            background-color: white;
-            color: #969595;
-            border: 1px solid #969595;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 60px;
-            height: 40px;
-            font-size: 15px;
-            font-weight: bold;
-        }
-
         .bottom{
             display: flex;
             flex-direction: row;
@@ -197,20 +163,54 @@
             align-items: flex-end;
         }
 
+        .chat-input{
+            display: flex;
+            flex-direction: row;
+            justify-content: center; /* 가로 방향 가운데 정렬 추가 */
+            position: fixed;
+            bottom: 0;
+            padding: 10px;
+            background-color: #ffffff;
+            width: 100%;
+        }
+
+        .chat-text{
+            flex: 1; /* 남은 공간을 차지하도록 설정 */
+            width: 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 5px;
+            padding: 0px 10px;
+        }
+
+        .chat-text:focus {
+            outline: none;
+        }
+
+        button {
+            padding: 5px;
+            background-color: white;
+            color: #969595;
+            border: 1px solid #969595;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 60px;
+            height: 40px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
     </style>
 </head>
 <body>
-
 <header>
     <a href="/" id="disconn"><span><</span></a>
-    <span>1:1 채팅</span>
+    <p th:text="|${room.ownerMember.name}님과의 대화|">1:1 채팅</p>
 </header>
-
 <div class="chat-container">
     <div class="chat-messages">
         <div id="messages" class="chat-column">
-
-
             <div th:each="message : ${allChat}">
                 <!-- Sender's message -->
                 <div th:if="${message.sender.id == loginMemberId}" class="send-info">
@@ -245,25 +245,22 @@
             </div>
         </div>
     </div>
-
-    <footer>
-    <form class="chat-input" id="message-form">
-        <input class="chat-text" id="chat-text" type="text" placeholder="메시지를 입력하세요">
-        <button id="sendButton" type="submit">전송</button>
-    </form>
-    </footer>
 </div>
+<form class="chat-input" id="message-form">
+    <input class="chat-text" id="chat-text" type="text" placeholder="메시지를 입력하세요">
+    <button id="sendButton" type="submit">전송</button>
+</form>
 
 
 <script th:inline="javascript">
 
     var stompClient = null;
 
-    var roomId = /*[[${roomId}]]*/ null;
+    var roomId = /*[[${room.id}]]*/ null;
 
     var loginMemberId = /*[[${loginMemberId}]]*/ null;
 
-    var messageIds=/*[[${massageIds}]]*/
+    var messageIds =/*[[${massageIds}]]*/ null;
 
     function connect() {
 
@@ -275,10 +272,12 @@
 
             console.log('Connected: ' + frame);
 
+            markMessageAsRead(roomId,messageIds);
+
             stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
                 var messageContent = JSON.parse(response.body);
                 showMessage(messageContent);
-                markMessageAsRead(messageContent.messageId);
+                // markMessageAsRead(messageContent.messageId);
             });
 
             stompClient.subscribe('/sub/check-read', function (statusResponse) {
@@ -290,10 +289,10 @@
         });
     }
 
-    function markMessageAsRead(messageId) {
+    function markMessageAsRead(roomId,messageIds) {
         if(loginMemberId != senderId)
-            // 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
-            stompClient.send('/pub/mark-as-read/' + messageId, {}, JSON.stringify({ messageIds: messageIds }));
+            // 룸 입장시 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
+            stompClient.send('/pub/mark-as-read/' + roomId, {}, JSON.stringify({ messageIds: messageIds }));
     }
 
     function markReadDB() {
@@ -310,6 +309,12 @@
         var senderName = messageContent.senderName;
 
         senderId= messageContent.senderId;
+
+        var readStatus = messageContent.readStatus ? '읽음' : '안읽음';
+
+        if (senderId !== loginMemberId) {
+            updateReadStatus(true);
+        }
 
         loginMemberId = /*[[${loginMemberId}]]*/ null;
 

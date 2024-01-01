@@ -18,6 +18,7 @@ import soloproject.seomoim.member.service.MemberService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Controller
@@ -55,37 +56,34 @@ public class ChatController {
         response.setContent(message.getContent());
         response.setRoomId(findRoom.getId());
         response.setMessageId(saveMessage.getId());
+        response.setReadStatus(chatMessage.isReadStatus());
 
         messagingTemplate.convertAndSend("/sub/chatMessage/"+message.getRoomId(),response);
     }
 
 
-    @MessageMapping("/mark-as-read/{messageId}")
-    public void markAsRead(@DestinationVariable Long messageId,
+    @MessageMapping("/mark-as-read/{roomId}")
+    public void markAsRead(@DestinationVariable Long roomId,
                            @Payload MarkAsReadRequest request) {
+        //방입장시에 받은 메세지들의 상태를 읽음으로 변경
         List<Long> messageIds = request.getMessageIds();
-
         for(Long chatMessageId : messageIds){
             ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
                     .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
             chatMessage.setReadStatus(true);
             chatMessageRepository.save(chatMessage);
         }
-        ChatMessage chatMessage = chatMessageRepository.findById(messageId).orElseThrow(() -> new IllegalStateException("존재하지않는메시지"));
-        chatMessage.setReadStatus(true);
-        chatMessageRepository.save(chatMessage);
-        ReadStatusDto readStatusDto = new ReadStatusDto();
-        readStatusDto.setMessageId(messageId);
-        readStatusDto.setReadStatus(true);
-
-        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
+//        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
     }
 
     @Getter @Setter
     private static class ReadStatusDto{
-        private Long messageId;
+        private List<Long> messageId;
         private boolean readStatus;
 
+        public void add(Long messageId){
+            this.messageId.add(messageId);
+        }
     }
 
     @Setter@Getter

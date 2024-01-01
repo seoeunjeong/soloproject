@@ -54,7 +54,7 @@ public class SecurityConfiguration {
                         .antMatchers("/moims/post/**").hasRole("AUTH_USER")
                         .antMatchers(HttpMethod.GET, "/moims/**").permitAll()
                         .antMatchers(HttpMethod.POST, "/moims/**").hasRole("AUTH_USER")
-                        .antMatchers("/members").permitAll()
+                        .antMatchers("/members/**").permitAll()
                         .antMatchers("/chat/**").permitAll()
                         .anyRequest().authenticated());
 

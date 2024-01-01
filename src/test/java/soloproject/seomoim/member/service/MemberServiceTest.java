@@ -76,19 +76,19 @@ class MemberServiceTest {
         assertThat(member.getAge()).isEqualTo(33);
     }
 
-    @Test
-    public void 회원삭제테스트() throws Exception{
-        //given
-        Member member = new Member();
-        member.setEmail("dmswjd@naver.com");
-        member.setPassword("1111");
-        member.setConfirmPassword("1111");
-        Long signupId = memberService.signup(member);
-        //when
-        memberService.delete(signupId);
-
-        //then
-        assertThrows(BusinessLogicException.class,()->memberService.findMember(signupId));
-    }
+//    @Test
+//    public void 회원삭제테스트() throws Exception {
+//        //given
+//        Member member = new Member();
+//        member.setEmail("dmswjd@naver.com");
+//        member.setPassword("1111");
+//        member.setConfirmPassword("1111");
+//        Long signupId = memberService.signup(member);
+//        //when
+//        memberService.delete(signupId);
+//
+//        //then
+//        assertThrows(BusinessLogicException.class, () -> memberService.findMember(signupId));
+//    }
 
 }

@@ -113,7 +113,19 @@ public class MemberController {
     }
 
 
-    @GetMapping("/member/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/members/{member-id}")
+    public void DeleteMember(@PathVariable("member-id") Long memberId,
+                             @AuthenticationdUser String email) {
+        log.info("email={}",email);
+        log.info("memberId={}",memberId);
+        Member findMember = memberService.findMember(memberId);
+        log.info("findMember={}",findMember);
+        memberService.delete(email,findMember.getId());
+    }
+
+
+    @GetMapping("/members/logout")
     public String googleLogout(Authentication authentication,HttpServletRequest request) {
 
         OAuth2AuthorizedClient google = oAuth2AuthorizedClientService.loadAuthorizedClient("google", authentication.getName());

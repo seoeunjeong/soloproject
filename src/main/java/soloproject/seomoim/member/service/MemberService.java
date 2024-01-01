@@ -79,9 +79,13 @@ public class MemberService {
     }
 
     @Transactional
-    public void delete(Long memberId){
-        Member member = findMember(memberId);
-        memberRepository.delete(member);
+    public void delete(String email,Long memberId){
+        Member loginMember = findByEmail(email);
+        Member deleteMember = findMember(memberId);
+        if(loginMember!=deleteMember){
+            throw new BusinessLogicException(ExceptionCode.INVALID_REQUEST);
+        }
+        memberRepository.delete(deleteMember);
     }
 
 
@@ -93,8 +97,7 @@ public class MemberService {
 
     public Member findByEmail(String email){
          return memberRepository.findByEmail(email)
-                .
-                 orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
     private void checkIdDuplication(Member member) {

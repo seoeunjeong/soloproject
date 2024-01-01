@@ -252,8 +252,8 @@
 
         $("#oneToOneButton").click(function() {
 
-            var receiverId = /*[[${moim.memberId}]]*/ null;
-            var memberId = /*[[${loginMemberId}]]*/ '';
+            const receiverId = /*[[${moim.memberId}]]*/ null;
+            const memberId = /*[[${loginMemberId}]]*/ null;
             $.ajax({
                 type: "POST",
                 url: "/chat/room?receiver=" + receiverId+"&sender="+memberId,

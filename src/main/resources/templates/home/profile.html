@@ -2,9 +2,8 @@
 <html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
 <header>
   <a href="/"><span>프로필</span></a>
-  <a href="/member/logout"><p>로그아웃</p>
-    <img src="/img/logout.png" alt="logout.png"
-    /></a>
+  <a href="#" onclick="confirmAndDelete()"><p>회원탈퇴</p><img src="/img/logout.png" alt="logout.png"/>
+  </a>
 </header>
 <section>
   <div class="image-container">
@@ -71,7 +70,8 @@
   <div class="latest-container">
     <p th:if="${latest.isEmpty()}" style="color: #948f8f; font-size: 15px;">최근 본 모임이 아직 없어요.</p>
     <div th:each="moim:${latest}">
-      <a href="#" th:onclick="'handleLinkClick(event, ' + ${moim.moimId} + ')'">
+<!--      <a th:href="@{/moims/{moimdId}(moimdI=${moim.moimId})}">-->
+      <a href="#" th:onclick="'handleDelete(' + ${moim.moimId} + ')'">
         <div class="latestMoim">
           <p th:text="${moim.title}"></p>
           <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
@@ -125,30 +125,25 @@
   <button class="post-but" id="postButton">+</button>
 
   <script th:inline="javascript">
+
     const postButton = document.getElementById('postButton');
+
     postButton.addEventListener('click', function () {
-      window.location.href='/moims/post'
+      window.location.href = '/moims/post'
     });
-  </script>
 
-
-  <script th:inline="javascript">
-
-    var memberId = /*[[${member.id}]]*/ '';
-
-    function handleLinkClick(event, moimId) {
-
-      var url = '/moims/' + moimId;
+    function handleDelete(moimId) {
+      const url = '/moims/' + moimId;
 
       $.ajax({
         type: 'GET',
         url: url,
-        success: function(response) {
+        success: function (response) {
           window.location.href = url;
         },
-        error: function(xhr) {
+        error: function (xhr) {
           try {
-            var errorResponse = JSON.parse(xhr.responseText);
+            const errorResponse = JSON.parse(xhr.responseText);
 
             if (xhr.status === 404) {
               alert(errorResponse.message);
@@ -158,12 +153,13 @@
           } catch (e) {
             console.error('에러 응답 파싱 중 오류 발생');
           }
-      }});
+        }
+      });
 
-      // event.preventDefault();
     }
 
-    var editButton = document.getElementById('editButton');
+
+    const editButton = document.getElementById('editButton');
 
     editButton.addEventListener('click', function () {
       window.location.href = '/members/edit_form'
@@ -172,9 +168,29 @@
 
     const emailButton = document.getElementById('email-button');
 
-    emailButton.addEventListener('click',function (){
-      window.location.href='/email/auth-form'
-    })
+    emailButton.addEventListener('click', function () {
+      window.location.href = '/email/auth-form'
+    });
+
+
+    function confirmAndDelete() {
+      const loginMemberId = /*[[${loginMemberId}]]*/ '';
+      if (confirm('정말로 탈퇴하시겠습니까?')) {
+        const xhr = new XMLHttpRequest();
+        const url = '/members/' +loginMemberId;
+        xhr.open('DELETE', url, true);
+        xhr.onload = function () {
+          if (xhr.status === 204) {
+            alert('탈퇴되었습니다.');
+            window.location.href = '/login-form'
+          } else {
+            alert('탈퇴에 실패했습니다.');
+          }
+        };
+        xhr.send();
+      }
+    }
+
   </script>
 
 </section>

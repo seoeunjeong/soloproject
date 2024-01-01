@@ -40,21 +40,19 @@ public class ChatRoomController {
         }
         Optional<ChatRoom> findRoom = chatRoomRepository.findByOwnerMemberAndRequestMember(ownerMember,requestMember);
 
-
         if (findRoom.isPresent()) {
-            ChatRoom.Dto dto = new ChatRoom.Dto();
-            dto.setRoomId(findRoom.get().getId());
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            ChatRoom.Dto chatRommDto = new ChatRoom.Dto();
+            chatRommDto.setRoomId(findRoom.get().getId());
+            return new ResponseEntity<>(chatRommDto, HttpStatus.OK);
         }
         if(findRoom.isEmpty()){
             ChatRoom createChatRoom = new ChatRoom();
             createChatRoom.setOwnerMember(ownerMember);
             createChatRoom.setRequestMember(requestMember);
-
             ChatRoom createdChatRoom = chatRoomRepository.save(createChatRoom);
-            ChatRoom.Dto dto = new ChatRoom.Dto();
-            dto.setRoomId(createdChatRoom.getId());
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            ChatRoom.Dto chatRommDto = new ChatRoom.Dto();
+            chatRommDto.setRoomId(createdChatRoom.getId());
+            return new ResponseEntity<>(chatRommDto, HttpStatus.OK);
         }
 
         return null;
@@ -64,16 +62,18 @@ public class ChatRoomController {
     @GetMapping("/chat-form/{room-id}")
     public String chatRoom(@PathVariable("room-id") Long roomId,
                            @AuthenticationdUser String email, Model model) {
-            Member loginMember = memberService.findByEmail(email);
-            model.addAttribute("loginMemberId", loginMember.getId());
-            model.addAttribute("roomId", roomId);
-            Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
-            List<ChatMessage> allMessage = chatMessageRepository.findByChatRoom(chatRoom.get());
-            List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())
-                    .collect(Collectors.toList());
-            chatMessageRepository.saveAll(allMessage);
-            model.addAttribute("allChat", allMessage);
-            model.addAttribute("massageIds", messageIds);
+        Member loginMember = memberService.findByEmail(email);
+        model.addAttribute("loginMemberId", loginMember.getId());
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalStateException("존재하지않는 채팅방입니다"));
+        model.addAttribute("room", chatRoom);
+        List<ChatMessage> allMessage = chatMessageRepository.findByChatRoom(chatRoom);
+        List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())
+                .collect(Collectors.toList());
+//           chatMessageRepository.saveAll(allMessage);
+        model.addAttribute("allChat", allMessage);
+        //채팅방입장시에 받은사람의 메세지상태를 변경하기위해 사용
+        model.addAttribute("massageIds", messageIds);
 
         return "moims/chatRoom";
     }
