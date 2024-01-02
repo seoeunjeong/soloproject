@@ -15,6 +15,7 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.utils.UriCreator;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -46,18 +47,22 @@ public class ChatRoomController {
 
         Member loginMember = memberService.findByEmail(email);
         model.addAttribute("loginMemberId", loginMember.getId());
-
         ChatRoom findChatRoom = chatRoomService.findChatRoomById(roomId);
         model.addAttribute("room", findChatRoom);
-        List<ChatMessage> allMessage = findChatRoom.getMessages();
-        model.addAttribute("allChat", allMessage);
+//        List<ChatMessage> allMessage = findChatRoom.getMessages();
+        List<ChatMessage> allChatMessage = chatMessageRepository.findByChatRoom(findChatRoom);
+        model.addAttribute("allChat", allChatMessage);
 
-        for(ChatMessage message: allMessage){
+
+        for(ChatMessage message: allChatMessage){
             if(loginMember!=message.getSender()){
                 message.setReadStatus(ReadStatus.READ);
                 chatMessageRepository.save(message);
             }
         }
+        /*채팅방입장할때 DB에 저장된 메세지를 읽는건 서버에서 처리 클라이언트가어떻게 알지?*/
+
+
         return "moims/chatRoom";
     }
 
@@ -71,7 +76,3 @@ public class ChatRoomController {
     }
 
 }
-
-/*채팅방입장할때 DB에 저장된 메세지를 읽는건 서버에서 처리*/
-//       List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())         .collect(Collectors.toList());
-//        model.addAttribute("massageIds", messageIds);

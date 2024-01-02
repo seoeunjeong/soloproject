@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import soloproject.seomoim.chat.message.ChatMessage;
+import soloproject.seomoim.chat.message.ChatService;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.chat.room.ChatRoomRepository;
 import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
@@ -23,7 +25,9 @@ import soloproject.seomoim.recommend.DistanceService;
 import soloproject.seomoim.utils.PageResponseDto;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +43,7 @@ public class HomeController {
     private final ChatRoomRepository chatRoomRepository;
     private final LatestViewService latestViewService;
     private final DistanceService distanceService;
-
+    private final ChatService chatService;
     @GetMapping("/")
     public String home(Model model) {
 
@@ -76,12 +80,22 @@ public class HomeController {
     public String alarmFrom(@AuthenticationdUser String mail, Model model) {
         Member loginMember = memberService.findByEmail(mail);
         List<ChatRoom> allChatRoom = chatRoomRepository.findByMember(loginMember);
+
+        // Map을 사용하여 각 채팅방의 안 읽은 메시지 수를 계산
+        Map<Long, Long> unreadMessageCountMap = new HashMap<>();
+        for (ChatRoom chatRoom : allChatRoom) {
+            List<ChatMessage> unreadMessages = chatService.findUnreadMessageByLoginMember(loginMember,chatRoom.getId());
+            long unreadMessageCount = unreadMessages.size();
+            unreadMessageCountMap.put(chatRoom.getId(), unreadMessageCount);
+        }
 //        todo roomId로 알람을 구독하자!
-//        List<Long> chatRoomIds = allChatRoom.stream().map(ChatRoom::getId)
-//                .collect(Collectors.toList());
-//        log.info("chatRoomIds={}",chatRoomIds);
+        List<Long> chatRoomIds = allChatRoom.stream().map(ChatRoom::getId)
+                .collect(Collectors.toList());
+        log.info("chatRoomIds={}",chatRoomIds);
+
         model.addAttribute("chatRooms",allChatRoom);
-//        model.addAttribute("chatRoomIds", chatRoomIds);
+        model.addAttribute("unreadMessageCounts", unreadMessageCountMap);
+        model.addAttribute("chatRoomIds", chatRoomIds);
 
         return "home/chat";
     }

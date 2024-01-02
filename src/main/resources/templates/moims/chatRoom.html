@@ -81,11 +81,11 @@
             font-size: 13px;
         }
         .receive-message{
-            max-width: 300px;
+            max-width: 200px;
             background-color: #ffffff;
             color: #000000;
-            border-radius: 10px;
-            padding: 10px;
+            border-radius: 5px;
+            padding: 8px;
             position: relative;
         }
         .receive-message:after {
@@ -124,11 +124,11 @@
         }
         .send-message {
             align-self: flex-end;
-            max-width: 300px;
+            max-width: 200px;
             background-color: #ffffff;
             color: #000000;
-            border-radius: 10px;
-            padding: 10px;
+            border-radius: 5px;
+            padding: 8px;
             position: relative;
 
         }
@@ -205,8 +205,8 @@
 </head>
 <body>
 <header>
-    <a href="/" id="disconn"><span><</span></a>
-    <p th:text="|${room.ownerMember.name}님과의 대화|">1:1 채팅</p>
+    <a href="/chat" id="disconn"><span><</span></a>
+    <p th:text="${(room.ownerMember.id == loginMemberId) ? room.requestMember.name : room.ownerMember.name} + '님과의 대화'">1:1 채팅</p>
 </header>
 <div class="chat-container">
     <div class="chat-messages">
@@ -219,7 +219,7 @@
                     <div>
                         <p th:text="${message.sender.name}"></p>
                         <div class="bottom">
-                            <span class="time" th:text="${message.readStatus.status}">읽음</span>
+                            <span class="status" th:text="${message.readStatus.status}">읽음</span>
                             <span class="time" th:text="${#temporals.format(message.createdAt,'a hh:mm')}">오후 00:00 </span>
                             <span class="message send-message" th:text="${message.content}"></span>
                         </div>
@@ -259,7 +259,11 @@
 
     var loginMemberId = /*[[${loginMemberId}]]*/ null;
 
-    var messageIds =/*[[${massageIds}]]*/ null;
+    // var readMessages =/*[[${readMessages}]]*/ null;
+
+    // readMessages.forEach(function (readMessage) {
+    //     markMessageAsRead(loginMemberId, readMessage.sender.id, readMessage.messageId, stompClient);
+    // });
 
     function connect() {
 
@@ -271,22 +275,20 @@
 
             console.log('Connected: ' + frame);
 
-            // markMessageAsRead(roomId,messageIds);
 
             stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
                 var messageContent = JSON.parse(response.body);
                 showMessage(messageContent);
-                // markMessageAsRead(messageContent.messageId);
             });
 
             stompClient.subscribe('/sub/check-read', function (statusResponse) {
-                var statusResponse = JSON.parse(statusResponse.body);
-                if (statusResponse.status) {
-                    updateReadStatus(true);
-                }
+                console.log('Received check-read response: ', statusResponse);
+                var statusContent = JSON.parse(statusResponse.body);
+                updateReadStatus(statusContent.messageId,statusContent.readStatus);
+
             });
         });
-    }
+    };
 
 
     function showMessage(messageContent) {
@@ -305,6 +307,7 @@
 
         const createdAt = new Date(messageContent.createdAt);
 
+        const messageId = messageContent.messageId;
         const formatter = new Intl.DateTimeFormat('ko-KR', {
             hour: '2-digit',
             minute: '2-digit',
@@ -320,19 +323,19 @@
         var bottom = senderId === loginMemberId ? 'bottom' : 'receive-bottom';
 
 
-        var messageHtml ='<div class="' + messageClass + '">' +
+        var messageHtml ='<div id="'+messageId+'"class="' + messageClass + '">' +
             '<img src="'+senderProfileUrl+'">' +
             '<div>' +
             '<p>' + senderName + '</p>' +
             '<div class="'+bottom+'">'+
-                '<span class="time" class="status">'+readStatus+'</span>'+
-                '<span class="time">'+datetime+'</span>'+
-                '<span class="message ' + message + '">' + content + '</span>'+
+            '<span class="status">'+readStatus+'</span>'+
+            '<span class="time">'+datetime+'</span>'+
+            '<span class="message ' + message + '">' + content + '</span>'+
             '</div></div></div>';
 
         // 받은 메시지일 경우 readStatus 부분을 추가하지 않음
         if (senderId !== loginMemberId) {
-            messageHtml = ('<div class="' + messageClass + '">' +
+            messageHtml = ('<div id="'+messageId+'"class="' + messageClass + '">' +
                 '<img src="'+senderProfileUrl+'">' +
                 '<div>' +
                 '<p>' + senderName + '</p>' +
@@ -344,29 +347,24 @@
 
         $('#messages').append(messageHtml);
 
+        markMessageAsRead(loginMemberId,senderId,messageContent.messageId,stompClient)
     }
 
-    //
-    // if (senderId !== loginMemberId) {
-    //     updateReadStatus(true);
-    // }
-    // function markMessageAsRead(roomId,messageIds) {
-    //     if(loginMemberId != senderId)
-    //         // 룸 입장시 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
-    //         stompClient.send('/pub/mark-as-read/' + roomId, {}, JSON.stringify({ messageIds: messageIds }));
-    // }
-    //
-    // function markReadDB() {
-    //     if(loginMemberId != senderId)
-    //         stompClient.send('/pub/mark-as-read/', {}, JSON.stringify({ messageIds: messageIds }));
-    // }
 
-    // function updateReadStatus(readStatus) {
-    //     const readStatusElement = $('.status');
-    //     if (readStatusElement.length > 0) {
-    //         readStatusElement.text(readStatus); // 상태에 따라 내용을 변경합니다.
-    //     }
-    // }
+    function markMessageAsRead(loginMemberId,senderId,messageId,stompClient) {
+        if(loginMemberId != senderId)
+            // 실시간으로 받은 메세지 읽었다고 알려주기.
+            stompClient.send('/pub/mark-as-read/' + messageId,{},JSON.stringify({}));
+    }
+
+
+    function updateReadStatus(messageId,readStatus) {
+        console.log('Updating read status for message ID ' + messageId + ': ' + readStatus);
+
+        const messageElement = $('#' + messageId);
+        messageElement.find('.status').text(readStatus);
+
+    }
 
 
 
@@ -389,7 +387,6 @@
 
         });
     });
-
 </script>
 </body>
 </html>

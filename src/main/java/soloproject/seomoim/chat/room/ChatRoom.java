@@ -2,7 +2,9 @@ package soloproject.seomoim.chat.room;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.transaction.annotation.Transactional;
 import soloproject.seomoim.chat.message.ChatMessage;
+import soloproject.seomoim.chat.message.ReadStatus;
 import soloproject.seomoim.member.entity.Member;
 
 import javax.persistence.*;
@@ -39,5 +41,11 @@ public class ChatRoom {
         this.requestMember= member;
         member.getRequestRooms().add(this);
     }
+
+//    public long getUnreadMessageCount() {
+//        return messages.stream()
+//                .filter(message ->message.getReadStatus() == ReadStatus.UNREAD)
+//                .count();
+//    }
 }
 

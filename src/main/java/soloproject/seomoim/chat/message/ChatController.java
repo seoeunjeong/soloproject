@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.chat.room.ChatRoomRepository;
+import soloproject.seomoim.chat.room.ChatRoomService;
 import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
 import soloproject.seomoim.member.service.MemberService;
 
 import java.time.LocalDateTime;
@@ -25,16 +27,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
-
     private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
 
     @MessageMapping("/chatMessage")
+    @Transactional
     public void sendMessage(@RequestBody ChatMessageDto.Send message) {
-
         ChatMessage savedMessage = chatService.createMessage(message);
-
         ChatMessageDto.Response responseMessage = chatMessageMapper(savedMessage);
-
+        Long unReadMessageCount = chatService.GetUnReadMessageCount(message.getRoomId());
+        responseMessage.setUnReadCount(unReadMessageCount);
         messagingTemplate.convertAndSend("/sub/chatMessage/" + message.getRoomId(), responseMessage);
     }
 
@@ -50,50 +53,27 @@ public class ChatController {
             String profileImageUrl = chatMessage.getSender().getProfileImage().getProfileImageUrl();
             responseDto.setSenderProfileUrl(profileImageUrl);
         }
+        responseDto.setRoomId(chatMessage.getChatRoom().getId());
+        //읽지않은 메세지수를 응답으로 같이 보내주자.
+
         return responseDto;
     }
 
 
-//    @MessageMapping("/mark-as-read/{roomId}")
-//    public void markAsRead(@DestinationVariable Long roomId,
-//                           @Payload MarkAsReadRequest request) {
-//        //방입장시에 받은 메세지들의 상태를 읽음으로 변경
-//        List<Long> messageIds = request.getMessageIds();
-//        for(Long chatMessageId : messageIds){
-//            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
-//                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
-//            chatMessage.setReadStatus(ReadStatus.READ);
-//            chatMessageRepository.save(chatMessage);
-//        }
-////        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
-//    }
+    @MessageMapping("/mark-as-read/{messageId}")
+    public void markAsRead(@DestinationVariable Long messageId) {
+        ChatMessage chatMessage = chatService.updateReadStatus(messageId);
+        ReadStatusDto readStatusDto = new ReadStatusDto();
+        readStatusDto.setMessageId(chatMessage.getId());
+        readStatusDto.setReadStatus(chatMessage.getReadStatus());
+        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
+    }
 
-//    @Getter @Setter
-//    private static class ReadStatusDto{
-//        private List<Long> messageId;
-//        private boolean readStatus;
-//
-//        public void add(Long messageId){
-//            this.messageId.add(messageId);
-//        }
-//    }
+    @Getter
+    @Setter
+    private class ReadStatusDto{
+        private Long messageId;
+        private ReadStatus readStatus;
 
-//    @Setter@Getter
-//    private static class MarkAsReadRequest {
-//        private List<Long> messageIds;
-//    }
-
-//
-//    @MessageMapping("/mark-as-read")
-//    public void markAsRead(@Payload MarkAsReadRequest request) {
-//        List<Long> messageIds = request.getMessageIds();
-//
-//        for(Long chatMessageId : messageIds){
-//            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
-//                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
-//            chatMessage.setReadStatus(ReadStatus.READ);
-//            chatMessageRepository.save(chatMessage);
-//        }
-//        messagingTemplate.convertAndSend("/sub/check-read",true);
-//    }
+    }
 }

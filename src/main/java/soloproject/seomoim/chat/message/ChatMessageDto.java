@@ -20,11 +20,13 @@ public class ChatMessageDto {
     @Setter
     public static class Response{
         private Long messageId;
+        private Long roomId;
         private Long senderId;
         private String senderName;
         private String senderProfileUrl;
         private String content;
         private ReadStatus readStatus;
         private LocalDateTime createdAt;
+        private Long unReadCount;
     }
 }

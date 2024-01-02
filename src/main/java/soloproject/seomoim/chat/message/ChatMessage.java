@@ -27,7 +27,7 @@ public class ChatMessage extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ReadStatus readStatus = ReadStatus.UNREAD;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
