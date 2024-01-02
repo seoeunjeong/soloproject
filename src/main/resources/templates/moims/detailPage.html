@@ -258,9 +258,8 @@
                 type: "POST",
                 url: "/chat/room?receiver=" + receiverId+"&sender="+memberId,
                 contentType: "application/json",
-                success: function (response) {
-                    var roomId = response.roomId;
-                    window.location.href = "/chat/chat-form/" + roomId;
+                success: function (data, status, xhr) {
+                    window.location.href = xhr.getResponseHeader("Location");
                 },
                 error: function(response) {
                     alert(response.responseJSON.message);

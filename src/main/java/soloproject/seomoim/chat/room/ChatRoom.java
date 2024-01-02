@@ -30,17 +30,14 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom")
     private List<ChatMessage> messages = new ArrayList<>();
 
-    //연관관계 주인이 아닌쪽 연관관계 편의 메소드로 데이터 넣어주기 ㅎㅎㅎㅎ
-//    public void addMember(Member member) {
-//        this.members.add(member);
-//        member.getChatRooms().add(this);
-//    }
-
-    public static class Dto{
-        @Setter
-        @Getter
-        private Long roomId;
+    //연관관계 편의메소드 연관관계 주인이 아닌쪽 데이터도 넣어주기//
+    public void addOwnerMember(Member member) {
+        this.ownerMember= member;
+        member.getOwnerRooms().add(this);
     }
-
+    public void addRequestMember(Member member) {
+        this.requestMember= member;
+        member.getRequestRooms().add(this);
+    }
 }
 

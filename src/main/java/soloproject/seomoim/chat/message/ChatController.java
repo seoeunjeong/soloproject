@@ -18,90 +18,82 @@ import soloproject.seomoim.member.service.MemberService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class ChatController {
-    private final ChatMessageRepository chatMessageRepository;
-    private final ChatRoomRepository chatRoomRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final MemberService memberService;
+
+    private final ChatService chatService;
 
     @MessageMapping("/chatMessage")
-    @Transactional
-    public void sendMessage(@RequestBody ChatMessageDto.Post message) {
-        ChatMessage chatMessage = new ChatMessage();
-        Member senderMember = memberService.findMember(message.getSender());
-        chatMessage.setSender(senderMember);
+    public void sendMessage(@RequestBody ChatMessageDto.Send message) {
 
-        ChatRoom findRoom = chatRoomRepository.findById(message.getRoomId())
-                .orElseThrow(() -> new IllegalStateException("존재하지않는 채팅방입니다"));
-        chatMessage.setChatRoom(findRoom);
-        chatMessage.setContent(message.getContent());
-        chatMessage.setReadStatus(false);
-        ChatMessage saveMessage = chatMessageRepository.save(chatMessage);
+        ChatMessage savedMessage = chatService.createMessage(message);
 
-        ChatMessageDto.Response response = new ChatMessageDto.Response();
+        ChatMessageDto.Response responseMessage = chatMessageMapper(savedMessage);
 
-        if(senderMember.getProfileImage()!=null){
-        String profileImageUrl = senderMember.getProfileImage().getProfileImageUrl();
-            response.setSenderProfileUrl(profileImageUrl);
+        messagingTemplate.convertAndSend("/sub/chatMessage/" + message.getRoomId(), responseMessage);
+    }
+
+    private ChatMessageDto.Response chatMessageMapper(ChatMessage chatMessage) {
+        ChatMessageDto.Response responseDto = new ChatMessageDto.Response();
+        responseDto.setMessageId(chatMessage.getId());
+        responseDto.setSenderId(chatMessage.getSender().getId());
+        responseDto.setSenderName(chatMessage.getSender().getName());
+        responseDto.setContent(chatMessage.getContent());
+        responseDto.setReadStatus(chatMessage.getReadStatus());
+        responseDto.setCreatedAt(chatMessage.getCreatedAt());
+        if (chatMessage.getSender() != null && chatMessage.getSender().getProfileImage() != null) {
+            String profileImageUrl = chatMessage.getSender().getProfileImage().getProfileImageUrl();
+            responseDto.setSenderProfileUrl(profileImageUrl);
         }
-        response.setSenderName(senderMember.getName());
-        response.setSenderId(senderMember.getId());
-        response.setCreatedAt(LocalDateTime.now());
-        response.setContent(message.getContent());
-        response.setRoomId(findRoom.getId());
-        response.setMessageId(saveMessage.getId());
-        response.setReadStatus(chatMessage.isReadStatus());
-
-        messagingTemplate.convertAndSend("/sub/chatMessage/"+message.getRoomId(),response);
+        return responseDto;
     }
 
 
-    @MessageMapping("/mark-as-read/{roomId}")
-    public void markAsRead(@DestinationVariable Long roomId,
-                           @Payload MarkAsReadRequest request) {
-        //방입장시에 받은 메세지들의 상태를 읽음으로 변경
-        List<Long> messageIds = request.getMessageIds();
-        for(Long chatMessageId : messageIds){
-            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
-                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
-            chatMessage.setReadStatus(true);
-            chatMessageRepository.save(chatMessage);
-        }
-//        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
-    }
+//    @MessageMapping("/mark-as-read/{roomId}")
+//    public void markAsRead(@DestinationVariable Long roomId,
+//                           @Payload MarkAsReadRequest request) {
+//        //방입장시에 받은 메세지들의 상태를 읽음으로 변경
+//        List<Long> messageIds = request.getMessageIds();
+//        for(Long chatMessageId : messageIds){
+//            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
+//                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
+//            chatMessage.setReadStatus(ReadStatus.READ);
+//            chatMessageRepository.save(chatMessage);
+//        }
+////        messagingTemplate.convertAndSend("/sub/check-read",readStatusDto);
+//    }
 
-    @Getter @Setter
-    private static class ReadStatusDto{
-        private List<Long> messageId;
-        private boolean readStatus;
+//    @Getter @Setter
+//    private static class ReadStatusDto{
+//        private List<Long> messageId;
+//        private boolean readStatus;
+//
+//        public void add(Long messageId){
+//            this.messageId.add(messageId);
+//        }
+//    }
 
-        public void add(Long messageId){
-            this.messageId.add(messageId);
-        }
-    }
+//    @Setter@Getter
+//    private static class MarkAsReadRequest {
+//        private List<Long> messageIds;
+//    }
 
-    @Setter@Getter
-    private static class MarkAsReadRequest {
-        private List<Long> messageIds;
-    }
-
-
-    @MessageMapping("/mark-as-read")
-    public void markAsRead(@Payload MarkAsReadRequest request) {
-        List<Long> messageIds = request.getMessageIds();
-
-        for(Long chatMessageId : messageIds){
-            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
-                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
-            chatMessage.setReadStatus(true);
-            chatMessageRepository.save(chatMessage);
-        }
-        messagingTemplate.convertAndSend("/sub/check-read",true);
-    }
+//
+//    @MessageMapping("/mark-as-read")
+//    public void markAsRead(@Payload MarkAsReadRequest request) {
+//        List<Long> messageIds = request.getMessageIds();
+//
+//        for(Long chatMessageId : messageIds){
+//            ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
+//                    .orElseThrow(() -> new IllegalStateException("존재하지 않는 메시지"));
+//            chatMessage.setReadStatus(ReadStatus.READ);
+//            chatMessageRepository.save(chatMessage);
+//        }
+//        messagingTemplate.convertAndSend("/sub/check-read",true);
+//    }
 }

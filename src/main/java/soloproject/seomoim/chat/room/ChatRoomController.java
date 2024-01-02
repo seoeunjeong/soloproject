@@ -2,89 +2,76 @@ package soloproject.seomoim.chat.room;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.chat.message.ChatMessage;
 import soloproject.seomoim.chat.message.ChatMessageRepository;
+import soloproject.seomoim.chat.message.ReadStatus;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
 import soloproject.seomoim.member.service.MemberService;
+import soloproject.seomoim.utils.UriCreator;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor
 @Controller
 @RequestMapping("/chat")
+@RequiredArgsConstructor
 public class ChatRoomController {
 
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomService chatRoomService;
     private final MemberService memberService;
+    private final ChatMessageRepository chatMessageRepository;
+
+    private final static String CHAT_ROOM_DEFAULT_URL = "/chat/room";
 
     // 채팅방 생성
     @PostMapping("/room")
     @ResponseBody
-    public ResponseEntity<ChatRoom.Dto> createRoom(@RequestParam("receiver") Long ownerMemberId,
+    public ResponseEntity createRoom(@RequestParam("receiver") Long ownerMemberId,
                                         @RequestParam("sender") Long requestMemberId) {
-
-        Member ownerMember = memberService.findMember(ownerMemberId);
-        Member requestMember = memberService.findMember(requestMemberId);
-        if(ownerMember==requestMember){
-            throw new IllegalStateException("본인에게 1:1대화는 불가능합니다.");
-        }
-        Optional<ChatRoom> findRoom = chatRoomRepository.findByOwnerMemberAndRequestMember(ownerMember,requestMember);
-
-        if (findRoom.isPresent()) {
-            ChatRoom.Dto chatRommDto = new ChatRoom.Dto();
-            chatRommDto.setRoomId(findRoom.get().getId());
-            return new ResponseEntity<>(chatRommDto, HttpStatus.OK);
-        }
-        if(findRoom.isEmpty()){
-            ChatRoom createChatRoom = new ChatRoom();
-            createChatRoom.setOwnerMember(ownerMember);
-            createChatRoom.setRequestMember(requestMember);
-            ChatRoom createdChatRoom = chatRoomRepository.save(createChatRoom);
-            ChatRoom.Dto chatRommDto = new ChatRoom.Dto();
-            chatRommDto.setRoomId(createdChatRoom.getId());
-            return new ResponseEntity<>(chatRommDto, HttpStatus.OK);
-        }
-
-        return null;
+        Long createdRoomId = chatRoomService.createRoom(ownerMemberId, requestMemberId);
+        URI location = UriCreator.createUri(CHAT_ROOM_DEFAULT_URL, createdRoomId);
+        return ResponseEntity.created(location).build();
     }
 
-    // 채팅방 입장 화면
-    @GetMapping("/chat-form/{room-id}")
+    // 채팅방 입장
+    @GetMapping("/room/{room-id}")
     public String chatRoom(@PathVariable("room-id") Long roomId,
                            @AuthenticationdUser String email, Model model) {
+
         Member loginMember = memberService.findByEmail(email);
         model.addAttribute("loginMemberId", loginMember.getId());
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalStateException("존재하지않는 채팅방입니다"));
-        model.addAttribute("room", chatRoom);
-        List<ChatMessage> allMessage = chatMessageRepository.findByChatRoom(chatRoom);
-        List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())
-                .collect(Collectors.toList());
-//           chatMessageRepository.saveAll(allMessage);
-        model.addAttribute("allChat", allMessage);
-        //채팅방입장시에 받은사람의 메세지상태를 변경하기위해 사용
-        model.addAttribute("massageIds", messageIds);
 
+        ChatRoom findChatRoom = chatRoomService.findChatRoomById(roomId);
+        model.addAttribute("room", findChatRoom);
+        List<ChatMessage> allMessage = findChatRoom.getMessages();
+        model.addAttribute("allChat", allMessage);
+
+        for(ChatMessage message: allMessage){
+            if(loginMember!=message.getSender()){
+                message.setReadStatus(ReadStatus.READ);
+                chatMessageRepository.save(message);
+            }
+        }
         return "moims/chatRoom";
     }
 
-    // 특정 채팅방 조회
-    @GetMapping("/room/{roomId}")
-    @ResponseBody
-    public ChatRoom roomInfo(@PathVariable Long roomId) {
+    //모든 채팅방조회
+    @GetMapping("/room/all/{member-id}")
+    public void getJoinedChatRooms(@PathVariable("member-id") Long memberId,
+                                      Model model){
+        List<ChatRoom> joinedChatRooms = chatRoomService.findJoinedChatRooms(memberId);
+        model.addAttribute("joinedChatRooms",joinedChatRooms);
 
-        return chatRoomRepository.findById(roomId).get();
     }
 
-
 }
+
+/*채팅방입장할때 DB에 저장된 메세지를 읽는건 서버에서 처리*/
+//       List<Long> messageIds = allMessage.stream().map(chatMessage -> chatMessage.getId())         .collect(Collectors.toList());
+//        model.addAttribute("massageIds", messageIds);

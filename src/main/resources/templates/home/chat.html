@@ -16,7 +16,7 @@
 <section>
     <p th:if="${chatRooms.isEmpty()}">생성된 채팅방이 아직 없어요 :)</p>
     <div th:each="chatRoom:${chatRooms}" class="alarm-item">
-        <a th:href="@{/chat/chat-form/{roomId}(roomId=${chatRoom.id})}">
+        <a th:href="@{/chat/room/{roomId}(roomId=${chatRoom.id})}">
             <div th:if="${loginMemberId == chatRoom.ownerMember.id}">
                 <div class="chat-container">
                     <img th:if="${chatRoom?.requestMember?.profileImage?.profileImageUrl}"

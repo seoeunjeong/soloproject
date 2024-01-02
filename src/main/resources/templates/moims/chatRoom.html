@@ -219,8 +219,7 @@
                     <div>
                         <p th:text="${message.sender.name}"></p>
                         <div class="bottom">
-                            <span class="time" th:if="${message.isReadStatus()}">읽음</span>
-                            <span class="time" th:unless="${message.isReadStatus()}">안읽음</span>
+                            <span class="time" th:text="${message.readStatus.status}">읽음</span>
                             <span class="time" th:text="${#temporals.format(message.createdAt,'a hh:mm')}">오후 00:00 </span>
                             <span class="message send-message" th:text="${message.content}"></span>
                         </div>
@@ -272,7 +271,7 @@
 
             console.log('Connected: ' + frame);
 
-            markMessageAsRead(roomId,messageIds);
+            // markMessageAsRead(roomId,messageIds);
 
             stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
                 var messageContent = JSON.parse(response.body);
@@ -289,47 +288,30 @@
         });
     }
 
-    function markMessageAsRead(roomId,messageIds) {
-        if(loginMemberId != senderId)
-            // 룸 입장시 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
-            stompClient.send('/pub/mark-as-read/' + roomId, {}, JSON.stringify({ messageIds: messageIds }));
-    }
 
-    function markReadDB() {
-        if(loginMemberId != senderId)
-            stompClient.send('/pub/mark-as-read/', {}, JSON.stringify({ messageIds: messageIds }));
-    }
-
-    var loginMemberId;
-    var senderId;
     function showMessage(messageContent) {
 
-        var content = messageContent.content;
+        const loginMemberId = /*[[${loginMemberId}]]*/ null;
 
-        var senderName = messageContent.senderName;
+        const content = messageContent.content;
 
-        senderId= messageContent.senderId;
+        const senderName = messageContent.senderName;
 
-        var readStatus = messageContent.readStatus ? '읽음' : '안읽음';
+        const senderId= messageContent.senderId;
 
-        if (senderId !== loginMemberId) {
-            updateReadStatus(true);
-        }
+        const senderProfileUrl= messageContent.senderProfileUrl || '/img/profile2.png';
 
-        loginMemberId = /*[[${loginMemberId}]]*/ null;
+        const readStatus = messageContent.readStatus;
 
-        var createdAt = new Date(messageContent.createdAt);
+        const createdAt = new Date(messageContent.createdAt);
 
-        var formatter = new Intl.DateTimeFormat('ko-KR', {
+        const formatter = new Intl.DateTimeFormat('ko-KR', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true
         });
 
         var datetime = formatter.format(createdAt);
-
-        var readStatus = messageContent.readStatus ?'읽음':'안읽음';
-
 
         var messageClass = senderId === loginMemberId ? 'send-info' : 'receive-info';
 
@@ -339,7 +321,7 @@
 
 
         var messageHtml ='<div class="' + messageClass + '">' +
-            '<img src="/img/profile2.png">' +
+            '<img src="'+senderProfileUrl+'">' +
             '<div>' +
             '<p>' + senderName + '</p>' +
             '<div class="'+bottom+'">'+
@@ -351,7 +333,7 @@
         // 받은 메시지일 경우 readStatus 부분을 추가하지 않음
         if (senderId !== loginMemberId) {
             messageHtml = ('<div class="' + messageClass + '">' +
-                '<img src="/img/profile2.png">' +
+                '<img src="'+senderProfileUrl+'">' +
                 '<div>' +
                 '<p>' + senderName + '</p>' +
                 '<div class="'+bottom+'">'+
@@ -362,17 +344,29 @@
 
         $('#messages').append(messageHtml);
 
-        if (senderId !== loginMemberId) {
-            updateReadStatus(readStatus);
-        }
     }
 
-    function updateReadStatus(isRead) {
-        var readStatusElement = $('.status'); // 해당 클래스를 가진 엘리먼트를 선택합니다.
-        if (readStatusElement.length > 0) {
-            readStatusElement.text(isRead ? '읽음' : '안읽음'); // 상태에 따라 내용을 변경합니다.
-        }
-    }
+    //
+    // if (senderId !== loginMemberId) {
+    //     updateReadStatus(true);
+    // }
+    // function markMessageAsRead(roomId,messageIds) {
+    //     if(loginMemberId != senderId)
+    //         // 룸 입장시 해당 messageId의 메시지를 읽었다는 신호를 서버로 전송
+    //         stompClient.send('/pub/mark-as-read/' + roomId, {}, JSON.stringify({ messageIds: messageIds }));
+    // }
+    //
+    // function markReadDB() {
+    //     if(loginMemberId != senderId)
+    //         stompClient.send('/pub/mark-as-read/', {}, JSON.stringify({ messageIds: messageIds }));
+    // }
+
+    // function updateReadStatus(readStatus) {
+    //     const readStatusElement = $('.status');
+    //     if (readStatusElement.length > 0) {
+    //         readStatusElement.text(readStatus); // 상태에 따라 내용을 변경합니다.
+    //     }
+    // }
 
 
 

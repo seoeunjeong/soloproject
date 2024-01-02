@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class ChatMessage extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
@@ -23,8 +24,8 @@ public class ChatMessage extends BaseEntity {
 
     private String content;
 
-
-    private boolean readStatus = false;
+    @Enumerated(EnumType.STRING)
+    private ReadStatus readStatus = ReadStatus.UNREAD;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
