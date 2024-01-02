@@ -259,11 +259,8 @@
 
     var loginMemberId = /*[[${loginMemberId}]]*/ null;
 
-    // var readMessages =/*[[${readMessages}]]*/ null;
+    var readStatusDtos =/*[[${readStatusDtos}]]*/ null;
 
-    // readMessages.forEach(function (readMessage) {
-    //     markMessageAsRead(loginMemberId, readMessage.sender.id, readMessage.messageId, stompClient);
-    // });
 
     function connect() {
 
@@ -274,6 +271,10 @@
         stompClient.connect({}, function (frame) {
 
             console.log('Connected: ' + frame);
+
+            readStatusDtos.forEach(function (readStatusDto) {
+                markMessageAsRead(loginMemberId, readStatusDto.senderId, readStatusDto.messageId, stompClient);
+            });
 
 
             stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {

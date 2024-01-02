@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import soloproject.seomoim.chat.message.ChatController;
 import soloproject.seomoim.chat.message.ChatMessage;
 import soloproject.seomoim.chat.message.ChatMessageRepository;
 import soloproject.seomoim.chat.message.ReadStatus;
@@ -17,6 +18,8 @@ import soloproject.seomoim.utils.UriCreator;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import static soloproject.seomoim.chat.message.ChatController.*;
 
 @Slf4j
 @Controller
@@ -54,15 +57,22 @@ public class ChatRoomController {
         model.addAttribute("allChat", allChatMessage);
 
 
+        List<ReadStatusDto> readStatusDtos= new ArrayList<>();
+
         for(ChatMessage message: allChatMessage){
-            if(loginMember!=message.getSender()){
-                message.setReadStatus(ReadStatus.READ);
-                chatMessageRepository.save(message);
+//            if(loginMember!=message.getSender()){
+//                message.setReadStatus(ReadStatus.READ);
+//                chatMessageRepository.save(message);
+
+                ReadStatusDto readStatusDto = new ReadStatusDto();
+                readStatusDto.setMessageId(message.getId());
+                readStatusDto.setSenderId(message.getSender().getId());
+                readStatusDto.setReadStatus(ReadStatus.READ);
+                readStatusDtos.add(readStatusDto);
             }
-        }
-        /*채팅방입장할때 DB에 저장된 메세지를 읽는건 서버에서 처리 클라이언트가어떻게 알지?*/
+        /*채팅방입장할때 DB에 저장된 메세지를 읽는건 서버에서 처리*/
 
-
+        model.addAttribute("readStatusDtos",readStatusDtos);
         return "moims/chatRoom";
     }
 
@@ -74,5 +84,7 @@ public class ChatRoomController {
         model.addAttribute("joinedChatRooms",joinedChatRooms);
 
     }
+
+
 
 }

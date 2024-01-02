@@ -71,8 +71,9 @@ public class ChatController {
 
     @Getter
     @Setter
-    private class ReadStatusDto{
+     public static class ReadStatusDto{
         private Long messageId;
+        private Long senderId;
         private ReadStatus readStatus;
 
     }
