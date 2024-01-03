@@ -6,18 +6,14 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 public class ChatMessageDto {
-    @Getter
-    @Setter
+    @Getter @Setter
     public static class Send{
         private Long roomId;
-        private Long receiver;
-        private Long sender;
+        private Long senderId;
         private String content;
-        private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
+    @Getter @Setter
     public static class Response{
         private Long messageId;
         private Long roomId;
@@ -28,5 +24,15 @@ public class ChatMessageDto {
         private ReadStatus readStatus;
         private LocalDateTime createdAt;
         private Long unReadCount;
+    }
+
+
+    @Getter
+    @Setter
+    public static class ReadStatusDto{
+        private Long messageId;
+        private Long senderId;
+        private ReadStatus readStatus;
+
     }
 }

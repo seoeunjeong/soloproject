@@ -9,7 +9,6 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,17 +19,11 @@ public class ChatService {
     private final MemberService memberService;
 
     @Transactional
-    public ChatMessage createMessage(ChatMessageDto.Send message) {
-        Member senderMember = memberService.findMember(message.getSender());
+    public ChatMessage saveMessage(ChatMessageDto.Send message) {
+        Member senderMember = memberService.findMember(message.getSenderId());
         ChatRoom room = chatRoomService.findChatRoomById(message.getRoomId());
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setSender(senderMember);
-        chatMessage.setChatRoom(room);
-        chatMessage.setContent(message.getContent());
-        chatMessage.setReadStatus(ReadStatus.UNREAD);
-        ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
-
-        return savedMessage;
+        ChatMessage createdMessage = ChatMessage.create(senderMember, message.getContent(), ReadStatus.UNREAD, room);
+        return chatMessageRepository.save(createdMessage);
     }
 
     public List<ChatMessage> findUnreadMessageByLoginMember(Member member,Long roomId){
@@ -38,12 +31,12 @@ public class ChatService {
         return chatMessageRepository.findUnReadMessageByLoginMember(member,findChatRoom,ReadStatus.UNREAD);
     }
 
-    public Long GetUnReadMessageCount(Long roomId){
-        return chatMessageRepository.countUnreadMessagesByChatRoomId(roomId);
+    public Long getUnReadMessageCount(Long roomId){
+        return chatMessageRepository.unreadMessageCountOfChatRoomId(roomId);
     }
 
     @Transactional
-    public ChatMessage updateReadStatus(Long messageId){
+    public ChatMessage updateReadStatus(Long messageId) {
         ChatMessage chatMessage = findById(messageId);
         chatMessage.setReadStatus(ReadStatus.READ);
         return chatMessage;

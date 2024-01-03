@@ -39,23 +39,43 @@ public class TestDataInit {
         member2.setPassword("dkssud1!");
         member2.setConfirmPassword("dkssud1!");
         member2.setName("서은정");
-        Long member2Id = memberService.signup(member2);
+        Long memberId2 = memberService.signup(member2);
+
         Member member3 = new Member();
         member3.setRoles(List.of("AUTH_USER"));
-        memberService.update(member2Id,member3);
+        memberService.update(memberId2,member3);
 
 
         MoimDto.Post post = new MoimDto.Post();
-        post.setMoimCategory(MoimCategory.EXERCISE);
+        post.setMoimCategory(MoimCategory.EAT);
         post.setStartedAt(LocalDateTime.now());
-        post.setTitle("고기먹구싶어요");
-        post.setContent("삼겹살 한우 차돌박이 ㅎㅎㅎㅎㅎ");
+        post.setTitle("고기먹자ㅎㅎㅎㅎ");
+        post.setContent("삼겹살 한우 차돌박이 !!!!!!!!");
         post.setPlaceName("고바우");
         post.setPlaceAddress("서울 구로구 부일로1길 9");
         post.setTotalParticipantCount(5);
-        Moim moim = mapper.moimPostDtoToMoim(post);
+        moimService.createMoim(memberId2, mapper.moimPostDtoToMoim(post));
 
-        moimService.createMoim(member2Id,moim);
+        MoimDto.Post post2 = new MoimDto.Post();
+        post2.setMoimCategory(MoimCategory.STUDY);
+        post2.setStartedAt(LocalDateTime.of(2024, 1, 4, 19, 30));
+        post2.setTitle("코딩테스트 공부");
+        post2.setContent("모여서 각자 공부!");
+        post2.setPlaceName("스타벅스 역곡역DT점");
+        post2.setPlaceAddress("경기 부천시 소사구 경인로 485");
+        post2.setTotalParticipantCount(3);
+        moimService.createMoim(memberId2, mapper.moimPostDtoToMoim(post2));
 
+        MoimDto.Post post3 = new MoimDto.Post();
+        post3.setMoimCategory(MoimCategory.EXERCISE);
+        post3.setStartedAt(LocalDateTime.of(2024, 1, 5, 20, 00));
+        post3.setTitle("헬스 필라테스 ㅎㅎㅎㅎ");
+        post3.setContent("하체 뿌시기!!!");
+        post3.setPlaceName("스포애니 역곡역점");
+        post3.setPlaceAddress("경기 부천시 소사구 경인로 527");
+        post3.setTotalParticipantCount(5);
+        moimService.createMoim(memberId2, mapper.moimPostDtoToMoim(post3));
+
+        
     }
 }

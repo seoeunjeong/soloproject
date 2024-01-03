@@ -36,6 +36,15 @@ public class ChatMessage extends BaseEntity {
         chatRoom.getMessages().add(this);
     }
 
+    public static ChatMessage create(Member sender,String content,ReadStatus readStatus,ChatRoom chatRoom){
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender(sender);
+        chatMessage.setContent(content);
+        chatMessage.setReadStatus(readStatus);
+        chatMessage.setChatRoom(chatRoom);
+        return chatMessage;
+    }
+
 }
 
 

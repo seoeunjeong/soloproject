@@ -77,21 +77,19 @@ public class HomeController {
     }
 
     @GetMapping("/chat")
-    public String alarmFrom(@AuthenticationdUser String mail, Model model) {
+    public String alarmHome(@AuthenticationdUser String mail, Model model) {
         Member loginMember = memberService.findByEmail(mail);
         List<ChatRoom> allChatRoom = chatRoomRepository.findByMember(loginMember);
 
-        // Map을 사용하여 각 채팅방의 안 읽은 메시지 수를 계산
         Map<Long, Long> unreadMessageCountMap = new HashMap<>();
         for (ChatRoom chatRoom : allChatRoom) {
             List<ChatMessage> unreadMessages = chatService.findUnreadMessageByLoginMember(loginMember,chatRoom.getId());
             long unreadMessageCount = unreadMessages.size();
             unreadMessageCountMap.put(chatRoom.getId(), unreadMessageCount);
         }
-//        todo roomId로 알람을 구독하자!
+
         List<Long> chatRoomIds = allChatRoom.stream().map(ChatRoom::getId)
                 .collect(Collectors.toList());
-        log.info("chatRoomIds={}",chatRoomIds);
 
         model.addAttribute("chatRooms",allChatRoom);
         model.addAttribute("unreadMessageCounts", unreadMessageCountMap);

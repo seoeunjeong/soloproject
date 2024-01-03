@@ -6,7 +6,6 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.service.MemberService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,14 +16,14 @@ public class ChatRoomService {
 
     //채팅방 crud
 
-    public Long createRoom(Long ownerMemberId,Long requestMemberId) {
+    public Long createRoom(Long ownerMemberId, Long requestMemberId) {
         Member ownerMember = memberService.findMember(ownerMemberId);
         Member requestMember = memberService.findMember(requestMemberId);
-        if(ownerMember==requestMember){
+        if (ownerMember == requestMember) {
             throw new IllegalStateException("본인에게 1:1대화는 불가능합니다.");
         }
         ChatRoom chatRoom = checkChatRoomAndCreate(ownerMember, requestMember);
-        ChatRoom createdChatRoom= chatRoomRepository.save(chatRoom);
+        ChatRoom createdChatRoom = chatRoomRepository.save(chatRoom);
 
         return createdChatRoom.getId();
 
@@ -45,12 +44,11 @@ public class ChatRoomService {
         return chatRoomRepository.findByOwnerMemberAndRequestMember(ownerMember, requestMember)
                 .orElseGet(() -> {
                     ChatRoom chatRoom = new ChatRoom();
-                    chatRoom.setOwnerMember(ownerMember);
-                    chatRoom.setRequestMember(requestMember);
+                    chatRoom.addOwnerMember(ownerMember);
+                    chatRoom.addRequestMember(requestMember);
                     return chatRoom;
                 });
     }
-
 
     public ChatRoom checkChatRoomExistence(Member ownerMember, Member requestMember) {
         return chatRoomRepository.findByOwnerMemberAndRequestMember(ownerMember, requestMember)

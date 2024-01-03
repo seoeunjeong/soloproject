@@ -16,10 +16,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage,Long> {
     List<ChatMessage> findUnReadMessageByLoginMember(@Param("member") Member member,
                                                      @Param("chatRoom") ChatRoom chatRoom,
                                                      @Param("status") ReadStatus status);
-
-    List<ChatMessage> findAllByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
-
     @Query("SELECT COUNT(cm) FROM ChatMessage cm WHERE cm.chatRoom.id = :roomId AND cm.readStatus = 'UNREAD'")
-    Long countUnreadMessagesByChatRoomId(@Param("roomId") Long roomId);
+    Long unreadMessageCountOfChatRoomId(@Param("roomId") Long roomId);
+
 
 }

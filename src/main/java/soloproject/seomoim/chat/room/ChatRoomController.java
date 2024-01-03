@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import soloproject.seomoim.chat.message.ChatController;
-import soloproject.seomoim.chat.message.ChatMessage;
-import soloproject.seomoim.chat.message.ChatMessageRepository;
-import soloproject.seomoim.chat.message.ReadStatus;
+import soloproject.seomoim.chat.message.*;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
 import soloproject.seomoim.member.service.MemberService;
@@ -18,8 +15,7 @@ import soloproject.seomoim.utils.UriCreator;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
-import static soloproject.seomoim.chat.message.ChatController.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -30,14 +26,12 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
     private final ChatMessageRepository chatMessageRepository;
-
     private final static String CHAT_ROOM_DEFAULT_URL = "/chat/room";
 
-    // 채팅방 생성
     @PostMapping("/room")
     @ResponseBody
     public ResponseEntity createRoom(@RequestParam("receiver") Long ownerMemberId,
-                                        @RequestParam("sender") Long requestMemberId) {
+                                     @RequestParam("sender") Long requestMemberId) {
         Long createdRoomId = chatRoomService.createRoom(ownerMemberId, requestMemberId);
         URI location = UriCreator.createUri(CHAT_ROOM_DEFAULT_URL, createdRoomId);
         return ResponseEntity.created(location).build();
@@ -47,31 +41,26 @@ public class ChatRoomController {
     @GetMapping("/room/{room-id}")
     public String chatRoom(@PathVariable("room-id") Long roomId,
                            @AuthenticationdUser String email, Model model) {
-
         Member loginMember = memberService.findByEmail(email);
         model.addAttribute("loginMemberId", loginMember.getId());
         ChatRoom findChatRoom = chatRoomService.findChatRoomById(roomId);
         model.addAttribute("room", findChatRoom);
-//        List<ChatMessage> allMessage = findChatRoom.getMessages();
         List<ChatMessage> allChatMessage = chatMessageRepository.findByChatRoom(findChatRoom);
         model.addAttribute("allChat", allChatMessage);
 
+        List<ChatMessage> unReadMessage = allChatMessage.stream()
+                .filter(chatMessage -> chatMessage.getReadStatus() == ReadStatus.UNREAD)
+                .collect(Collectors.toList());
+        List<ChatMessageDto.Response> readStatusDtos = new ArrayList<>();
 
-        List<ReadStatusDto> readStatusDtos= new ArrayList<>();
-
-        for(ChatMessage message: allChatMessage){
-//            if(loginMember!=message.getSender()){
-//                message.setReadStatus(ReadStatus.READ);
-//                chatMessageRepository.save(message);
-
-                ReadStatusDto readStatusDto = new ReadStatusDto();
+        for(ChatMessage message: unReadMessage) {
+            if (loginMember != message.getSender()) {
+                ChatMessageDto.Response readStatusDto = new ChatMessageDto.Response();
                 readStatusDto.setMessageId(message.getId());
                 readStatusDto.setSenderId(message.getSender().getId());
-                readStatusDto.setReadStatus(ReadStatus.READ);
                 readStatusDtos.add(readStatusDto);
             }
-        /*채팅방입장할때 DB에 저장된 메세지를 읽는건 서버에서 처리*/
-
+        }
         model.addAttribute("readStatusDtos",readStatusDtos);
         return "moims/chatRoom";
     }

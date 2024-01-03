@@ -1,6 +1,7 @@
 package soloproject.seomoim.member.emailAuthentication;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import soloproject.seomoim.advice.exception.BusinessLogicException;
@@ -13,15 +14,17 @@ import javax.mail.internet.MimeMessage;
 @Service
 @RequiredArgsConstructor
 public class MailSendService {
-    private final static String SENDER_EMAIL = "seocoding1@gmail.com";
+
+    @Value("${spring.mail.username}")
+    private String senderEmail;
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
 
-    public int sendMail(String email) {
+    public void sendMail(String email) {
         int number = createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
-            message.setFrom(SENDER_EMAIL);
+            message.setFrom(senderEmail);
             message.setRecipients(MimeMessage.RecipientType.TO, email);
             message.setSubject("회원가입 인증번호 발송");
             message.setText("회원가입화면으로 돌아가 인증번호를 입력해주세요");
@@ -39,7 +42,6 @@ public class MailSendService {
         String sendNumber = String.valueOf(number);
         redisUtil.set(email,sendNumber,3);
 //        email을 키로 저장 ㅎㅎㅎㅎㅎ
-        return number;
     }
 
     /*todo! 랜덤번호 안전하게 생성*/

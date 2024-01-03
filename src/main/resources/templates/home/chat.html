@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>채팅</title>
-</head>
 <body>
-
 <header>
     <a href="/"><span>SEOMOIM</span></a>
     <a href="/members/logout"><p>로그아웃</p>
-    <img src="/img/logout.png" alt="logout.png"/></a>
+        <img src="/img/logout.png" alt="logout.png"/></a>
 </header>
 
 <section>
-    <p th:if="${chatRooms.isEmpty()}">생성된 채팅방이 아직 없어요 :)</p>
+    <div class="empty" th:if="${chatRooms.isEmpty()}">
+        <p>진행중인 채팅방이 없습니다.</p><br>
+        <span>모임장에게 1:1문의로 원활한 소통이 가능합니다.</span>
+    </div>
+
     <div th:each="chatRoom:${chatRooms}" th:attr="roomId=${chatRoom.id}" class="alarm-item">
         <a th:href="@{/chat/room/{roomId}(roomId=${chatRoom.id})}">
             <div th:if="${loginMemberId == chatRoom.ownerMember.id}">
@@ -22,15 +20,18 @@
                     <img th:if="${chatRoom?.requestMember?.profileImage?.profileImageUrl}"
                          th:src="${chatRoom?.requestMember?.profileImage?.profileImageUrl}">
                     <img th:unless="${chatRoom?.requestMember?.profileImage?.profileImageUrl}" src="/img/profile2.png">
+
+                    <div class="chat-column">
                     <div class="chat-item">
                         <span th:text="${chatRoom.requestMember.name}">서은정</span>
-                        <p th:text="${chatRoom.getMessages().size() > 0 ? chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).content : 'No messages'}">내용</p>
+                        <p th:text="${chatRoom.getMessages().size() > 0 ? #temporals.format(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).createdAt, 'a hh:mm') : ''}">전송시간</p>
                     </div>
                     <div class="chat-info">
-                        <p th:text="${chatRoom.getMessages().size() > 0 ? #temporals.format(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).createdAt, 'a hh:mm') : ''}">전송시간</p>
-                        <p id="unReadCount" th:if="${unreadMessageCounts.get(chatRoom.id) > 0}" th:text="|${unreadMessageCounts.get(chatRoom.id)}개|">1개</p>
+                        <p th:text="${chatRoom.getMessages().size() > 0 ? chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).content : 'No messages'}">내용</p>
+                        <p id="unReadCount" th:if="${unreadMessageCounts.get(chatRoom.id) > 0}" th:text="|새로운 메시지 ${unreadMessageCounts.get(chatRoom.id)}개|">1개</p>
                     </div>
-                </div>
+                    </div>
+                 </div>
             </div>
 
             <div th:if="${loginMemberId == chatRoom.requestMember.id}">
@@ -38,50 +39,51 @@
                     <img th:if="${chatRoom?.ownerMember?.profileImage?.profileImageUrl}"
                          th:src="${chatRoom.ownerMember?.profileImage?.profileImageUrl}">
                     <img th:unless="${chatRoom?.ownerMember?.profileImage?.profileImageUrl}" src="/img/profile2.png">
+
+                    <div class="chat-column">
                     <div class="chat-item">
                         <span th:text="${chatRoom.ownerMember.name}">서은정</span>
-                        <p th:text="${chatRoom.getMessages().size() > 0 ? chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).content : 'No messages'}">내용</p>
+                        <p th:text="${chatRoom.getMessages().size() > 0 ? #temporals.format(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).createdAt, 'a hh:mm') : ''}">전송시간</p>
                     </div>
                     <div class="chat-info">
-                        <p th:text="${chatRoom.getMessages().size() > 0 ? #temporals.format(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).createdAt, 'a hh:mm') : ''}">전송시간</p>
-                        <p th:if="${unreadMessageCounts.get(chatRoom.id) > 0}" th:text="|${unreadMessageCounts.get(chatRoom.id)}개|">1개</p>
+                        <p th:text="${chatRoom.getMessages().size() > 0 ? chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).content : 'No messages'}">내용</p>
+                        <p th:if="${unreadMessageCounts.get(chatRoom.id) > 0}" th:text="|새로운 메시지 ${unreadMessageCounts.get(chatRoom.id)}개|">1개</p>
                     </div>
-                </div>
+                    </div>
+                 </div>
             </div>
         </a>
-
         <button class="post-but" id="postButton">+</button>
     </div>
 
 
-    <!--채팅목록에서 받아야할 알림들!-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <script th:inline="javascript">
 
         document.addEventListener('DOMContentLoaded', function () {
             connect();
         });
 
-        var stompClient=null;
-        var loginMemberId =/*[[${loginMemberId}]]*/ null;
-        var chatRoomIds = /*[[${#strings.arrayJoin(chatRoomIds, ',') }]]*/ null;
+        const chatRoomIds = /*[[${#strings.arrayJoin(chatRoomIds, ',') }]]*/ null;
 
         function connect() {
+
+            var stompClient=null;
+
             const socket = new SockJS('/chat');
 
             stompClient = Stomp.over(socket);
 
             stompClient.connect({}, function (frame) {
-
                 console.log('Connected: ' + frame);
 
-                var roomIdArray = chatRoomIds.split(',');
+                const roomIdArray = chatRoomIds.split(',');
 
                 roomIdArray.forEach(function (roomId) {
-
                     stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
-                        var messageContent = JSON.parse(response.body);
+                        const messageContent = JSON.parse(response.body);
                         handleReceivedMessage(messageContent);
 
                     });
@@ -93,10 +95,9 @@
             console.log('받은 메시지:', message);
             const content = message.content;
             const roomId = message.roomId;
-            const senderName=message.senderName;
-            const senderId = message.senderId;
-            const unReadCount =message.unReadCount;
-            const senderProfileUrl=  message.senderProfileUrl || '/img/profile2.png'
+            const senderName = message.senderName;
+            const unReadCount = message.unReadCount;
+            const senderProfileUrl = message.senderProfileUrl || '/img/profile2.png'
             const createdAt = new Date(message.createdAt).toLocaleString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -108,35 +109,31 @@
             const chatInfo = alarmItem.find('.chat-info');
 
             const newChatItem = `
-             <a href="/chat/room/${roomId}">
-        <div class="chat-container">
-            <img src="${senderProfileUrl}">
-            <div class="chat-item">
-                <span>${senderName}</span>
-                <p>${content}</p>
-            </div>
-            <div class="chat-info">
-                <p>${createdAt}</p>
-                <p>${unReadCount}개</p>
-            </div>
-        </div>
-        </a>`;
-
+                <img src="${senderProfileUrl}">
+                    <div class="chat-column">
+                        <div class="chat-item">
+                         <span>${senderName}</span>
+                         <p>${createdAt}</p>
+                        </div>
+                        <div class="chat-info">
+                         <p>${content}</p>
+                         <p>새로운 메시지 ${unReadCount}개</p>
+                        </div>
+                     </div>
+               </div>
+            </a>`;
 
             chatItem.replaceWith($(newChatItem).find('.chat-item'));
             chatInfo.replaceWith($(newChatItem).find('.chat-info'));
 
         }
 
-
-    </script>
-
-
-    <script th:inline="javascript">
         const postButton = document.getElementById('postButton');
         postButton.addEventListener('click', function () {
             window.location.href = '/moims/post'
         });
+
+
     </script>
 
 </section>
