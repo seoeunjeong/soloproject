@@ -2,22 +2,22 @@
 <html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
 <header>
   <a href="/"><span>프로필</span></a>
-  <a href="#" onclick="confirmAndDelete()"><p>회원탈퇴</p><img src="/img/logout.png" alt="logout.png"/>
-  </a>
+  <a href="/members/logout"><p>로그아웃</p>
+    <img src="/img/logout.png" alt="logout.png"
+    /></a>
 </header>
 <section>
   <div class="image-container">
     <a id="editButton">
       <img th:if="${member?.profileImageUrl}" th:src="${member?.profileImageUrl}"/>
       <img th:unless="${member?.profileImageUrl}" src="/img/unnamed.png"/>
-      <img class="camera" src="/img/camera.png"/>
     </a>
   </div>
   <div class="info-container">
     <p class="item1" th:text="${member.name}">name</p>
     <div class="email">
       <p class="item2" th:text="${member.email}">email</p>
-      <button th:if="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button">인증완료</button>
+      <button th:if="${member.roles.iterator().next()=='AUTH_USER'}" class="complete-button">인증완료</button>
       <button th:unless="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button" id="email-button">인증
       </button>
     </div>
@@ -122,6 +122,9 @@
       </a>
     </div>
   </div>
+  <div style="display: grid; place-items: center;">
+  <button class="delete-but" onclick="confirmAndDelete()">회원탈퇴</button>
+  </div>
   <button class="post-but" id="postButton">+</button>
 
   <script th:inline="javascript">
@@ -175,14 +178,14 @@
 
     function confirmAndDelete() {
       const loginMemberId = /*[[${loginMemberId}]]*/ '';
-      if (confirm('정말로 탈퇴하시겠습니까?')) {
+      if (confirm('정말로 탈퇴하시겠습니까?모든 데이터가 삭제됩니다.')) {
         const xhr = new XMLHttpRequest();
         const url = '/members/' +loginMemberId;
         xhr.open('DELETE', url, true);
         xhr.onload = function () {
           if (xhr.status === 204) {
             alert('탈퇴되었습니다.');
-            window.location.href = '/login-form'
+            window.location.href = '/'
           } else {
             alert('탈퇴에 실패했습니다.');
           }

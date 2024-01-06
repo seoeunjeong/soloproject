@@ -21,7 +21,6 @@ public class GlobalExceptionAdvice {
     }
 
 
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {

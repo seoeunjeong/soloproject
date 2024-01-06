@@ -2,8 +2,7 @@ SEOMOIM
 =============
 소모임과 당근마켓을 모티브로 해서
 지속적인 모임 활동은 부담스럽지만 1회 성 모임을 참여하고 싶은 사람들을 위해 <br>
-카레 고리 와 위치 기반으로 모임을 만들고 참여할 수 있는 백엔드 API 서버를 구축하는것이 목표입니다.<br>
-Rest API형 서버로써 서버 공부에 집중할 수 있도록 하고 추후 필요시 웹 화면은 프로토타입으로 개발 예정입니다.
+카레 고리 와 위치 기반으로 모임을 만들고 참여할 수 있는 Server Side Rendering방식의 애플리케이션<br>
 
 ## 프로젝트 use_case
 
@@ -65,8 +64,8 @@ Git Flow를 사용하여 브랜치를 관리합니다.<br>
 
 
 ## 사용 기술 및 환경
-Java11, Spring boot, Spring data jpa, QueryDSL, mysql<br>
-Spring security, OAuth2, Spring batch, AWS, Docker
+Java17, Spring boot, Spring data jpa, QueryDSL, mysql,redis<br>
+Spring security, OAuth2, Spring batch, AWS, Docker,websocket
 <br>
 
 ## 이슈
@@ -97,18 +96,15 @@ Spring security, OAuth2, Spring batch, AWS, Docker
 [//]: # ()
 [//]: # ()
 [//]: # (<br>)
+
 ## Database
 - Mysql<br>
- aws 서비스를 사용하고 있습니다.
+  docker 컨테이너를 사용하고 있습니다.
 - Redis<br>
-docker 컨테이너를 사용하고 있습니다.
+  docker 컨테이너를 사용하고 있습니다.
 <br>
 
 ## 화면 설계
 
-
-### 고객 화면 프로토타입
-
-### 관리자 화면 프로토타입
 
 ## 프로젝트 DB ERD

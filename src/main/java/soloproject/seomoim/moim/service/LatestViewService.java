@@ -30,4 +30,9 @@ public class LatestViewService {
 
         return zSetOps.reverseRange(memberKey, 0, count - 1);
     }
+
+    public void deleteLatestPostsForMember(Long memberId) {
+        String memberKey = LATEST_POST_KEY + ":" + memberId;
+        redisTemplateObject.delete(memberKey);
+    }
 }

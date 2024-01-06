@@ -39,6 +39,7 @@ public class DocumentDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Data
     public static class AddressDto {
         @JsonProperty("region_3depth_name")
         private String region3DepthName;

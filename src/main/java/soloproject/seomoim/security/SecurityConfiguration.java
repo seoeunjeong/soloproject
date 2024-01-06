@@ -49,6 +49,7 @@ public class SecurityConfiguration {
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(new OAuth2SuccessHandler(memberRepository)))
                 .authorizeHttpRequests(authorize -> authorize
+                        .antMatchers("/").hasAnyRole("USER", "AUTH_USER")
                         .antMatchers("/img/**", "/css/**","/auth/google","/login-form", "/signup-form",
                                 "/email/**","/moims/search/**").permitAll()
                         .antMatchers("/moims/post/**").hasRole("AUTH_USER")

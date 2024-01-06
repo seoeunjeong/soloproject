@@ -3,21 +3,18 @@
 <head>
   <title>SEOMOIM</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
   <link rel="stylesheet" href="/css/login.css"/>
   <!--알림을 위해 Toastify CDN추가-->
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
-
   <div class="main-container">
-   <img src="/img/logo.png" alt="로고"/>
-   <p class="main-item">안녕하세요.</p>
-   <p class="main-item">SEOMOIM입니다.</p>
-   <p class="submain-item">회원 서비스 이용을 위해 로그인 해주세요.</p>
+    <img src="/img/logo.png" alt="서모임로고"/>
+    <p class="main-item">안녕하세요.</p>
+    <p class="main-item">SEOMOIM입니다.</p>
+    <p class="submain-item">회원 서비스 이용을 위해 로그인 해주세요.</p>
   </div>
-
 
   <div class="container">
     <form id="loginForm" action="/process_login" method="post">
@@ -45,7 +42,7 @@
       <p>|</p>
       <a href="/oauth2/authorization/google"><p>Google 로그인</p></a>
       <p>|</p>
-      <p class="singupform" onclick="signupForm()">회원가입</p>
+      <p onclick="signupForm()">회원가입</p>
     </div>
     <div th:class="alert" th:if="${authSuccess!= null}">
       <p th:text="${authSuccess}">인증 성공</p>
@@ -62,7 +59,7 @@
 
     window.onload = function () {
 
-      var successValue = /*[[${success}]]*/ false;
+      let successValue = /*[[${success}]]*/ false;
 
       if (successValue) {
         Toastify({
@@ -75,6 +72,7 @@
         }).showToast();
       }
     };
+
 </script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>

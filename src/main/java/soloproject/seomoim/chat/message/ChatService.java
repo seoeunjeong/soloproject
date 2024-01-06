@@ -20,7 +20,7 @@ public class ChatService {
 
     @Transactional
     public ChatMessage saveMessage(ChatMessageDto.Send message) {
-        Member senderMember = memberService.findMember(message.getSenderId());
+        Member senderMember = memberService.findMemberById(message.getSenderId());
         ChatRoom room = chatRoomService.findChatRoomById(message.getRoomId());
         ChatMessage createdMessage = ChatMessage.create(senderMember, message.getContent(), ReadStatus.UNREAD, room);
         return chatMessageRepository.save(createdMessage);

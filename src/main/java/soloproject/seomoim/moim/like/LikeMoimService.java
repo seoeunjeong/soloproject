@@ -23,7 +23,7 @@ public class LikeMoimService {
     @Transactional
     public void like(Long moimId, Long memberId) {
         Moim moim = moimService.findMoim(moimId);
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
         LikeMoim likeMoim = checkLike(member, moim);
         if (likeMoim.isStatus()) {
             throw new IllegalStateException("이미 좋아요한 모임입니다");
@@ -35,7 +35,7 @@ public class LikeMoimService {
 
     public void cancelLike(long moimId, long memberId) {
         Moim moim = moimService.findMoim(moimId);
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
         LikeMoim likeMoim = checkLike(member, moim);
         if (!likeMoim.isStatus()) {
             throw new IllegalStateException("좋아요 하지 않은 모임입니다");

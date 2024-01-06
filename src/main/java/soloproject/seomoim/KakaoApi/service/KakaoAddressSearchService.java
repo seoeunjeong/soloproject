@@ -1,6 +1,5 @@
 package soloproject.seomoim.KakaoApi.service;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +15,10 @@ import org.springframework.web.client.RestTemplate;
 import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
 
 import java.net.URI;
+import java.util.Optional;
 
 @Slf4j
 @Service
-@Getter
 @RequiredArgsConstructor
 public class KakaoAddressSearchService {
 
@@ -35,19 +34,18 @@ public class KakaoAddressSearchService {
             maxAttempts = 2,
             backoff = @Backoff(delay = 2000)
     )
-    public KakaoApiResponseDto requestAddressSearch(String address) {
+    public Optional<KakaoApiResponseDto> requestAddressSearch(String address) {
 
         if (ObjectUtils.isEmpty(address)) return null;
 
         URI uri = kakaoUriBuilderService.buildUriForAddressSearch(address);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-
         httpHeaders.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
 
-        HttpEntity httpEntity = new HttpEntity(httpHeaders);
+        HttpEntity<Void> httpEntity = new HttpEntity<>(httpHeaders);
 
-        return restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoApiResponseDto.class).getBody();
+        return Optional.ofNullable(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoApiResponseDto.class).getBody());
 
     }
 

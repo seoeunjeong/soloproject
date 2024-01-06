@@ -1,4 +1,4 @@
-package soloproject.seomoim.profileImage;
+package soloproject.seomoim.member.profileImage;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,13 +12,11 @@ public class ProfileImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="profile_image_id")
     private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "member_id", unique = true)
-    private Member member;
 
     private String profileImageUrl;
 
     private String uuid;
+
 }

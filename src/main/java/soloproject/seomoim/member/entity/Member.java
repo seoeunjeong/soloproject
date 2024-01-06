@@ -1,12 +1,11 @@
 package soloproject.seomoim.member.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.moim.like.LikeMoim;
-import soloproject.seomoim.profileImage.ProfileImage;
+import soloproject.seomoim.member.profileImage.ProfileImage;
 import soloproject.seomoim.utils.BaseEntity;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
@@ -45,13 +44,17 @@ public class Member extends BaseEntity {
 
     private double longitude;
 
-    private String addressDong;
+    private String eupMyeonDong;
 
-    @OneToOne(mappedBy = "member",cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name = "profile_image_id")
     private ProfileImage profileImage;
 
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="member_roles",
+    joinColumns=@JoinColumn(name="member_id"))
+    @Column(name = "roles_name")
     private List<String> roles = new ArrayList<>();
 
     //멤버는 여러 모임을 만들 수 있다.
@@ -59,11 +62,11 @@ public class Member extends BaseEntity {
     private List<Moim> createMoims = new ArrayList<>();
 
     //멤버는 여러 모임에 참여 할수있다.
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
     private List<MoimMember> joinMoims = new ArrayList<>();
 
     //멤버는 여러 모임을 좋아요 추가할수있다.
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
     private List<LikeMoim> likeMoims = new ArrayList<>();
 
     @OneToMany(mappedBy = "ownerMember")
@@ -73,14 +76,6 @@ public class Member extends BaseEntity {
     private List<ChatRoom> requestRooms= new ArrayList<>();
 
 
-
-    //연관관계 편의 메소드
-    public void setCreateMoims(Moim moim) {
-        createMoims.add(moim);
-        if (moim.getMember() != this) {
-            moim.setMember(this);
-        }
-    }
 
     public Member(String email,String name,String profile) {
         this.email = email;

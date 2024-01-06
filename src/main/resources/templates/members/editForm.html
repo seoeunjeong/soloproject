@@ -3,40 +3,38 @@
 <head>
   <title>프로필편집</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 </head>
 <body>
 <header>
-  <a href="/profile"><</a>
-  <span>프로필 편집</span>
+  <a href="/profile"><span><</span></a>
+  <span>프로필편집</span>
 </header>
 
 <section>
   <div class="editForm-container">
-  <form id="edit" th:action="@{'/members/'+ ${member.id}}" method="post" enctype="multipart/form-data">
-    <div class="image-container">
-      <input type="file" id="fileInput" name="profileImage" style="display: none" />
-      <img th:if="${member?.profileImage?.profileImageUrl}" th:src="${member?.profileImage?.profileImageUrl}"
-           alt="Click to Upload" class="uploadImage"/>
-      <img th:unless="${member?.profileImage?.profileImageUrl}" src="/img/unnamed.png" alt="Click to Upload"
-              class="uploadImage"/>
-      <button type="button" class="button" onclick="cancelFileSelection()">취소</button>
-    </div>
+    <form id="edit" th:object="${update}" th:action="@{'/members/'+ ${loginMemberId}}" method="post">
+      <div class="image-container">
+         <input type="file" id="fileInput" name="profileImage" style="display: none" accept="image/*" />
+         <img th:if="${profileUrl!=null}" th:src="${profileUrl.profileImageUrl}" alt="Click to Upload" class="uploadImage"/>
+         <img th:unless="${profileUrl!=null}" src="/img/unnamed.png" alt="Click to Upload" class="uploadImage"/>
+         <button type="button" class="button" onclick="deleteProfileImage()">삭제</button>
+      </div>
     <hr />
+
     <div class="profile_container">
     <div class="profile_container_row">
       <label for="name">이름</label>
       <input
               type="text"
               id="name"
-              name="name"
-              th:value="${member.name}"
+              th:field="*{name}"
               placeholder="이름"
       />
     </div>
+      <div class="field-error" th:errors="*{name}">
+        이름 오류
+      </div>
     <div>
       <div class="profile_container_row">
       <label for="age">나이</label>
@@ -44,11 +42,11 @@
               type="number"
               id="age"
               placeholder="나이"
-              name="age"
-              th:value="${member.age}"
-              min="0"
-              max="100"
+              th:field="*{age}"
       />
+      </div>
+      <div class="field-error" th:errors="*{age}">
+        나이 오류
       </div>
     </div>
     <div>
@@ -57,17 +55,19 @@
       <input
               type="text"
               id="address_kakao"
-              name="address"
-              th:value="${member.address}"
-              placeholder="가까운 모임을 추천해 드릴게요 :)"
+              th:field="*{address}"
+              placeholder="입력 후 가까운 모임을 추천받을 수 있습니다."
               readonly
       />
       </div>
+      <div class="field-error" th:errors="*{address}">
+        주소 오류
+      </div>
     </div>
     <div class="gender-container">
-      <input type="radio" id="female" th:field="${member.gender}" value="F" th:checked="${member.gender == 'F'}"/>
+      <input type="radio" id="female" th:field="*{gender}" value="F" th:checked="*{gender == 'F'}"/>
       <label for="female">여자</label>
-      <input type="radio" id="male" th:field="${member.gender}" value="M" th:checked="${member.gender=='M'}"/>
+      <input type="radio" id="male" th:field="*{gender}" value="M" th:checked="*{gender=='M'}"/>
       <label for="male">남자</label>
     </div>
     </div>
@@ -79,15 +79,13 @@
 
   </div>
 
-<!-- Kakao 우편번호 서비스 -->
-<!-- https://postcode.map.daum.net/guide -->
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
-<script>
+<!-- Kakao 우편번호 서비스 -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script th:inline="javascript" >
 
   window.onload = function () {
-    document
-            .getElementById('address_kakao')
+    document.getElementById('address_kakao')
             .addEventListener('click', function () {
               new daum.Postcode({
                 oncomplete: function (data) {
@@ -99,7 +97,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
 
-    var images = document.querySelectorAll('.uploadImage');
+    let images = document.querySelectorAll('.uploadImage');
 
     images.forEach(function (image) {
       image.addEventListener('click', function () {
@@ -107,45 +105,71 @@
       });
     });
 
-      var fileInput = document.getElementById('fileInput');
-      var image = document.querySelector('.uploadImage');
+
+    let loginMemberId= /*[[${loginMemberId}]]*/ null
+
+    let fileInput = document.getElementById('fileInput');
 
       fileInput.addEventListener('change', function (event) {
-        var selectedFile = event.target.files[0];
+
+        let selectedFile = event.target.files[0];
+        let image = document.querySelector('.uploadImage');
 
         if (selectedFile) {
-          displaySelectedImage(image, selectedFile);
+          // FormData 객체 생성
+          let formData = new FormData();
+          formData.append('profileImage', selectedFile);
+
+          // AJAX로 서버에 전송
+          let xhr = new XMLHttpRequest();
+          xhr.open('POST', '/members/profileImage/'+loginMemberId);
+
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              window.location.href = '/members/edit_form';
+            } else {
+              console.error('Profile image upload failed');
+            }
+          };
+
+          xhr.send(formData);
         } else {
-          image.src= '/img/profile.png'
+          image.src = '/img/unnamed.png';
         }
       });
+  });
 
-      function displaySelectedImage(image, file) {
-        var reader = new FileReader();
+  let loginMemberId= /*[[${loginMemberId}]]*/ null
 
-        reader.onload = function (e) {
-          console.log("File loaded successfully");
-          image.src = e.target.result;
-        };
+  function deleteProfileImage() {
+    let xhr = new XMLHttpRequest();
+    let imageElement = document.querySelector('.uploadImage');
 
-        reader.onerror = function (e) {
-          console.error("Error loading file:", e.target.error);
-        };
+    xhr.open('DELETE', '/members/profileImage/' + loginMemberId);
 
-        if (file) {
-          reader.readAsDataURL(file);
-        } else {
-          console.error("Invalid file object");
-        }
+    xhr.onload = function () {
+      if (xhr.status === 204) {
+        imageElement.src = '/img/unnamed.png';
+
+      } else {
+        console.error('Profile image deletion failed');
       }
-    });
+    };
 
-    function cancelFileSelection() {
-    // 파일 입력 필드 초기화
-    document.getElementById('fileInput').value = '';
-    // 이미지 초기화 (원하는 경우)
-    document.querySelector('.uploadImage').src = '/img/unnamed.png';
+    xhr.send();
   }
+
+  // function cancelFileSelection() {
+  //   let fileInput = document.getElementById('fileInput');
+  //   let imageElement = document.querySelector('.uploadImage');
+  //
+  //   // 이미지 파일이 선택되지 않은 경우
+  //   if (!fileInput.files.length) {
+  //     // 기본 이미지로 변경
+  //     imageElement.src = '/img/unnamed.png';
+  //   }
+  // }
+
 
 </script>
 </section>

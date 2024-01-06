@@ -1,6 +1,5 @@
 package soloproject.seomoim.moim.entitiy;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,7 +50,7 @@ public class Moim extends BaseEntity {
 
     private double longitude;
 
-    private String addressDong;
+    private String eupMyeonDong;
 
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;

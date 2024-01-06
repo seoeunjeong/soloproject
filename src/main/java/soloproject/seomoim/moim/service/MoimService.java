@@ -18,6 +18,7 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
+import soloproject.seomoim.moim.entitiy.MoimStatus;
 import soloproject.seomoim.moim.repository.MoimMemberRepository;
 import soloproject.seomoim.moim.repository.MoimRepository;
 
@@ -39,18 +40,19 @@ public class MoimService {
 
     @Transactional
     public Long createMoim(Long memberId, Moim moim){
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
         moim.setMember(member);
 
         if (member.getCreateMoims().size() > 3) {
             throw new IllegalStateException("모임은 최대 3개까지 개설 가능합니다.");
         }
 
-        KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(moim.getPlaceAddress());
+        KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(moim.getPlaceAddress())
+                .orElseThrow(() -> new IllegalStateException("카카오 주소검색요청에 실패했습니다 다른장소를 선택해주세요."));
         DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
         moim.setLatitude(documentDto.getLatitude());
         moim.setLongitude(documentDto.getLongitude());
-        moim.setAddressDong(documentDto.getRegion3DepthName());
+        moim.setEupMyeonDong(documentDto.getRegion3DepthName());
 
         int dDay = moim.calculateDDay();
         moim.setDDay(dDay);
@@ -78,13 +80,13 @@ public class MoimService {
                     findMoim.setPlaceAddress(placeAddress);
                     DocumentDto documentDto= null;
                     try{
-                        documentDto = kakaoAddressSearchService.requestAddressSearch(placeAddress).getDocumentDtoList().get(0);
+                        documentDto = kakaoAddressSearchService.requestAddressSearch(placeAddress).get().getDocumentDtoList().get(0);
                     }catch (Exception e){
                         log.error(e.getMessage());
                     }
                     findMoim.setLongitude(documentDto.getLongitude());
                     findMoim.setLatitude(documentDto.getLatitude());
-                    findMoim.setAddressDong(documentDto.getRegion3DepthName());
+                    findMoim.setEupMyeonDong(documentDto.getRegion3DepthName());
                 });
         Optional.ofNullable(moim.getMoimCategory())
                 .ifPresent(findMoim::setMoimCategory);
@@ -97,7 +99,7 @@ public class MoimService {
 
     @Transactional
     public void deleteMoim(String loginMemberEmail, Long moimId) {
-        Member loginMember = memberService.findByEmail(loginMemberEmail);
+        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
         Moim moim = findMoim(moimId);
         if (loginMember != moim.getMember()) {
             throw new IllegalStateException("모임장이 아니면 모임을 삭제 할 수없습니다.");
@@ -120,7 +122,7 @@ public class MoimService {
     @Transactional
     public void joinMoim(Long moimId, Long memberId){
         Moim moim = findMoim(moimId);
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
 
         MoimMember joinStatus = checkJoin(member,moim);
         if (joinStatus.isStatus()) {
@@ -136,7 +138,7 @@ public class MoimService {
     @Transactional
     public void cancelJoinMoim(Long moimId, Long memberId) {
         Moim moim = findMoim(moimId);
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
 
         if(moim.getMember()==member){
             throw new IllegalStateException("모임장은 모임 참여를 취소할 수 없습니다.");
@@ -196,13 +198,10 @@ public class MoimService {
         for (Moim moim : allMoim) {
             int dDay = moim.calculateDDay();
             moim.setDDay(dDay);
+            if(dDay<0) {
+                moim.setMoimStatus(MoimStatus.MOIM_FINISH);
+            }
             moimRepository.save(moim);
         }
     }
-
-    //회원이 만든 moim 을 조회할수있다.
-//    public List<Moim> findMyCreatedMoim(Long memberId){
-//        Member member = memberService.findMember(memberId);
-//        return moimRepository.findMoimsByMember(member);
-//    }
 }

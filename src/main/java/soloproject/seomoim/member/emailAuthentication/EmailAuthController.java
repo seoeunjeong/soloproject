@@ -2,13 +2,12 @@ package soloproject.seomoim.member.emailAuthentication;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.member.loginCheck.AuthenticationUser;
 import soloproject.seomoim.member.service.MemberService;
-import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 import soloproject.seomoim.utils.RedisUtil;
 
 import java.util.List;
@@ -24,47 +23,47 @@ public class EmailAuthController {
     private final RedisUtil redisUtil;
 
     @GetMapping("/email/auth-form")
-    public String emailAuthFrom(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-        List<String> roles = userDetails.getRoles();
+    public String emailAuthFrom(@AuthenticationUser String loginMemberEmail, Model model) {
+        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+        List<String> roles = loginMember.getRoles();
         if (roles.get(0).equals("AUTH_USER")) {
-
             throw new IllegalStateException("이미 인증된 회원입니다");
         }
-        String email = userDetails.getEmail();
+        String email = loginMember.getEmail();
         model.addAttribute("email", email);
         return "members/emailAuthForm";
     }
 
-    /*인증번호 발송 api*/
     @GetMapping("/email")
-    public String MailSend(String email, Model model){
-        mailsendService.sendMail(email);
-        model.addAttribute("send","success");
-        model.addAttribute("email",email);
+    public String MailSend(String email, Model model) {
+        try {
+            mailsendService.sendMail(email);
+        } catch (Exception e) {
+            model.addAttribute("sendError", e.getMessage());
+        }
+        model.addAttribute("send", "success");
+        model.addAttribute("email", email);
         return "members/emailAuthForm";
     }
 
-
-    //재로그인 유도
+    //인증시 재로그인 유도
     @PostMapping("/email/auth")
-    public String authEmail(@RequestParam String number,
+    public String authEmail(@RequestParam String verificationCode,
                             @RequestParam String email,
                             Model model) {
-        String sendNumber = (String) redisUtil.get(email);
-        log.info("sendNumber=" + sendNumber);
-        if(sendNumber==null){
+        String sendCode = (String) redisUtil.get(email);
+        log.info("sendNumber=" + sendCode);
+        if(sendCode==null){
             model.addAttribute("email",email);
             model.addAttribute("expire","인증시간이 만료되었습니다.");
             return "members/emailAuthForm";
         }
-        log.info("number=" + number);
 
-        if (number.equals(sendNumber)) {
-            Member findMember = memberService.findByEmail(email);
+        if (verificationCode.equals(sendCode)) {
+            Member findMember = memberService.findMemberByEmail(email);
             findMember.setRoles(List.of("AUTH_USER"));
             memberService.update(findMember.getId(), findMember);
             model.addAttribute("authSuccess","인증이 완료되었습니다 로그인 해주세요.");
-
             return "members/loginForm";
 
         } else {

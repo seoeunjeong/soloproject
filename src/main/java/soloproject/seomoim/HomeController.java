@@ -11,7 +11,7 @@ import soloproject.seomoim.chat.message.ChatMessage;
 import soloproject.seomoim.chat.message.ChatService;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.chat.room.ChatRoomRepository;
-import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
+import soloproject.seomoim.member.loginCheck.AuthenticationUser;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
@@ -21,7 +21,7 @@ import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.service.MoimService;
-import soloproject.seomoim.recommend.DistanceService;
+import soloproject.seomoim.moim.service.DistanceService;
 import soloproject.seomoim.utils.PageResponseDto;
 
 
@@ -66,8 +66,8 @@ public class HomeController {
 
 
     @GetMapping("/profile")
-    public String profileHome(@AuthenticationdUser String email, Model model) {
-        Member member = memberService.findByEmail(email);
+    public String profileHome(@AuthenticationUser String email, Model model) {
+        Member member = memberService.findMemberByEmail(email);
         model.addAttribute("member", mapper.memberToMemberResponseDto(member));
         Set<Object> latestViewMoim = latestViewService.getLatestPostsForMember(member.getId(), 5);
         model.addAttribute("latest", latestViewMoim);
@@ -77,8 +77,8 @@ public class HomeController {
     }
 
     @GetMapping("/chat")
-    public String alarmHome(@AuthenticationdUser String mail, Model model) {
-        Member loginMember = memberService.findByEmail(mail);
+    public String alarmHome(@AuthenticationUser String mail, Model model) {
+        Member loginMember = memberService.findMemberByEmail(mail);
         List<ChatRoom> allChatRoom = chatRoomRepository.findByMember(loginMember);
 
         Map<Long, Long> unreadMessageCountMap = new HashMap<>();
@@ -107,8 +107,8 @@ public class HomeController {
 
 
     @ModelAttribute("loginMemberId")
-    public Long loginMember(@AuthenticationdUser String email){
-        Member loginMember = memberService.findByEmail(email);
+    public Long loginMember(@AuthenticationUser String email){
+        Member loginMember = memberService.findMemberByEmail(email);
         return loginMember.getId();
     }
 }

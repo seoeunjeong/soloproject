@@ -1,4 +1,4 @@
-package soloproject.seomoim.recommend;
+package soloproject.seomoim.moim.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

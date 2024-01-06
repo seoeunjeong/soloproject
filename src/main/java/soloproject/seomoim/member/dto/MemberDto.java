@@ -2,6 +2,7 @@ package soloproject.seomoim.member.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
@@ -43,13 +44,13 @@ public class MemberDto {
         @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,4}$", message = "이름은 특수문자를 제외한 2~4자리여야 합니다.")
         private String name;
 
+        @Range(min = 1,max = 100,message="올바른 나이를 입력해주세요.")
         private Integer age;
 
         private char gender;
 
         private String address;
 
-        private MultipartFile profileImage;
 
     }
 

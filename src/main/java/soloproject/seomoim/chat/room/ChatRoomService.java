@@ -17,8 +17,8 @@ public class ChatRoomService {
     //채팅방 crud
 
     public Long createRoom(Long ownerMemberId, Long requestMemberId) {
-        Member ownerMember = memberService.findMember(ownerMemberId);
-        Member requestMember = memberService.findMember(requestMemberId);
+        Member ownerMember = memberService.findMemberById(ownerMemberId);
+        Member requestMember = memberService.findMemberById(requestMemberId);
         if (ownerMember == requestMember) {
             throw new IllegalStateException("본인에게 1:1대화는 불가능합니다.");
         }
@@ -30,7 +30,7 @@ public class ChatRoomService {
     }
 
     public List<ChatRoom> findJoinedChatRooms(Long memberId) {
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
         return chatRoomRepository.findByMember(member);
     }
 

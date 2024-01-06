@@ -6,16 +6,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import soloproject.seomoim.KakaoApi.dto.DocumentDto;
 import soloproject.seomoim.KakaoApi.dto.KakaoApiResponseDto;
 import soloproject.seomoim.KakaoApi.service.KakaoAddressSearchService;
 import soloproject.seomoim.advice.exception.BusinessLogicException;
-import soloproject.seomoim.advice.exception.ClientRequestException;
 import soloproject.seomoim.advice.exception.ExceptionCode;
 import soloproject.seomoim.member.entity.Member;
+import soloproject.seomoim.member.profileImage.ProfileImageUploadService;
 import soloproject.seomoim.member.repository.MemberRepository;
 import soloproject.seomoim.security.FormLogin.CustomAuthorityUtils;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,13 +32,15 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
     private final KakaoAddressSearchService kakaoAddressSearchService;
+    private final ProfileImageUploadService profileImageUploadService;
 
     @Transactional
     public Long signup(Member member) {
-        checkIdDuplication(member);
+
+        checkIdDuplication(member.getEmail());
 
         if (!member.getPassword().equals(member.getConfirmPassword())) {
-            throw new ClientRequestException(ExceptionCode.PASSWORD_MISMATCH);
+            throw new BusinessLogicException(ExceptionCode.PASSWORD_MISMATCH);
         }
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
@@ -52,77 +57,75 @@ public class MemberService {
     @Transactional
     public void update(Long memberId, Member member) {
         //변경감지 사용
-        Member findmember = findMember(memberId);
+        Member findMember = findMemberById(memberId);
 
-        Optional.ofNullable(member.getPassword())
-                .ifPresent(findmember::setPassword);
         Optional.ofNullable(member.getName())
-                .ifPresent(findmember::setName);
+                .ifPresent(findMember::setName);
         Optional.ofNullable(member.getAge())
-                .ifPresent(findmember::setAge);
+                .ifPresent(findMember::setAge);
         Optional.ofNullable(member.getGender())
-                .ifPresent(findmember::setGender);
+                .ifPresent(findMember::setGender);
         Optional.ofNullable(member.getRoles())
                 .filter(roles -> !roles.isEmpty())
-                .ifPresent(findmember::setRoles);
+                .ifPresent(findMember::setRoles);
 
-        /*빈 문자열 들어온다*/
-        if (member.getAddress() != null && !member.getAddress().equals("")) {
-            KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(member.getAddress());
+        if (StringUtils.hasText(member.getAddress())) {
+            KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(member.getAddress())
+                    .orElseThrow(() -> new IllegalStateException("카카오 주소 요청이 실패했습니다.다른장소를 입력해주세요."));
             DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
-            log.info("documentDto={}",documentDto.toString());
-            findmember.setAddress(member.getAddress());
-            findmember.setLatitude(documentDto.getLatitude());
-            findmember.setLongitude(documentDto.getLongitude());
-            findmember.setAddressDong(documentDto.getRegion3DepthName());
+            log.info("documentDto={}", documentDto);
+            findMember.setAddress(member.getAddress());
+            findMember.setLatitude(documentDto.getLatitude());
+            findMember.setLongitude(documentDto.getLongitude());
+            findMember.setEupMyeonDong(documentDto.getRegion3DepthName());
+        }
+
+    }
+
+    @Transactional
+    public void updateProfileImage(Long memberId,MultipartFile profileImage){
+        Member findMember = findMemberById(memberId);
+        log.info("profileImamge={}",profileImage);
+        if (profileImage!=null) {
+            try {
+                profileImageUploadService.uploadFileToGCS(profileImage,findMember);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            profileImageUploadService.deleteFile(findMember);
         }
     }
 
     @Transactional
-    public void delete(String email,Long memberId){
-        Member loginMember = findByEmail(email);
-        Member deleteMember = findMember(memberId);
-        if(loginMember!=deleteMember){
+    public void delete(String loginMemberEmail, Long deleteMemberId) {
+        Member loginMember = findMemberByEmail(loginMemberEmail);
+        Member deleteMember = findMemberById(deleteMemberId);
+
+        if (loginMember != deleteMember) {
             throw new BusinessLogicException(ExceptionCode.INVALID_REQUEST);
         }
+        //todo ! 회원탈퇴할때 어떤 정보가 있더 무조건 탈퇴,관련데이터 전부 지우기
         memberRepository.delete(deleteMember);
     }
 
 
-    public Member findMember(Long memberId) {
+    public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
 
-    public Member findByEmail(String email){
+    public Member findMemberByEmail(String email){
          return memberRepository.findByEmail(email)
                  .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
-    private void checkIdDuplication(Member member) {
-        Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
-        if(findMember.isPresent()){
+    private void checkIdDuplication(String email) {
+        Optional<Member> findMember = memberRepository.findByEmail(email);
+        if (findMember.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.ALREADY_EXISTS_ID);
         }
     }
-
-/*
-    //회원 정보와 함께 참여한 모임 조회
-//    public Member findMemberAndfindParticipationMoim(Long memberId){
-//        Member findMember = memberRepository.findByIdAndParticipationMoims(memberId);
-//        return findMember;
-
-//    }
-//    회원이 자신이 참여한 모임 조회
-//    public List<Moim> findParticipationMoims(Long memberId){
-//        List<MoimMember> participationMoims = moimMemberRepository.findJoinMoims(memberId);
-//        List<Moim> moims = participationMoims.stream()
-//                .map(moimMember -> moimMember.getMoim().getId())
-//                .map(moimId -> moimRepository.findById(moimId).orElse(null))
-//                .collect(Collectors.toList());
-//        return moims;
-//    }
-*/
 
 }

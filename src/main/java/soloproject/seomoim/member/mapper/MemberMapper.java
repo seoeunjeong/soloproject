@@ -22,6 +22,8 @@ public interface MemberMapper {
 
     Member memberUpdateDtoToMember(Update updateRequest);
 
+    MemberDto.Update memberToMemberUpdateDto(Member member);
+
     @Mapping(source = "profileImage.profileImageUrl", target = "profileImageUrl")
     @Mapping(target = "joinMoims", qualifiedByName = "filterJoins")
     @Mapping(target = "likeMoims", qualifiedByName = "filterLikeMoims")

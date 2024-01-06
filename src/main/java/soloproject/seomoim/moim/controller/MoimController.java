@@ -14,7 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import soloproject.seomoim.member.loginCheck.AuthenticationdUser;
+import soloproject.seomoim.member.loginCheck.AuthenticationUser;
 import soloproject.seomoim.moim.service.LatestViewService;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.moim.like.LikeMoimService;
@@ -23,7 +23,7 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.entitiy.MoimMember;
-import soloproject.seomoim.recommend.DistanceService;
+import soloproject.seomoim.moim.service.DistanceService;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -105,12 +105,12 @@ public class MoimController {
 
     @GetMapping("/{moim-id}")
     public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
-                                 @AuthenticationdUser String email, Model model) {
+                                 @AuthenticationUser String email, Model model) {
         Moim moim = moimService.findMoim(moimId);
 
         model.addAttribute("moim", mapper.moimToResponseDto(moim));
 
-        Member loginMember = memberService.findByEmail(email);
+        Member loginMember = memberService.findMemberByEmail(email);
         MoimMember joinStatus = moimService.checkJoin(loginMember, moim);
         LikeMoim likeMoim = likeMoimService.checkLike(loginMember, moim);
         model.addAttribute("likeStatus", likeMoim.isStatus());
@@ -186,7 +186,7 @@ public class MoimController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}")
     public void deleteMoim(@PathVariable("moim-id") Long moimId,
-                           @AuthenticationdUser String email) {
+                           @AuthenticationUser String email) {
         moimService.deleteMoim(email, moimId);
     }
 
@@ -255,7 +255,7 @@ public class MoimController {
     @GetMapping("/nearby/{member-id}")
     public String findNearbyMoims(@PathVariable("member-id") Long memberId,
              RedirectAttributes redirectAttributes) {
-        Member member = memberService.findMember(memberId);
+        Member member = memberService.findMemberById(memberId);
         if (member.getAddress() == null) {
             return "redirect:/";
         }
@@ -320,8 +320,8 @@ public class MoimController {
     }
 
     @ModelAttribute("loginMemberId")
-    public Long loginMember(@AuthenticationdUser String email){
-        Member loginMember = memberService.findByEmail(email);
+    public Long loginMember(@AuthenticationUser String email){
+        Member loginMember = memberService.findMemberByEmail(email);
         return loginMember.getId();
     }
 }
