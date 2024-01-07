@@ -1,5 +1,6 @@
 package soloproject.seomoim.moim.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public interface MoimRepository extends JpaRepository<Moim,Long> , MoimRepositoryCustom{
 
-    List<Moim> findByStartedAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Page<Moim> findByStartedAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
 
     @Query("SELECT m FROM Moim m ORDER BY m.likeCount DESC")
     List<Moim> findLikeCountTop5(Pageable pageable);

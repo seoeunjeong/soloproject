@@ -1,4 +1,31 @@
 spring:
+  profiles:
+    active: local #default
+    group:
+      local:
+        common
+      prod:
+        common
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://seomoim-database:3306/seomoim?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  redis:
+    host: seomoim-redis
+    port: 6379
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/seomoim?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
@@ -8,6 +35,11 @@ spring:
     host: localhost
     port: 6379
 
+---
+spring:
+  config:
+    activate:
+      on-profile: common
   jpa:
     hibernate:
       ddl-auto: create-drop

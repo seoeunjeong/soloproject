@@ -12,6 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class MoimSearchDto {
 
+    private String eupMyeonDong;
+
     private MoimCategory moimCategory;
 
     private String keyword;

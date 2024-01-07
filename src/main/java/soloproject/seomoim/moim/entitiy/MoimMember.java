@@ -41,8 +41,8 @@ public class MoimMember extends BaseEntity {
 
     public void setMember(Member member) {
         this.member = member;
-        if (!this.member.getJoinMoims().contains(this)) {
-            this.member.getJoinMoims().add(this);
+        if (!this.member.getJoinMoimList().contains(this)) {
+            this.member.getJoinMoimList().add(this);
         }
     }
     

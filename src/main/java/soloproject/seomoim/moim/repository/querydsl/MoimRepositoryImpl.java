@@ -32,7 +32,8 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
                 .where(
                         moimStartedAt(searchDto.getStartedAt()),
                         moimCategory(searchDto.getMoimCategory()),
-                        moimKeyword(searchDto.getKeyword())
+                        moimKeyword(searchDto.getKeyword()),
+                        moimEupMyeonDong(searchDto.getEupMyeonDong())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -68,6 +69,9 @@ public class MoimRepositoryImpl implements MoimRepositoryCustom {
     }
     private BooleanExpression moimContentKeyword(String keyword) {
         return keyword != null ? moim.content.contains(keyword): null;
+    }
+    private BooleanExpression moimEupMyeonDong(String eupMyeonDong) {
+        return !eupMyeonDong.isEmpty() ? moim.eupMyeonDong.eq(eupMyeonDong): null;
     }
 
 }

@@ -43,7 +43,7 @@ public class MoimService {
         Member member = memberService.findMemberById(memberId);
         moim.setMember(member);
 
-        if (member.getCreateMoims().size() > 3) {
+        if (member.getCreateMoimList().size() > 3) {
             throw new IllegalStateException("모임은 최대 3개까지 개설 가능합니다.");
         }
 
@@ -171,10 +171,10 @@ public class MoimService {
     }
 
 
-    public List<Moim> findTodayMoims() {
+    public Page<Moim> findTodayMoims(int page,int size) {
         LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN);
         LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);
-        return moimRepository.findByStartedAtBetween(startOfDay, endOfDay);
+        return moimRepository.findByStartedAtBetween(startOfDay, endOfDay,PageRequest.of(page,size));
     }
     public List<Moim> findPopularMoims() {
         return moimRepository.findLikeCountTop5(PageRequest.of(0, 5));
@@ -203,5 +203,12 @@ public class MoimService {
             }
             moimRepository.save(moim);
         }
+    }
+
+    @Transactional
+    public void delegateLeader(Long moimId,Long memberId) {
+        Moim moim = findMoim(moimId);
+        Member newLeader = memberService.findMemberById(memberId);
+        moim.setMember(newLeader);
     }
 }

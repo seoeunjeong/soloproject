@@ -20,7 +20,7 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
-import soloproject.seomoim.moim.service.LatestViewService;
+import soloproject.seomoim.moim.service.LatestViewMoimService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -35,7 +35,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberMapper mapper;
     private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
-    private final LatestViewService latestViewService;
+    private final LatestViewMoimService latestViewService;
     @GetMapping("/login-form")
     public String loginForm(HttpServletRequest request, Model model) {
         String referer = request.getHeader("Referer");

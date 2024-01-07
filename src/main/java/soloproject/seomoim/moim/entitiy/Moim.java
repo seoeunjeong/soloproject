@@ -62,7 +62,7 @@ public class Moim extends BaseEntity {
 
 
     @OneToMany(mappedBy = "moim",cascade = CascadeType.ALL)
-    private List<LikeMoim> likeMoims = new ArrayList<>();
+    private List<LikeMoim> likeList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private MoimStatus moimStatus = MoimStatus.MOIM_OPEN;
@@ -74,8 +74,8 @@ public class Moim extends BaseEntity {
     //양방향 연관관계에서 한쪽에만 엔티티만 추가해주는 실수를 하더라도 다른쪽 엔티티를 추가
     public void setMember(Member member) {
         this.member = member;
-        if (!this.member.getCreateMoims().contains(this)) {
-            this.member.getCreateMoims().add(this);
+        if (!this.member.getCreateMoimList().contains(this)) {
+            this.member.getCreateMoimList().add(this);
         }
     }
     public void setParticipants(MoimMember moimMember) {

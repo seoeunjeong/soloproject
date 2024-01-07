@@ -31,6 +31,7 @@ services:
       - seomoim-redis
     image: seoeunjeong/seomoim-app
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY}

@@ -2,7 +2,6 @@ package soloproject.seomoim.member.profileImage;
 
 import lombok.Getter;
 import lombok.Setter;
-import soloproject.seomoim.member.entity.Member;
 
 import javax.persistence.*;
 

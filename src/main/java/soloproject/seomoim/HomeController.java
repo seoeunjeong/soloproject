@@ -16,12 +16,12 @@ import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
-import soloproject.seomoim.moim.service.LatestViewService;
+import soloproject.seomoim.moim.service.LatestViewMoimService;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.service.MoimService;
-import soloproject.seomoim.moim.service.DistanceService;
+import soloproject.seomoim.moim.service.NearByMoimService;
 import soloproject.seomoim.utils.PageResponseDto;
 
 
@@ -41,8 +41,8 @@ public class HomeController {
     private final MemberMapper mapper;
     private final MoimMapper moimMapper;
     private final ChatRoomRepository chatRoomRepository;
-    private final LatestViewService latestViewService;
-    private final DistanceService distanceService;
+    private final LatestViewMoimService latestViewService;
+    private final NearByMoimService nearByMoimService;
     private final ChatService chatService;
     @GetMapping("/")
     public String home(Model model) {
@@ -52,7 +52,7 @@ public class HomeController {
         PageResponseDto<MoimDto.Response> totalResponse = new PageResponseDto<>(moimMapper.moimsToResponseDtos(moims), totalPage);
 
         List<Moim> popularMoims = moimService.findPopularMoims();
-        List<Moim> todayMoims = moimService.findTodayMoims();
+        List<Moim> todayMoims = moimService.findTodayMoims(0,5).getContent();
 
         List<MoimDto.Response> todayResponse = moimMapper.moimsToResponseDtos(todayMoims);
         List<MoimDto.Response> popularResponse = moimMapper.moimsToResponseDtos(popularMoims);
@@ -71,7 +71,7 @@ public class HomeController {
         model.addAttribute("member", mapper.memberToMemberResponseDto(member));
         Set<Object> latestViewMoim = latestViewService.getLatestPostsForMember(member.getId(), 5);
         model.addAttribute("latest", latestViewMoim);
-        List<Moim> nearbyMoims = distanceService.findNearbyMoims(member);
+        List<Moim> nearbyMoims = nearByMoimService.findNearbyMoims(member);
         model.addAttribute("nearByMoims", nearbyMoims);
         return "home/profile";
     }

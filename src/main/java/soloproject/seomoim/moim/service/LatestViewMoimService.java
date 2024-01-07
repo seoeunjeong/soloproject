@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class LatestViewService {
+public class LatestViewMoimService {
 
     private static final String LATEST_POST_KEY = "latest_view";
 

@@ -26,7 +26,7 @@ public class MailSendService {
         try {
             message.setFrom(senderEmail);
             message.setRecipients(MimeMessage.RecipientType.TO, recipientEmail);
-            message.setSubject("SEOMOIM 이메일인증번호");
+            message.setSubject("SEOMOIM 이메일 인증번호 발송");
             String body = "";
             body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
             body += "<h1>" + verificationCode + "</h1>";

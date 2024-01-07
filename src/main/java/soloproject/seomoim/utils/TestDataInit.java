@@ -58,7 +58,7 @@ public class TestDataInit {
 
         MoimDto.Post post2 = new MoimDto.Post();
         post2.setMoimCategory(MoimCategory.STUDY);
-        post2.setStartedAt(LocalDateTime.of(2024, 1, 4, 19, 30));
+        post2.setStartedAt(LocalDateTime.of(2024, 1, 8, 19, 30));
         post2.setTitle("코딩테스트 공부");
         post2.setContent("모여서 각자 공부!");
         post2.setPlaceName("스타벅스 역곡역DT점");
@@ -68,7 +68,7 @@ public class TestDataInit {
 
         MoimDto.Post post3 = new MoimDto.Post();
         post3.setMoimCategory(MoimCategory.EXERCISE);
-        post3.setStartedAt(LocalDateTime.of(2024, 1, 5, 20, 00));
+        post3.setStartedAt(LocalDateTime.of(2024, 1, 10, 20, 00));
         post3.setTitle("헬스 필라테스 ㅎㅎㅎㅎ");
         post3.setContent("하체 뿌시기!!!");
         post3.setPlaceName("스포애니 역곡역점");

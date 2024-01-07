@@ -66,9 +66,9 @@ public class MemberDto {
         private char gender;
         private String address;
         private LocalDateTime createdAt;
-        private List<CreateMoimsDto> createMoims;
-        private List<LikeMoimDto> likeMoims;
-        private List<MoimMemberDto> joinMoims;
+        private List<CreateMoimsDto> createMoimList;
+        private List<LikeMoimDto> likeMoimList;
+        private List<MoimMemberDto> joinMoimList;
 
     }
 

@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
 
     private Integer age;
 
-    private char gender;
+    private Character gender;
 
     private String address;
 
@@ -59,23 +59,21 @@ public class Member extends BaseEntity {
 
     //멤버는 여러 모임을 만들 수 있다.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Moim> createMoims = new ArrayList<>();
+    private List<Moim> createMoimList = new ArrayList<>();
 
     //멤버는 여러 모임에 참여 할수있다.
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
-    private List<MoimMember> joinMoims = new ArrayList<>();
+    private List<MoimMember> joinMoimList = new ArrayList<>();
 
-    //멤버는 여러 모임을 좋아요 추가할수있다.
+    //멤버는 여러 모임을 좋아요할수있다.
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
-    private List<LikeMoim> likeMoims = new ArrayList<>();
+    private List<LikeMoim> likeMoimList = new ArrayList<>();
 
     @OneToMany(mappedBy = "ownerMember")
     private List<ChatRoom> ownerRooms= new ArrayList<>();
 
     @OneToMany(mappedBy = "requestMember")
     private List<ChatRoom> requestRooms= new ArrayList<>();
-
-
 
     public Member(String email,String name,String profile) {
         this.email = email;

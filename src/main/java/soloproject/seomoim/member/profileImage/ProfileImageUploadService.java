@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.repository.MemberRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,11 +24,10 @@ public class ProfileImageUploadService {
 
     private final Storage storage;
 
-    private final MemberRepository memberRepository;
     private static final String IMAGE_DEFAULT_URL = "https://storage.googleapis.com/seomoim/";
 
     /*todo 이미지 리사이징 */
-    public void uploadFileToGCS(MultipartFile file, Member member) throws IOException {
+    public void uploadFileToGCS(MultipartFile file,Member member) throws IOException {
 
         if (member.getProfileImage() != null) {
             deleteFile(member);
@@ -42,7 +40,6 @@ public class ProfileImageUploadService {
         profileImage.setProfileImageUrl(IMAGE_DEFAULT_URL + uuid);
         profileImage.setUuid(uuid);
         member.setProfileImage(profileImage);
-        memberRepository.save(member);
     }
 
 

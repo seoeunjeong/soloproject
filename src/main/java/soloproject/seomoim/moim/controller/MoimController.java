@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.member.loginCheck.AuthenticationUser;
-import soloproject.seomoim.moim.service.LatestViewService;
+import soloproject.seomoim.moim.service.LatestViewMoimService;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.moim.like.LikeMoimService;
 import soloproject.seomoim.member.entity.Member;
@@ -23,7 +23,7 @@ import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.moim.dto.MoimSearchDto;
 import soloproject.seomoim.moim.entitiy.MoimCategory;
 import soloproject.seomoim.moim.entitiy.MoimMember;
-import soloproject.seomoim.moim.service.DistanceService;
+import soloproject.seomoim.moim.service.NearByMoimService;
 import soloproject.seomoim.moim.mapper.MoimMapper;
 import soloproject.seomoim.moim.dto.MoimDto;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -51,8 +51,8 @@ public class MoimController {
     private final LikeMoimService likeMoimService;
     private final ObjectMapper objectMapper;
     private static final String COOKIE_DATA = "cookieDto";
-    private final LatestViewService latestViewService;
-    private final DistanceService distanceService;
+    private final LatestViewMoimService latestViewService;
+    private final NearByMoimService nearByMoimService;
 
 
     @Value("${kakao.maps.appKey}")
@@ -198,11 +198,6 @@ public class MoimController {
 
         moimService.joinMoim(moimId, memberId);
         Moim moim = moimService.findMoim(moimId);
-
-        MoimDto.joinDto joinDto = new MoimDto.joinDto();
-        joinDto.setMemberId(memberId);
-        joinDto.setStatus(true);
-        joinDto.setMoimResponseDto(mapper.moimToResponseDto(moim));
         return new ResponseEntity<>(mapper.moimToResponseDto(moim),HttpStatus.OK);
     }
 
@@ -212,10 +207,6 @@ public class MoimController {
                             @PathVariable("member-id") Long memberId) {
         moimService.cancelJoinMoim(moimId, memberId);
         Moim moim = moimService.findMoim(moimId);
-        MoimDto.joinDto joinDto = new MoimDto.joinDto();
-        joinDto.setMemberId(memberId);
-        joinDto.setStatus(false);
-        joinDto.setMoimResponseDto(mapper.moimToResponseDto(moim));
         return new ResponseEntity<>(mapper.moimToResponseDto(moim),HttpStatus.OK);
     }
 
@@ -251,6 +242,13 @@ public class MoimController {
         return "home/search";
     }
 
+    @GetMapping("/search-EupMyeonDong")
+    public String searchEupMyeonDong(Model model){
+        model.addAttribute("kakaoMapsAppKey", kakaoMapsAppKey);
+        return "moims/addressSearchPage";
+    }
+
+
 
     @GetMapping("/nearby/{member-id}")
     public String findNearbyMoims(@PathVariable("member-id") Long memberId,
@@ -259,18 +257,40 @@ public class MoimController {
         if (member.getAddress() == null) {
             return "redirect:/";
         }
-        List<Moim> nearbyMoims = distanceService.findNearbyMoims(member);
+        List<Moim> nearbyMoims = nearByMoimService.findNearbyMoims(member);
 
         redirectAttributes.addFlashAttribute("moims", nearbyMoims);
 
         return "redirect:/";
     }
 
+    @PostMapping("/delegate/{moim-id}/{member-id}")
+    public String delegateLeader(@PathVariable("member-id") Long memberId,
+                                 @PathVariable("moim-id") Long moimId,
+                                 RedirectAttributes redirectAttributes) {
+        moimService.delegateLeader(moimId,memberId);
 
+        redirectAttributes.addAttribute("moim-id", moimId);
+
+        return "redirect:moims/{moim-id}";
+    }
+
+    @GetMapping("/allToday")
+    public String allToday() {
+        return "moims/todayPage";
+    }
 
     @GetMapping("/today")
-    public List<Moim> getTodayMoims() {
-        return moimService.findTodayMoims();
+    @ResponseBody
+    public ResponseEntity<PageResponseDto<MoimDto.Response>> getTodayMoims(@RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "5") int size,
+                                    Model model) {
+        Page<Moim> todayMoims = moimService.findTodayMoims(page - 1, size);
+        List<Moim> moims = todayMoims.getContent();
+        PageResponseDto<MoimDto.Response> pageResponseDto = new PageResponseDto<>(mapper.moimsToResponseDtos(moims),todayMoims);
+        model.addAttribute("moims", pageResponseDto);
+
+        return new ResponseEntity<>(pageResponseDto,HttpStatus.OK);
 
     }
 

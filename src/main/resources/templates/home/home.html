@@ -50,7 +50,7 @@
     </div>
     </div>
     <div class="division"></div>
-    <div class="total-title"><h4>★TODAY 모임★</h4><a>더보기 ></a></div>
+    <div class="total-title"><h4>★TODAY 모임★</h4><a href="/moims/allToday">더보기 ></a></div>
     <div class="today-card-container">
         <div th:each="todayMoim:${todayMoims}">
             <a th:href="@{/moims/{moimId}(moimId=${todayMoim.moimId})}">
@@ -94,7 +94,7 @@
         </div>
     </div>
     <div class="division"></div>
-    <div class="total-title"><h4>❤️인기있는 모임❤️</h4> <a>더보기 ></a></div>
+    <div class="total-title"><h4>❤️인기있는 모임❤️</h4></div>
     <div class="popular-card-container">
         <div th:each="popularMoim:${popularMoims}">
             <a th:href="@{/moims/{moimId}(moimId=${popularMoim.moimId})}">

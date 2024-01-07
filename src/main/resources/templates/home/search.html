@@ -8,7 +8,7 @@
   </head>
 <body>
 <header>
-  <a href="/"><span>SEOMOIM</span></a>
+  <a href="/moims/search-EupMyeonDong"><span>읍면동 ></span></a>
 </header>
 <section>
   <div class="search-container">
@@ -18,7 +18,7 @@
         <button class="search-button" form="search">검색</button>
       </div>
       <div class="filter-container">
-      <input type="text" class="eupMyeonDong" placeholder="읍면동을 입력하세요">
+        <input type="text" class="eupMyeonDong" th:field="*{eupMyeonDong}"placeholder="읍면동을 입력하세요" />
       <select class="moimCategory" th:field="*{moimCategory}">
         <option value=""> 카테고리 </option>
         <option data-image="icon/coffee.png" value="COFFEE">COFFEE</option>

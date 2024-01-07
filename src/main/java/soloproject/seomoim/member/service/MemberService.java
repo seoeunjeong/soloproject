@@ -83,17 +83,16 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateProfileImage(Long memberId,MultipartFile profileImage){
-        Member findMember = findMemberById(memberId);
-        log.info("profileImamge={}",profileImage);
-        if (profileImage!=null) {
+    public void updateProfileImage(Long memberId, MultipartFile profileImage) {
+        Member member = findMemberById(memberId);
+        if (profileImage != null) {
             try {
-                profileImageUploadService.uploadFileToGCS(profileImage,findMember);
+                profileImageUploadService.uploadFileToGCS(profileImage, member);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            profileImageUploadService.deleteFile(findMember);
+            profileImageUploadService.deleteFile(member);
         }
     }
 

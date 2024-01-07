@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.moim.entitiy.Moim;
-import soloproject.seomoim.moim.service.MoimService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DistanceService {
+public class NearByMoimService {
 
     private final MoimService moimService;
     private static final double DIRECTION_KM=10.0;
