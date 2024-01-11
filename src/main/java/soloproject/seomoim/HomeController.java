@@ -1,5 +1,6 @@
 package soloproject.seomoim;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,7 @@ import soloproject.seomoim.chat.message.ChatMessage;
 import soloproject.seomoim.chat.message.ChatService;
 import soloproject.seomoim.chat.room.ChatRoom;
 import soloproject.seomoim.chat.room.ChatRoomRepository;
-import soloproject.seomoim.member.loginCheck.AuthenticationUser;
+import soloproject.seomoim.member.loginCheck.LoginMember;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.mapper.MemberMapper;
 import soloproject.seomoim.member.service.MemberService;
@@ -66,18 +67,19 @@ public class HomeController {
 
 
     @GetMapping("/profile")
-    public String profileHome(@AuthenticationUser String email, Model model) {
+    public String profileHome(@LoginMember String email, Model model) throws JsonProcessingException {
         Member member = memberService.findMemberByEmail(email);
         model.addAttribute("member", mapper.memberToMemberResponseDto(member));
-        Set<Object> latestViewMoim = latestViewService.getLatestPostsForMember(member.getId(), 5);
-        model.addAttribute("latest", latestViewMoim);
+        Set<MoimDto.Response> latestViewMoims = latestViewService.getLatestViewMoims(member.getId(), 5);
+        model.addAttribute("latestMoims", latestViewMoims);
         List<Moim> nearbyMoims = nearByMoimService.findNearbyMoims(member);
-        model.addAttribute("nearByMoims", nearbyMoims);
+        List<MoimDto.Response> responses = moimMapper.moimsToResponseDtos(nearbyMoims);
+        model.addAttribute("nearByMoims", responses);
         return "home/profile";
     }
 
     @GetMapping("/chat")
-    public String alarmHome(@AuthenticationUser String mail, Model model) {
+    public String alarmHome(@LoginMember String mail, Model model) {
         Member loginMember = memberService.findMemberByEmail(mail);
         List<ChatRoom> allChatRoom = chatRoomRepository.findByMember(loginMember);
 
@@ -107,7 +109,7 @@ public class HomeController {
 
 
     @ModelAttribute("loginMemberId")
-    public Long loginMember(@AuthenticationUser String email){
+    public Long loginMember(@LoginMember String email){
         Member loginMember = memberService.findMemberByEmail(email);
         return loginMember.getId();
     }

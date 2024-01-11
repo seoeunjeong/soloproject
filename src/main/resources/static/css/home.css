@@ -480,24 +480,24 @@ input[type="date" i] {
 .latest-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
     overflow: auto;
     margin: 20px 0px;
-    height: 100px;
+    height: 180px;
 }
 
-.latest-container .latestMoim{
+.latest-container .card{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-bottom: 1px solid #a9a9a9;
+    font-size: 15px;
+    width: 240px;
+    height: 140px;
     background-color: #fff;
-    border: 1px solid #a9a9a9 ;
-    height: 80px;
-    width: 90px;
-    border-radius: 20px;
-    padding: 5px 5px;
+    border-radius: 10%;
+    padding: 15px;
+    margin-bottom: 5px;
     margin-right: 10px;
-    font-size: 18px;
 }
 
 .latest-container a{

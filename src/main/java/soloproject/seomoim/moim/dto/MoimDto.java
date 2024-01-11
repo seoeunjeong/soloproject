@@ -82,7 +82,7 @@ public class MoimDto {
 
     @Getter @Setter
     @EqualsAndHashCode(of = {"moimId"})
-    public static class Response implements Serializable {
+    public static class Response{
         private Long moimId;
         private Long memberId;
         private String memberProfileImageUrl;
@@ -102,7 +102,7 @@ public class MoimDto {
         private MoimStatus moimStatus;
     }
     @Getter @Setter
-    public static class MoimMemberDto implements Serializable{
+    public static class MoimMemberDto {
         private Long memberId;
         private String name;
         private String profileImageUrl;

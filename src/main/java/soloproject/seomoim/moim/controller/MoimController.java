@@ -14,7 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import soloproject.seomoim.member.loginCheck.AuthenticationUser;
+import soloproject.seomoim.member.loginCheck.LoginMember;
 import soloproject.seomoim.moim.service.LatestViewMoimService;
 import soloproject.seomoim.moim.like.LikeMoim;
 import soloproject.seomoim.moim.like.LikeMoimService;
@@ -105,7 +105,7 @@ public class MoimController {
 
     @GetMapping("/{moim-id}")
     public String MoimDetailPage(@PathVariable("moim-id") Long moimId,
-                                 @AuthenticationUser String email, Model model) {
+                                 @LoginMember String email, Model model) throws JsonProcessingException {
         Moim moim = moimService.findMoim(moimId);
 
         model.addAttribute("moim", mapper.moimToResponseDto(moim));
@@ -116,7 +116,7 @@ public class MoimController {
         model.addAttribute("likeStatus", likeMoim.isStatus());
         model.addAttribute("joinStatus",joinStatus.isStatus());
 
-        latestViewService.addLatestPostForMember(loginMember.getId(),mapper.moimToResponseDto(moim));
+        latestViewService.addLatestViewMoim(loginMember.getId(),mapper.moimToResponseDto(moim));
 
         return "moims/detailPage";
     }
@@ -186,7 +186,7 @@ public class MoimController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moim-id}")
     public void deleteMoim(@PathVariable("moim-id") Long moimId,
-                           @AuthenticationUser String email) {
+                           @LoginMember String email) {
         moimService.deleteMoim(email, moimId);
     }
 
@@ -340,7 +340,7 @@ public class MoimController {
     }
 
     @ModelAttribute("loginMemberId")
-    public Long loginMember(@AuthenticationUser String email){
+    public Long loginMember(@LoginMember String email){
         Member loginMember = memberService.findMemberByEmail(email);
         return loginMember.getId();
     }

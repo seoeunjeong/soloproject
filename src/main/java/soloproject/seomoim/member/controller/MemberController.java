@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import soloproject.seomoim.advice.exception.BusinessLogicException;
-import soloproject.seomoim.member.loginCheck.AuthenticationUser;
+import soloproject.seomoim.member.loginCheck.LoginMember;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.member.mapper.MemberMapper;
@@ -70,7 +70,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/edit_form")
-    public String myPageEditFrom(@AuthenticationUser String email,
+    public String myPageEditFrom(@LoginMember String email,
                                  @RequestParam(required = false) Boolean status,
                                  Model model) {
         Member member = memberService.findMemberByEmail(email);
@@ -120,14 +120,14 @@ public class MemberController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/members/{member-id}")
     public void deleteMember(@PathVariable("member-id") Long memberId,
-                             @AuthenticationUser String loginMemberEmail,
+                             @LoginMember String loginMemberEmail,
                              HttpServletRequest request) {
         memberService.delete(loginMemberEmail,memberId);
 
         HttpSession session = request.getSession();
         session.invalidate();
 
-        latestViewService.deleteLatestPostsForMember(memberId);
+        latestViewService.deleteLatestPostsForMeember(memberId,5);
 
 
     }
@@ -164,12 +164,12 @@ public class MemberController {
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                System.out.println("Google OAuth Token successfully revoked.");
+                log.info("Google OAuth Token 무효화 성공");
             } else {
-                System.out.println("Failed to revoke Google OAuth Token. Response: " + responseEntity.getBody());
+                log.info("Google OAuth Token 무효화 실패. Response: " + responseEntity.getBody());
             }
         } catch (HttpClientErrorException e) {
-            System.out.println("Failed to revoke Google OAuth Token. Error response: " + e.getResponseBodyAsString());
+                log.info("Google OAuth Token 무효화 요청 중 예외발생 : " + e.getResponseBodyAsString());
         }
     }
 }

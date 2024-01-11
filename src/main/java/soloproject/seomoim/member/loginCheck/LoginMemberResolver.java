@@ -10,10 +10,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import soloproject.seomoim.security.FormLogin.CustomUserDetails;
 
-public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasLoginAnnotation = parameter.hasParameterAnnotation(AuthenticationUser.class);
+        boolean hasLoginAnnotation = parameter.hasParameterAnnotation(LoginMember.class);
         boolean hasMemberType = String.class.isAssignableFrom(parameter.getParameterType());
 
         return hasLoginAnnotation && hasMemberType;

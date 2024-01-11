@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import soloproject.seomoim.member.entity.Member;
-import soloproject.seomoim.member.loginCheck.AuthenticationUser;
+import soloproject.seomoim.member.loginCheck.LoginMember;
 import soloproject.seomoim.member.service.MemberService;
 import soloproject.seomoim.utils.RedisUtil;
 
@@ -23,7 +23,7 @@ public class EmailAuthController {
     private final RedisUtil redisUtil;
 
     @GetMapping("/email/auth-form")
-    public String emailAuthFrom(@AuthenticationUser String loginMemberEmail, Model model) {
+    public String emailAuthFrom(@LoginMember String loginMemberEmail, Model model) {
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
         List<String> roles = loginMember.getRoles();
         if (roles.get(0).equals("AUTH_USER")) {

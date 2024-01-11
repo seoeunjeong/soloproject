@@ -68,22 +68,52 @@
   </div>
   <h3>최근본 <span style="font-size:15px">o_o </span>모임</h3>
   <div class="latest-container">
-    <p th:if="${latest.isEmpty()}" style="color: #948f8f; font-size: 15px;">최근 본 모임이 아직 없어요.</p>
-    <div th:each="moim:${latest}">
-<!--      <a th:href="@{/moims/{moimdId}(moimdI=${moim.moimId})}">-->
-      <a href="#" th:onclick="'handleDelete(' + ${moim.moimId} + ')'">
-        <div class="latestMoim">
-          <p th:text="${moim.title}"></p>
-          <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
+    <p th:if="${latestMoims.isEmpty()}" style="color: #948f8f; font-size: 15px;">최근 본 모임이 아직 없어요.</p>
+    <div th:each="moim:${latestMoims}">
+      <a href="#" th:onclick="'getMoimDetail(' + ${moim.moimId} + ')'">
+            <div class="card">
+              <div>
+                <p class="categry" th:text="${moim.moimCategory}">
+                  카테고리명
+                </p>
+                <p class="dday" th:if="${moim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                <p class="dday" th:unless="${moim.DDay eq 0}"  th:text="|D- ${moim.DDay}일|">D-Day</p>
+                <span class="status" th:text="${moim.moimStatus.status}"></span>
+              </div>
+              <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+              <p class="card-text">
+                <strong>장소 |</strong>
+                <span th:text="${moim.placeAddress}">위치 정보</span><br/>
+                <strong>일시 |</strong>
+                <span
+                        th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+                >일시 및 시간</span
+                ><br/>
+              </p>
+              <div class="participant-container">
+                <div class="participant">
+                  <div th:each="paricipant:${moim.participants}">
+                    <img th:if="${paricipant?.profileImageUrl}" th:src="${paricipant?.profileImageUrl}" />
+                    <img th:unless="${paricipant?.profileImageUrl}" src="/img/unnamed.png" />
+                  </div>
+                </div>
+                <div class="participant-detail">
+                  <span>참여자 </span>
+                  <strong th:text="${moim.participantCount}">0명</strong>
+                  <strong>/</strong
+                  ><span th:text="${moim.totalParticipantCount}"
+                >전체참여자수</span>
+                </div>
+              </div>
+            </div>
+          </a>
         </div>
-      </a>
-    </div>
   </div>
   <h3>가까운 모임 추천</h3>
   <div class="nearBy-container">
     <p th:if="${nearByMoims.isEmpty()}" style="color: #948f8f; font-size: 15px;">가까운 모임이 아직 없어요.</p>
     <div th:each="moim:${nearByMoims}">
-      <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
+      <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
         <div class="card">
           <div>
             <p class="categry" th:text="${moim.moimCategory}">
@@ -105,7 +135,7 @@
           </p>
           <div class="participant-container">
             <div class="participant">
-              <div th:each="people:${moim.Participants}">
+              <div th:each="people:${moim.participants}">
                 <img th:if="${people?.member?.profileImage?.profileImageUrl}" th:src="${people?.member?.profileImage?.profileImageUrl}" />
                 <img th:unless="${people?.member?.profileImage?.profileImageUrl}" src="/img/unnamed.png" />
               </div>
@@ -135,7 +165,7 @@
       window.location.href = '/moims/post'
     });
 
-    function handleDelete(moimId) {
+    function getMoimDetail(moimId) {
       const url = '/moims/' + moimId;
 
       $.ajax({
@@ -149,6 +179,7 @@
             const errorResponse = JSON.parse(xhr.responseText);
 
             if (xhr.status === 404) {
+              // 삭제된 모임 있을수있다.
               alert(errorResponse.message);
             } else {
               console.error('에러 발생: ' + xhr.status);
