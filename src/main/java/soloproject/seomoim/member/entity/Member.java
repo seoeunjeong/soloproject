@@ -1,10 +1,12 @@
 package soloproject.seomoim.member.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import soloproject.seomoim.comment.Comment;
-import soloproject.seomoim.like.LikeMoim;
-import soloproject.seomoim.moim.BaseEntitiy;
+import soloproject.seomoim.chat.room.ChatRoom;
+import soloproject.seomoim.moim.like.LikeMoim;
+import soloproject.seomoim.member.profileImage.ProfileImage;
+import soloproject.seomoim.utils.BaseEntity;
 import soloproject.seomoim.moim.entitiy.Moim;
 import soloproject.seomoim.moim.entitiy.MoimMember;
 
@@ -14,10 +16,12 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-public class Member extends BaseEntitiy {
+@NoArgsConstructor
+public class Member extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="member_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(unique = true)
@@ -25,32 +29,57 @@ public class Member extends BaseEntitiy {
 
     private String password;
 
+    @Transient
+    private String confirmPassword;
+
     private String name;
 
-    private int age;
+    private Integer age;
 
-    private char gender;
+    private Character gender;
 
-    private String region;
+    private String address;
 
-    //멤버는 여러 모임을 만들수있다
-    @OneToMany(mappedBy = "member")
-    private List<Moim> createMoims = new ArrayList<>();
+    private double latitude;
 
-    @OneToMany(mappedBy = "member")
-    private List<MoimMember> participationMoims= new ArrayList<>();
+    private double longitude;
 
-    @OneToMany(mappedBy = "member")
-    private List<LikeMoim> likeMoims = new ArrayList<>();
+    private String eupMyeonDong;
+
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name = "profile_image_id")
+    private ProfileImage profileImage;
 
 
-    //연관관계 편의 메소드
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="member_roles",
+    joinColumns=@JoinColumn(name="member_id"))
+    @Column(name = "roles_name")
+    private List<String> roles = new ArrayList<>();
 
-    public Member() {
-    }
+    //멤버는 여러 모임을 만들 수 있다.
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Moim> createMoimList = new ArrayList<>();
 
-    public Member(String email, String password) {
+    //멤버는 여러 모임에 참여 할수있다.
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
+    private List<MoimMember> joinMoimList = new ArrayList<>();
+
+    //멤버는 여러 모임을 좋아요할수있다.
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
+    private List<LikeMoim> likeMoimList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "ownerMember")
+    private List<ChatRoom> ownerRooms= new ArrayList<>();
+
+    @OneToMany(mappedBy = "requestMember")
+    private List<ChatRoom> requestRooms= new ArrayList<>();
+
+    public Member(String email,String name,String profile) {
         this.email = email;
-        this.password = password;
+        this.name = name;
+        ProfileImage profileImage = new ProfileImage();
+        profileImage.setProfileImageUrl(profile);
+        this.setProfileImage(profileImage);
     }
 }

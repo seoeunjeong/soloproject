@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>프로필</title>
+  </head>
+<body>
+<header>
+  <a href="/moims/search-EupMyeonDong"><span>읍면동 ></span></a>
+</header>
+<section>
+  <div class="search-container">
+    <form id="search" action="/moims/search" method="post" th:object="${moimSearchDto}" >
+      <div>
+        <input type="text" class="keyword"  th:field="*{keyword}" placeholder="검색어를 입력하세요"/>
+        <button class="search-button" form="search">검색</button>
+      </div>
+      <div class="filter-container">
+        <input type="text" class="eupMyeonDong" th:field="*{eupMyeonDong}"placeholder="읍면동을 입력하세요" />
+      <select class="moimCategory" th:field="*{moimCategory}">
+        <option value=""> 카테고리 </option>
+        <option data-image="icon/coffee.png" value="COFFEE">COFFEE</option>
+        <option data-image="icon/drink.png" value="DRINK">DRINK</option>
+        <option data-image="icon/eat.png"  value="EAT">EAT</option>
+        <option data-image="icon/exercise.png"  value="EXERCISE">EXERCISE</option>
+        <option data-image="icon/study.png" value="STUDY">STUDY</option>
+        <option data-image="icon/travel.png"  value="TRAVEL">TRAVEL</option>
+      </select>
+      <input type="date" id="searchDate" th:field="*{startedAt}"/>
+      </div>
+    </form>
+  </div>
+  </div>
+  <div class="result-container">
+    <p th:if="${moims == null}">검색어를 통해 모임을 검색할 수 있습니다.</p>
+    <p th:if="${moims != null and moims.data.isEmpty()}">아직 검색한 조건의 모임이 없습니다.<p>
+      <div th:each="moim:${moims?.data}">
+        <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
+          <div class="card">
+            <div>
+              <p class="categry" th:text="${moim.moimCategory}">
+                카테고리명
+              </p>
+              <p class="dday" th:if="${moim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+              <p class="dday" th:unless="${moim.DDay eq 0}" style="background-color:green; color: white; font-weight: bold" th:text="|D- ${moim.DDay}일|">D-Day</p>
+              <span class="status" th:text="${moim.moimStatus.status}"></span>
+            </div>
+            <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+            <p class="card-text">
+              <strong>장소 |</strong>
+              <span th:text="${moim.placeAddress}">위치 정보</span><br/>
+              <strong>일시 |</strong>
+              <span
+                      th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+              >일시 및 시간</span
+              ><br/>
+            </p>
+            <div class="participant-container">
+              <div class="participant">
+                <div th:each="people:${moim.getParticipants()}">
+                  <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
+                  <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
+                </div>
+              </div>
+              <div class="participant-detail">
+                <span>참여자 </span>
+                <strong th:text="${moim.participantCount}">0명</strong>
+                <strong>/</strong
+                ><span th:text="${moim.totalParticipantCount}"
+              >전체참여자수</span>
+              </div>
+            </div>
+          </div>
+        </a>
+    </div>
+  </div>
+
+
+    <button class="post-but" id="postButton">+</button>
+
+  <script th:inline="javascript">
+    const postButton = document.getElementById('postButton');
+    postButton.addEventListener('click', function () {
+      window.location.href = '/moims/post'
+    });
+  </script>
+
+</section>
+</body>
+</html>

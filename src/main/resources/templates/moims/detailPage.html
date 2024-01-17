@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>Moim 정보</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="/css/page.css"/>
+</head>
+<body>
+<header>
+    <a href="/"><</a>
+    <span th:text="${moim.title}">모임 제목</span>
+    <p class="like-count" id="like-count" th:text="|+ ${moim.likeCount}|">좋아요 수</p>
+</header>
+
+<div class="container">
+    <div class="title-container">
+        <div>
+            <span class="startedAt" th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}">날짜</span>
+            <p class="title" th:text="${moim.title}">모임 제목</p>
+        </div>
+        <div class="member-container">
+            <div class="member">
+                <p>모임장:</p>
+                <img th:src="${moim?.memberProfileImageUrl ?: '/img/unnamed.png'}" alt="모임장프로필"/>
+            </div>
+            <a id="oneToOneButton" href="#">1:1문의</a>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <p class="sum">모임 내용</p>
+        <p class="content" th:text="${moim.content}">내용</p>
+    </div>
+
+    <div class="info-container">
+        <div class="sum">자세한 모임 정보</div>
+        <span>장소:</span><p th:text="${moim.placeName}">모임장소</p>
+        <br>
+        <span>주소:</span><p th:text="${moim.placeAddress}">모임주소</p>
+        <br>
+        <span>일시:</span><p th:text="${#temporals.format(moim.startedAt, 'yyyy년/MM월/dd일 (E) a HH:mm')}">모임일시</p>
+    </div>
+
+    <!--모임참여시 업데이트되는 부분-->
+    <div class="participant-container">
+        <div class="participant">
+            <p class="sum">참석자 정보</p>
+            <div class="participant-count">
+                <span>참석: </span><strong th:text="${moim.participantCount}">참여자수</strong><strong>명 /</strong>
+                <span th:text="${moim.totalParticipantCount}">모집인원</span>
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="profile" th:each="participant:${moim.participants}">
+                <img th:if="${participant?.profileImageUrl}" th:src="${participant?.profileImageUrl}"/>
+                <img th:unless="${participant?.profileImageUrl}" src="/img/unnamed.png"/>
+                <p th:text="${participant.name}"></p>
+
+                <div class="profile-info" id="profileInfo">
+                    <div class="profile-info-row"><p style="font-size: 10px">나이: </p>
+                        <p th:if="${participant.age!=null}" th:text="|${participant.age}살|">24</p>
+                    </div>
+                    <div class="profile-info-row"><p style="font-size: 10px">성별: </p>
+                        <p th:text="${participant.gender}">
+                            성별</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <img th:src="@{/img/love.png}" alt="Love Icon" id="likeIcon"/>
+    <button type="button" class="joinButton" id="joinButton">참여</button>
+</footer>
+
+
+<script th:inline="javascript">
+
+
+    window.onerror = function (message, source, lineno, colno, error) {
+        alert(error.message)
+        return true;
+    };
+
+    var memberId = /*[[${loginMemberId}]]*/ '';
+    var moimId = /*[[${moim.moimId}]]*/ '';
+    var joinStatus = /*[[${joinStatus}]]*/ false;
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // 초기 상태에 따라 버튼 설정
+        var button = document.getElementById('joinButton');
+
+        button.innerText = joinStatus ? '참여취소' : '참여';
+
+        button.addEventListener('click', joinStatus ? cancelJoinHandler : joinHandler);
+    });
+
+    function joinHandler() {
+        var url = '/moims/' + moimId + '/' + memberId;
+
+        fetch(url, {
+            method: 'POST',
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        alert("모임 참여는 인증 회원만 가능합니다.");
+                    }
+                    throw new Error('Network response was not ok');
+                  }
+                    return response.json();
+                })
+                .then(function (response) {
+                    updateParticipantContainer(response);
+                    toggleJoinButton(); // 상태 변경에 따라 버튼 업데이트
+                });
+    }
+
+    function cancelJoinHandler() {
+        var url = '/moims/' + moimId + '/' + memberId;
+
+        fetch(url, {
+            method: 'DELETE',
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    return response.json().then(response => {
+                        throw new Error(response.message || '모임 참여 취소에 실패했습니다. 나중에 다시 시도해주세요.');
+                    });
+                }
+                return response.json();
+            })
+            .then(function (moimResponseDto) {
+                updateParticipantContainer(moimResponseDto);
+                toggleJoinButton();
+            })
+            .catch(function (error) {
+                alert(error.message);
+
+            })
+    }
+
+    function toggleJoinButton() {
+
+        var button = document.getElementById('joinButton');
+
+        button.removeEventListener('click', joinHandler);
+        button.removeEventListener('click', cancelJoinHandler);
+
+        if (button.innerText === '참여') {
+            button.innerText = '참여취소'
+            button.addEventListener('click', cancelJoinHandler);
+        } else {
+            button.addEventListener('click', joinHandler);
+            button.innerText = '참여'
+        }
+    }
+
+    function updateParticipantContainer(response) {
+
+        var participantCountElement = document.querySelector('.participant-count strong');
+        participantCountElement.innerText = response.participantCount;
+
+        // 참석자 목록 업데이트
+        var imageContainer = document.querySelector('.image-container');
+        imageContainer.innerHTML = ''; // 기존 참석자 목록 초기화
+
+        response.participants.forEach(function (participant) {
+            var profileDiv = document.createElement('div');
+            profileDiv.className = 'profile';
+
+            var img = document.createElement('img');
+            img.src = participant.profileImageUrl || '/img/unnamed.png';
+
+            var nameP = document.createElement('p');
+            nameP.innerText = participant.name;
+
+            var profileInfoDiv = document.createElement('div');
+            profileInfoDiv.className = 'profile-info';
+
+            var ageRow = document.createElement('div');
+            ageRow.className = 'profile-info-row';
+
+            var ageRow = document.createElement('div');
+            ageRow.className = 'profile-info-row';
+            ageRow.innerHTML = '<p style="font-size: 10px">나이: </p>'
+
+            if (participant.age !== null) {
+                '<p>' + participant.age + '</p><p>살</p>';
+            }
+            profileInfoDiv.appendChild(ageRow);
+            if (participant.gender !== null) {
+                var genderRow = document.createElement('div');
+                genderRow.className = 'profile-info-row';
+                genderRow.innerHTML = '<p style="font-size: 10px">성별: </p><p>' + participant.gender + '</p>';
+                profileInfoDiv.appendChild(genderRow);
+            }
+
+            profileDiv.appendChild(img);
+            profileDiv.appendChild(nameP);
+            profileDiv.appendChild(profileInfoDiv);
+
+            imageContainer.appendChild(profileDiv);
+        });
+    }
+
+    var likeStatus = /*[[${likeStatus}]]*/ false;
+    var likeIcon = document.getElementById('likeIcon');
+
+    if (likeIcon) {
+        likeIcon.src = likeStatus ? '/img/heart.png' : '/img/love.png';
+        likeIcon.alt = 'Love Icon';
+    }
+
+    likeIcon.addEventListener('click', function () {
+        var url = '/likes/' + moimId + '/' + memberId;
+
+        fetch(url, {
+            method: likeStatus ? 'DELETE' : 'POST', // likeStatus에 따라 메서드 변경
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function (response) {
+                updateLikeCount(response);
+                updateLikeIcon();
+            })
+            .catch(function (error) {
+                alert(error.message);
+            })
+    });
+
+    function updateLikeIcon() {
+        likeStatus = !likeStatus;
+        likeIcon.src = likeStatus ? '/img/heart.png' : '/img/love.png';
+    }
+
+    function updateLikeCount(response) {
+        var likeCountElement = document.getElementById('like-count');
+        likeCountElement.innerText = '+ ' + response.likeCount;
+    }
+
+
+    $(document).ready(function() {
+
+        $("#oneToOneButton").click(function() {
+
+            const receiverId = /*[[${moim.memberId}]]*/ null;
+            const memberId = /*[[${loginMemberId}]]*/ null;
+            $.ajax({
+                type: "POST",
+                url: "/chat/room?receiver=" + receiverId+"&sender="+memberId,
+                contentType: "application/json",
+                success: function (data, status, xhr) {
+                    window.location.href = xhr.getResponseHeader("Location");
+                },
+                error: function(response) {
+                    alert(response.responseJSON.message);
+                }
+            });
+        });
+    });
+
+
+</script>
+</body>
+</html>

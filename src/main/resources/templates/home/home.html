@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
+<header>
+    <a href="/"><span>SEOMOIM</span></a>
+    <a href="/members/logout"><p>로그아웃</p>
+        <img src="/img/logout.png" alt="logout.png"
+        /></a>
+</header>
+<section>
+    <div class="total-title"><h4>전체 모임</h4><a href="moims/allPage">전체보기 ></a></div>
+    <div class="total-card-container">
+    <div th:each="moim:${moims?.data}">
+        <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
+            <div class="card">
+                <div>
+                    <p class="categry" th:text="${moim.moimCategory}">
+                        카테고리명
+                    </p>
+                    <p class="dday" th:if="${moim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                    <p class="dday" th:if="${moim.DDay gt 0}" style="background-color:green; color: white; font-weight: bold" th:text="|D- ${moim.DDay}일|">D-Day</p>
+                    <span class="status" th:text="${moim.moimStatus.status}"></span>
+                </div>
+                <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+                <p class="card-text">
+                    <strong>장소 |</strong>
+                    <span th:text="${moim.placeAddress}">위치 정보</span><br/>
+                    <strong>일시 |</strong>
+                    <span
+                            th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+                    >일시 및 시간</span
+                    ><br/>
+                </p>
+                <div class="participant-container">
+                    <div class="participant">
+                <div th:each="people:${moim.getParticipants()}">
+                    <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
+                    <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
+                </div>
+                    </div>
+                <div class="participant-detail">
+                    <span>참여자 </span>
+                    <strong th:text="${moim.participantCount}">0명</strong>
+                    <strong>/</strong
+                    ><span th:text="${moim.totalParticipantCount}"
+                    >전체참여자수</span>
+                </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    </div>
+    <div class="division"></div>
+    <div class="total-title"><h4>★TODAY 모임★</h4><a href="/moims/allToday">더보기 ></a></div>
+    <div class="today-card-container">
+        <div th:each="todayMoim:${todayMoims}">
+            <a th:href="@{/moims/{moimId}(moimId=${todayMoim.moimId})}">
+                <div class="card">
+                    <div>
+                        <p class="categry" th:text="${todayMoim.moimCategory}">
+                            카테고리명
+                        </p>
+                        <p class="dday" th:if="${todayMoim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                        <p class="dday" th:unless="${todayMoim.DDay eq 0}"  th:text="|D- ${todayMoim.DDay}일|">D-Day</p>
+                        <span class="status" th:text="${todayMoim.moimStatus.status}"></span>
+                    </div>
+                    <h3 class="card-title" th:text="${todayMoim.title}">모임 제목 1</h3>
+                    <p class="card-text">
+                        <strong>장소 |</strong>
+                        <span th:text="${todayMoim.placeAddress}">위치 정보</span><br/>
+                        <strong>일시 |</strong>
+                        <span
+                                th:text="${#temporals.format(todayMoim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+                        >일시 및 시간</span
+                        ><br/>
+                    </p>
+                    <div class="participant-container">
+                        <div class="participant">
+                        <div th:each="people:${todayMoim.participants}">
+                            <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
+                            <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
+
+                        </div>
+                        </div>
+                        <div class="participant-detail">
+                            <span>참여자 </span>
+                            <strong th:text="${todayMoim.participantCount}">0명</strong>
+                            <strong>/</strong
+                            ><span th:text="${todayMoim.totalParticipantCount}"
+                        >전체참여자수</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="division"></div>
+    <div class="total-title"><h4>❤️인기있는 모임❤️</h4></div>
+    <div class="popular-card-container">
+        <div th:each="popularMoim:${popularMoims}">
+            <a th:href="@{/moims/{moimId}(moimId=${popularMoim.moimId})}">
+                <div class="card">
+                    <div>
+                        <div>
+                            <p class="popular-like" th:text="|❤ ${popularMoim.likeCount}명이 모임을 좋아해요 ❤|">좋아요 수</p>
+                        </div>
+                    <p class="categry" th:text="${popularMoim.moimCategory}">
+                        카테고리명
+                    </p>
+                    <p class="dday" th:if="${popularMoim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                    <p class="dday" th:if="${popularMoim.DDay gt 0}" style="background-color:green; color: white; font-weight: bold" th:text="|D- ${popularMoim.DDay}일|">D-Day</p>
+
+                    <span class="status" th:text="${popularMoim.moimStatus.status}"></span>
+                </div>
+                        <h3 class="card-title" th:text="${popularMoim?.title}">모임 제목 1</h3>
+                    <p class="card-text">
+                        <strong>장소 |</strong>
+                        <span th:text="${popularMoim.placeAddress}">위치 정보</span><br/>
+                        <strong>일시 |</strong>
+                        <span
+                                th:text="${#temporals.format(popularMoim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+                        >일시 및 시간</span
+                        ><br/>
+                    </p>
+                    <div class="participant-container">
+                        <div class="participant">
+                        <div th:each="people:${popularMoim.Participants}">
+                            <img th:if="${people?.profileImageUrl}" th:src="${people?.profileImageUrl}" />
+                            <img th:unless="${people?.profileImageUrl}" src="/img/unnamed.png" />
+                        </div>
+                        </div>
+                        <div class="participant-detail">
+                            <span>참여자 </span>
+                            <strong th:text="${popularMoim.participantCount}">0명</strong>
+                            <strong>/</strong
+                            ><span th:text="${popularMoim.totalParticipantCount}"
+                        >전체참여자수</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+<button class="post-but" id="postButton">+</button>
+
+<script th:inline="javascript">
+    const postButton = document.getElementById('postButton');
+    postButton.addEventListener('click', function () {
+        window.location.href='/moims/post'
+    });
+</script>
+
+</section>
+</body>
+</html>

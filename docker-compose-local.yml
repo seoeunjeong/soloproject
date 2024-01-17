@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  seomoim-redis:
+    container_name: seomoim-redis
+    build:
+      dockerfile: Dockerfile
+      context: ./redis
+    image: seoeunjeong/seomoim-redis
+    ports:
+      - "6379:6379"
+  seomoim-database:
+    container_name: seomoim-database
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: seoeunjeong/seomoim-database
+    volumes:
+      - ./database/config:/etc/mysql/conf.d
+      - ./database/init:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=seomoim
+      - MYSQL_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - TZ= Asia/Seoul
+    ports:
+      - "3306:3306"

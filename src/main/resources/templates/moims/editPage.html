@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" loan="ko">
+<head>
+    <title>Moim 정보</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nanum Gothic', serif, sans-serif;
+            background-color: rgba(215, 214, 214, 0.18);
+        }
+
+        header {
+            display: flex;
+            position: fixed;
+            width: 100%;
+            height: 40px;
+            z-index: 1000;
+            top: 0;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fffffff8;
+            color: #000000f8;
+        }
+
+        header > a {
+            text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+            padding: 20px;
+        }
+
+        header span {
+            margin: 0 auto;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+
+        .like-count {
+            padding: 20px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            margin: 60px 20px;
+        }
+
+        .title-container {
+            display: flex;
+            justify-content: space-between;
+            background-color: rgb(255, 255, 255);
+            border-radius: 10px;
+            padding: 5px 5px
+        }
+
+        .startedAt{
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .member-container{
+            display: flex;
+            flex-direction: column;
+        }
+
+        .member {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .member img {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 20px;
+        }
+
+        .content-container {
+            margin-top: 10px;
+            background-color: rgb(255, 255, 255);
+            height: 150px;
+            padding: 5px 5px;
+            border-radius: 10px;
+        }
+
+        .sum{
+            font-size: 15px;
+            color: rgba(148, 143, 143, 0.58);
+            margin-bottom: 5px;
+
+        }
+        .content {
+            font-size: 15px;
+        }
+
+        .info-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 20px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 20px;
+            padding: 5px;
+        }
+
+        .info-container span {
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .info-container p{
+            display: inline-block;
+            font-size: 12px;
+            font-weight: lighter;
+
+        }
+
+        .participant-container {
+            display: flex;
+            flex-direction: column;
+            background-color: rgb(255, 255, 255);
+            border-radius: 20px;
+            padding: 5px 5px;
+        }
+
+        .participant{
+            display: flex;
+            flex-display: row;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .participant span{
+            font-size: 13px;
+        }
+        .participant-count{
+            margin-bottom: 5px;
+        }
+
+        .image-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .profile{
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-right: 2px;
+        }
+
+        .image-container img {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: -0.5em;
+            border: 1px solid #fffcfc;
+
+        }
+
+        .image-container p {
+           font-size: 10px;
+
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            top: 150%;
+            left: 50%;
+            width: 60px;
+            color: white;
+            padding: 2px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .profile:hover .profile-info {
+            opacity: 1;
+        }
+
+        .profile-info .profile-info-row {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+        }
+        .profile-info-row p{
+            font-size: 15px;
+        }
+
+        .like-count {
+            padding: 20px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        footer {
+            justify-content: center;
+            display: flex;
+            text-align: center;
+            align-items: center;
+            background-color: #ffffff;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            padding-bottom: 20px;
+            padding-top: 10px;
+        }
+
+        .editButton{
+            margin-left: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: #fdfdfd;
+            color: gray;
+            border: 1px solid gray;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .deleteButton {
+            width: 50%;
+            background-color: #206aea;
+            border: none;
+            border-radius: 50px;
+            padding: 12px;
+            text-align: center;
+            font-size: 17px;
+            color: whitesmoke;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="/profile"><</a>
+    <span th:text="${moim.title}">모임 정보</span>
+    <p class="like-count" th:text="|+ ${moim.likeCount}|"></p>
+</header>
+
+<div class="container">
+    <button class="editButton" id="editButton">편집</button>
+    <div class="title-container">
+        <div>
+              <span class="startedAt" th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"
+              >날짜</span>
+            <p class="title" th:text="${moim.title}">모임 제목</p>
+        </div>
+        <div class="member-container">
+            <div class="member">
+                <p>모임장:</p>
+                <img th:src="${moim?.memberProfileImageUrl?: '/img/profile2.png'}"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <p class="sum">모임 내용</p>
+        <p class="content" th:text="${moim.content}">내용</p>
+    </div>
+
+    <div class="info-container">
+        <div class="sum">자세한 위치 정보</div>
+        <span>장소:</span><p th:text="${moim.placeName}">모임장소</p>
+        <br>
+        <span>주소:</span><p th:text="${moim.placeAddress}">모임주소</p>
+        <br>
+        <span>일시:</span><p th:text="${#temporals.format(moim.startedAt, 'yyyy년/MM월/dd일 (E) a HH:mm')}">모임일시</p>
+    </div>
+
+    <div class="participant-container">
+        <div class="participant">
+            <p class="sum">참석자 정보</p>
+            <div class="participant-count">
+                <span>참석: </span>
+                <strong th:text="${moim.participantCount}">참여자수</strong
+            ><strong>명/</strong>
+                <span th:text="${moim.totalParticipantCount}">모집인원</span>
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="profile" th:each="participant:${moim.participants}">
+                <img th:if="${participant?.profileImageUrl}" th:src="${participant?.profileImageUrl}"/>
+                <img th:unless="${participant?.profileImageUrl}" src="/img/unnamed.png"/>
+                <p th:text="${participant?.name}"></p>
+
+                <div class="profile-info" id="profileInfo">
+                    <div class="profile-info-row"><p style="font-size: 10px">나이: </p><p th:text="${participant.age}">24</p><p>살</p></div>
+                    <div class="profile-info-row"><p style="font-size: 10px">성별: </p><p th:text="${participant.gender == 'F' ? '여성' : (participant.gender == 'M' ? '남성' : '정보없음')}">성별</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <button type="button" class="deleteButton" id="deleteButton">모임삭제</button>
+</footer>
+
+<script th:inline="javascript">
+
+    document.getElementById('deleteButton').addEventListener('click', function () {
+
+        var moimIdToDelete = /*[[${moim.moimId}]]*/ null;
+
+        fetch("/moims/" + moimIdToDelete, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.status === 204) {
+                    alert('모임이 삭제되었습니다.');
+                    window.location.href = "/profile"
+                } else {
+                    response.json().then(response => {
+                        alert('모임 삭제 중 예외 발생: ' + response.message);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('모임삭제중예외발생:', error);
+            });
+    });
+
+    var editButton = document.getElementById('editButton');
+    editButton.addEventListener('click', function () {
+        var moimIdToEdit = /*[[${moim.moimId}]]*/ null;
+        window.location.href = '/moims/edit/' + moimIdToEdit;
+
+    });
+
+
+</script>
+
+</body>
+</html>

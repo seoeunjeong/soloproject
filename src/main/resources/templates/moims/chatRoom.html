@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no,shrink-to-fit=no">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="/css/chatRoom.css" />
+    <title>1:1 채팅방</title>
+</head>
+<body>
+<header>
+    <a href="/chat"><span><</span></a>
+    <p th:text="${(room.ownerMember.id == loginMemberId) ? room.requestMember.name : room.ownerMember.name} + '님과의 대화'">1:1 채팅</p>
+</header>
+<div class="chat-container">
+        <div id="messages" class="chat-column">
+            <div th:each="message : ${allChat}">
+                <!-- Sender's message -->
+                <div th:if="${message.sender.id == loginMemberId}" class="send-info">
+                    <img th:if="${message.sender?.profileImage?.profileImageUrl}" th:src="${message.sender?.profileImage?.profileImageUrl}" />
+                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="/img/profile2.png" alt="sender's profile image" />
+                    <div>
+                        <p th:text="${message.sender.name}"></p>
+                        <div class="row">
+                            <span class="status" th:text="${message.readStatus.status}">읽음</span>
+                            <span class="time" th:text="${#temporals.format(message.createdAt,'HH:mm')}">00:00</span>
+                            <span class="message send-message" th:text="${message.content}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receiver's message -->
+                <div th:if="${message.sender.id != loginMemberId}" class="receive-info">
+                    <img th:if="${message.sender?.profileImage?.profileImageUrl}" th:src="${message.sender?.profileImage?.profileImageUrl}" />
+                    <img th:unless="${message.sender?.profileImage?.profileImageUrl}" src="/img/profile2.png" alt="Receiver's profile image" />
+                    <div>
+                        <p th:text="${message.sender.name}"></p>
+                        <div class="receive-row">
+                            <span class="time"
+                                  th:text="${#temporals.format(message.createdAt,'HH:mm')}">00:00</span>
+                            <span class="message receive-message" th:text="${message.content}"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+</div>
+
+<form id="message-form" class="chat-input">
+    <input  id="chat-text" type="text" placeholder="메시지를 입력하세요">
+    <button type="submit">전송</button>
+</form>
+
+
+<script th:inline="javascript">
+
+    let stompClient= null;
+    let roomId = /*[[${room.id}]]*/ null;
+    let loginMemberId = /*[[${loginMemberId}]]*/ null
+    //DB 메세지 데이터 읽었을때 전달해주는 응답//
+    let readStatusDtos =/*[[${readStatusDtos}]]*/ null;
+
+    function connect() {
+
+        const socket = new SockJS('/chat');
+
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+
+            console.log('Connected: ' + frame);
+
+            readStatusDtos.forEach(function (readStatusDto) {
+                markMessageAsRead(loginMemberId, readStatusDto.senderId, readStatusDto.messageId, stompClient);
+            });
+
+            stompClient.subscribe('/sub/chatMessage/' + roomId, function (response) {
+                let messageContent = JSON.parse(response.body);
+                showMessage(messageContent);
+            });
+
+            stompClient.subscribe('/sub/check-read', function (statusResponse) {
+                console.log('Received check-read response: ', statusResponse);
+                let statusContent = JSON.parse(statusResponse.body);
+                updateReadStatus(statusContent.messageId,statusContent.readStatus);
+            });
+        });
+    };
+
+
+    function showMessage(messageContent) {
+
+        let loginMemberId = /*[[${loginMemberId}]]*/ null;
+
+        let content = messageContent.content;
+
+        let senderName = messageContent.senderName;
+
+        let senderId= messageContent.senderId;
+
+        let senderProfileUrl= messageContent.senderProfileUrl || '/img/profile2.png';
+
+        let readStatus = messageContent.readStatus;
+
+        let messageId = messageContent.messageId;
+
+        let dateTime = new Date(messageContent.createdAt);
+
+        let formatter = new Intl.DateTimeFormat('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+
+        let createdAt = formatter.format(dateTime);
+
+        let messageClass = senderId === loginMemberId ? 'send-info' : 'receive-info';
+
+        let message = senderId === loginMemberId ? 'send-message' : 'receive-message';
+
+        let bottom = senderId === loginMemberId ? 'row' : 'receive-row';
+
+        // 보낸 메시지일 경우 messageId로 읽음여부 readStatus 표시
+        let messageHtml ='<div id="'+messageId+'"class="' + messageClass + '">' +
+            '<img src="'+senderProfileUrl+'">' +
+            '<div>' +
+            '<p>' + senderName + '</p>' +
+            '<div class="'+bottom+'">'+
+            '<span class="status">'+readStatus+'</span>'+
+            '<span class="time">'+createdAt+'</span>'+
+            '<span class="message ' + message + '">' + content + '</span>'+
+            '</div></div></div>';
+
+        if (senderId !== loginMemberId) {
+            messageHtml = ('<div id="'+messageId+'"class="' + messageClass + '">' +
+                '<img src="'+senderProfileUrl+'">' +
+                '<div>' +
+                '<p>' + senderName + '</p>' +
+                '<div class="'+bottom+'">'+
+                '<span class="time">'+createdAt+'</span>'+
+                '<span class="message ' + message + '">' + content + '</span>'+
+                '</div></div></div>');
+        }
+
+        $('#messages').append(messageHtml);
+
+        markMessageAsRead(loginMemberId,senderId,messageContent.messageId,stompClient)
+    }
+
+
+    function markMessageAsRead(loginMemberId, senderId, messageId, stompClient) {
+        // 실시간으로 받은 메세지 읽었다고 알려주기.
+        if (loginMemberId != senderId)
+            stompClient.send('/pub/mark-as-read/' + messageId, {}, JSON.stringify({}));
+    }
+
+
+    function updateReadStatus(messageId, readStatus) {
+        console.log('Updating read status for message ID ' + messageId + ': ' + readStatus);
+
+        let messageElement = $('#' + messageId);
+        messageElement.find('.status').text(readStatus);
+
+    }
+
+
+    $(function () {
+
+        connect();
+
+        $('#message-form').submit(function (event) {
+            event.preventDefault();
+
+            const messageContent = $('#chat-text').val();
+
+            stompClient.send("/pub/chatMessage", {}, JSON.stringify({
+                roomId: roomId,
+                content: messageContent,
+                senderId: loginMemberId
+            }));
+
+            $('#chat-text').val('');
+        });
+    });
+
+</script>
+</body>
+</html>

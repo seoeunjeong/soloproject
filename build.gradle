@@ -35,30 +35,59 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	//mysql추가
+	implementation 'mysql:mysql-connector-java'
+	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
+
 	//querydsl 추가
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-
+	//sql문
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
-	testImplementation 'junit:junit:4.13.1'
 
-
+	implementation 'org.projectlombok:lombok:1.18.22'
 	compileOnly 'org.projectlombok:lombok'
-	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-	runtimeOnly 'com.h2database:h2'
 
-//	test에서 lombok사용
+	//mapstruct
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+	//test에서 lombok사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//이메일 인증 발송을 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//redis 사용을 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+	//프로필이미지 구글 스토리지 사용
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+
+	//1:1채팅 웹소켓 사용
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	//spring retry사용
+	implementation 'org.springframework.retry:spring-retry'
+
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
 
@@ -76,3 +105,9 @@ compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝
+
+
+//jar 파일명 알아보기 쉽게 변경
+bootJar{
+	archiveFileName="app.jar"
+}

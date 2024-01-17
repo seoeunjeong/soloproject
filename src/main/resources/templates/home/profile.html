@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/homeLayoutForm::layout (~{::header},~{::section})}">
+<header>
+  <a href="/"><span>프로필</span></a>
+  <a href="/members/logout"><p>로그아웃</p>
+    <img src="/img/logout.png" alt="logout.png"
+    /></a>
+</header>
+<section>
+  <div class="image-container">
+    <a id="editButton">
+      <img th:if="${member?.profileImageUrl}" th:src="${member?.profileImageUrl}"/>
+      <img th:unless="${member?.profileImageUrl}" src="/img/unnamed.png"/>
+    </a>
+  </div>
+  <div class="info-container">
+    <p class="item1" th:text="${member.name}">name</p>
+    <div class="email">
+      <p class="item2" th:text="${member.email}">email</p>
+      <button th:if="${member.roles.iterator().next()=='AUTH_USER'}" class="complete-button">인증완료</button>
+      <button th:unless="${member.roles.iterator().next()=='AUTH_USER'}" class="email-button" id="email-button">인증
+      </button>
+    </div>
+    <hr/>
+    <div class="day">
+      <p class="item3">가입일</p>
+      <p class="item4"
+         th:text="${#temporals.format(member.createdAt,'yy년 MM월 dd일')}"
+      >
+        가입일
+      </p>
+    </div>
+  </div>
+  <h3>내가만든모임</h3>
+  <div class="create-container">
+    <p th:if="${member.createMoimList.isEmpty()}" style="color: #948f8f;font-size: 15px;">만든 모임이 아직 없어요.</p>
+    <div class="createdMoim" th:each="moim:${member.createMoimList}">
+      <div>
+        <p th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}" style="font-size: 10px; font-weight: bold;"></p>
+        <p th:text="${moim.title}"></p>
+      </div>
+      <a th:href="@{/moims/edit-page/{moimId}(moimId=${moim.id})}">관리</a>
+    </div>
+  </div>
+  <h3>참여한 모임</h3>
+  <div class="join-container">
+    <p th:if="${member.joinMoimList.isEmpty()}" style="color: #948f8f; font-size: 15px;">참여한 모임이 아직 없어요.</p>
+    <div th:each="moim:${member.joinMoimList}">
+    <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
+    <div class="joinMoim">
+      <p th:text="${moim.title}"></p>
+      <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
+    </div>
+    </a>
+    </div>
+  </div>
+  <h3>좋아요❤️모임</h3>
+  <div class="like-container">
+    <p th:if="${member.likeMoimList.isEmpty()}" style="color: #948f8f; font-size: 15px;">좋아요한 모임이 아직 없어요.</p>
+    <div th:each="moim:${member.likeMoimList}">
+      <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
+        <div class="likeMoim">
+          <p th:text="${moim.title}"></p>
+          <span th:text="${#temporals.format(moim.startedAt, 'MM월/dd일 (E)')}"></span>
+        </div>
+      </a>
+    </div>
+  </div>
+  <h3>최근본 <span style="font-size:15px">o_o </span>모임</h3>
+  <div class="latest-container">
+    <p th:if="${latestMoims.isEmpty()}" style="color: #948f8f; font-size: 15px;">최근 본 모임이 아직 없어요.</p>
+    <div th:each="moim:${latestMoims}">
+      <a href="#" th:onclick="'getMoimDetail(' + ${moim.moimId} + ')'">
+            <div class="card">
+              <div>
+                <p class="categry" th:text="${moim.moimCategory}">
+                  카테고리명
+                </p>
+                <p class="dday" th:if="${moim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+                <p class="dday" th:unless="${moim.DDay eq 0}"  th:text="|D- ${moim.DDay}일|">D-Day</p>
+                <span class="status" th:text="${moim.moimStatus.status}"></span>
+              </div>
+              <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+              <p class="card-text">
+                <strong>장소 |</strong>
+                <span th:text="${moim.placeAddress}">위치 정보</span><br/>
+                <strong>일시 |</strong>
+                <span
+                        th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+                >일시 및 시간</span
+                ><br/>
+              </p>
+              <div class="participant-container">
+                <div class="participant">
+                  <div th:each="paricipant:${moim.participants}">
+                    <img th:if="${paricipant?.profileImageUrl}" th:src="${paricipant?.profileImageUrl}" />
+                    <img th:unless="${paricipant?.profileImageUrl}" src="/img/unnamed.png" />
+                  </div>
+                </div>
+                <div class="participant-detail">
+                  <span>참여자 </span>
+                  <strong th:text="${moim.participantCount}">0명</strong>
+                  <strong>/</strong
+                  ><span th:text="${moim.totalParticipantCount}"
+                >전체참여자수</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+  </div>
+  <h3>가까운 모임 추천</h3>
+  <div class="nearBy-container">
+    <p th:if="${nearByMoims.isEmpty()}" style="color: #948f8f; font-size: 15px;">가까운 모임이 아직 없어요.</p>
+    <div th:each="moim:${nearByMoims}">
+      <a th:href="@{/moims/{moimId}(moimId=${moim.moimId})}">
+        <div class="card">
+          <div>
+            <p class="categry" th:text="${moim.moimCategory}">
+              카테고리명
+            </p>
+            <p class="dday" th:if="${moim.DDay eq 0}" style="background-color: crimson;color: white; font-weight: bold">today</p>
+            <p class="dday" th:unless="${moim.DDay eq 0}"  th:text="|D- ${moim.DDay}일|">D-Day</p>
+            <span class="status" th:text="${moim.moimStatus.status}"></span>
+          </div>
+          <h3 class="card-title" th:text="${moim?.title}">모임 제목 1</h3>
+          <p class="card-text">
+            <strong>장소 |</strong>
+            <span th:text="${moim.placeAddress}">위치 정보</span><br/>
+            <strong>일시 |</strong>
+            <span
+                    th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd (E) a hh:mm')}"
+            >일시 및 시간</span
+            ><br/>
+          </p>
+          <div class="participant-container">
+            <div class="participant">
+              <div th:each="people:${moim.participants}">
+                <img th:if="${people?.member?.profileImage?.profileImageUrl}" th:src="${people?.member?.profileImage?.profileImageUrl}" />
+                <img th:unless="${people?.member?.profileImage?.profileImageUrl}" src="/img/unnamed.png" />
+              </div>
+            </div>
+            <div class="participant-detail">
+              <span>참여자 </span>
+              <strong th:text="${moim.participantCount}">0명</strong>
+              <strong>/</strong
+              ><span th:text="${moim.totalParticipantCount}"
+            >전체참여자수</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div style="display: grid; place-items: center;">
+  <button class="delete-but" onclick="confirmAndDelete()">회원탈퇴</button>
+  </div>
+  <button class="post-but" id="postButton">+</button>
+
+  <script th:inline="javascript">
+
+    const postButton = document.getElementById('postButton');
+
+    postButton.addEventListener('click', function () {
+      window.location.href = '/moims/post'
+    });
+
+    function getMoimDetail(moimId) {
+      const url = '/moims/' + moimId;
+
+      $.ajax({
+        type: 'GET',
+        url: url,
+        success: function (response) {
+          window.location.href = url;
+        },
+        error: function (xhr) {
+          try {
+            const errorResponse = JSON.parse(xhr.responseText);
+
+            if (xhr.status === 404) {
+              // 삭제된 모임 있을수있다.
+              alert(errorResponse.message);
+            } else {
+              console.error('에러 발생: ' + xhr.status);
+            }
+          } catch (e) {
+            console.error('에러 응답 파싱 중 오류 발생');
+          }
+        }
+      });
+
+    }
+
+
+    const editButton = document.getElementById('editButton');
+
+    editButton.addEventListener('click', function () {
+      window.location.href = '/members/edit_form'
+
+    });
+
+    const emailButton = document.getElementById('email-button');
+
+    emailButton.addEventListener('click', function () {
+      window.location.href = '/email/auth-form'
+    });
+
+
+    function confirmAndDelete() {
+      const loginMemberId = /*[[${loginMemberId}]]*/ '';
+      if (confirm('정말로 탈퇴하시겠습니까?모든 데이터가 삭제됩니다.')) {
+        const xhr = new XMLHttpRequest();
+        const url = '/members/' +loginMemberId;
+        xhr.open('DELETE', url, true);
+        xhr.onload = function () {
+          if (xhr.status === 204) {
+            alert('탈퇴되었습니다.');
+            window.location.href = '/'
+          } else {
+            alert('탈퇴에 실패했습니다.');
+          }
+        };
+        xhr.send();
+      }
+    }
+
+  </script>
+
+</section>

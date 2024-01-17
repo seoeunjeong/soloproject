@@ -1,21 +1,116 @@
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/seomoim
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+  profiles:
+    active: local #default
+    group:
+      local:
+        common
+      prod:
+        common
 
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://seomoim-database:3306/seomoim?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  redis:
+    host: seomoim-redis
+    port: 6379
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/seomoim?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  redis:
+    host: localhost
+    port: 6379
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
   jpa:
     hibernate:
       ddl-auto: create-drop
+      dialect: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 1000
         show_sql: true
+    open-in-view: true
+
+  #javaMailSenderBean
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding:
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${OAUTH_CLIENT_ID}
+            clientSecret: ${OAUTH_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
 
 logging level:
   org.hibernate.sql: debug
+
+
+#  기본 1800초 30분
+server:
+  servlet:
+    session:
+      timeout: 1800
+
+#      개발시 사용하고 노출하지말자
+  error:
+    include-exception: true
+
+mail:
+  address:
+    admin: admin@gmail.com
+
+kakao:
+  api:
+    key: ${KAKAO_REST_API_KEY}
+  maps:
+    appKey: ${KAKAO_APP_KEY}
+
+cloud:
+  bucket: ${CLOUD_BUCKET_NAME}
+
+
+
+
+
 
 
 

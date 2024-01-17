@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!--  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>-->
+  <title>모임등록</title>
+  <link rel="stylesheet" href="/css/detail.css" />
+</head>
+<body>
+<header>
+  <a href="/"><span><</span></a>
+  <span>모임등록</span>
+</header>
+
+<div class="main-container">
+  <form class="post-form" id="post-form" th:action="@{/moims/post}" th:object="${post}" method="post">
+    <div>
+      <div class="row">
+        <div class="bottom">
+        <select
+                class="category"
+                id="moimCategory"
+                th:field="*{moimCategory}"
+                th:errorclass="field-error"
+        >
+          <option value="">카테고리</option>
+          <option
+                  th:each="category:${moimCategorys}"
+                  th:value="${category}"
+                  th:text="${category}"
+          ></option>
+        </select>
+          <div class="field-error" th:errors="*{moimCategory}">카테고리 오류</div>
+        </div>
+      <div>
+        <input
+                type="datetime-local"
+                class="date"
+                th:value="*{startedAt}"
+                id="startedAt"
+                name="startedAt"
+                th:errorclass="field-error"
+                placeholder="모임날짜 지정"
+        />
+        <div class="field-error" th:errors="*{startedAt}">날짜 오류</div>
+      </div>
+    </div>
+    <div>
+      <input
+              type="text"
+              class="title"
+              id="title"
+              th:field="*{title}"
+              th:errorclass="field-error"
+              placeholder="모임 제목"
+      />
+      <div class="field-error" th:errors="*{title}">모임제목 오류</div>
+    </div>
+    <div>
+          <textarea
+                  class="content"
+                  id="content"
+                  th:field="*{content}"
+                  th:errorclass="field-error"
+                  rows="4"
+                  placeholder="모임의 목표"
+          ></textarea>
+      <div class="field-error" th:errors="*{content}">모임내용 오류</div>
+    </div>
+    <div>
+      <input
+              type="number"
+              class="totalParticipantCount"
+              id="totalParticipantCount"
+              th:field="*{totalParticipantCount}"
+              th:errorclass="field-error"
+              placeholder="인원"
+      />
+      <p>명</p>
+      <div class="field-error" th:errors="*{totalParticipantCount}">
+        모집인원 오류
+      </div>
+    </div>
+    <div class="place" onclick="searchPage()">
+      <img src="/img/place.png" alt="place.png"/>
+      <input
+              type="text"
+              class="placeName"
+              id="placeName"
+              th:field="*{placeName}"
+              th:errorclass="field-error"
+              placeholder="모임장소"
+              readonly
+      />
+      <input type="hidden" id="placeAddress" name="placeAddress" th:value="*{placeAddress}">
+    </div>
+    <div class="field-error" th:errors="*{placeName}">
+      모임위치 오류
+    </div>
+    </div>
+    <input type="hidden" name="memberId" th:value="${loginMemberId}"/>
+    <button type="submit" class="btn" form="post-form">모임 만들기</button>
+  </form>
+</div>
+
+
+<script th:inline="javascript">
+
+  /*<![CDATA[*/
+  var error = /*[[${error}]]*/ null;
+  /*]]>*/
+  if (error) {
+    alert(error);
+  }
+
+  function searchPage() {
+
+    var formData = new FormData(document.getElementById('post-form'));
+
+    fetch('/moims/set-cookie', {
+      method: 'Post',
+      body: formData
+    }).then(response => {
+      window.location.href = '/moims/place-search-page';
+    }).catch(error => {
+      console.error('Error:', error);
+    });
+  }
+
+  function goBack() {
+    window.history.back();
+  }
+
+</script>
+
+</body>
+</html>

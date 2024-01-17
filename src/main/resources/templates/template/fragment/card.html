@@ -1,0 +1,39 @@
+<div th:fragment="card" class="card-container" id="moimList">
+    <div th:each="moim:${moims}">
+        <a th:href="@{/moims/{moimId}(moimId=${moim.id})}">
+            <div class="card">
+                <div>
+                    <p class="categry" th:text="${moim.moimCategory}">
+                        카테고리명
+                    </p>
+                    <p class="dday">D-Day</p>
+                </div>
+                <h3 class="card-title" th:text="${moim.title}">모임 제목 1</h3>
+                <p class="card-text">
+                    <strong>장소 |</strong>
+                    <span th:text="${moim.region}">위치 정보</span><br/>
+                    <strong>일시 |</strong>
+                    <span
+                            th:text="${#temporals.format(moim.startedAt, 'yyyy-MM-dd HH:mm')}"
+                    >일시 및 시간</span
+                    ><br/>
+                </p>
+                <div class="participant-container">
+                    <div class="participant" th:each="people:${moim.getParticipant()}">
+                        <img
+                                th:src="${people.getMember().getProfileImageURL()}"
+                                alt="Image"
+                        />
+                    </div>
+                    <div class="participant-detail">
+                        <span>참여자 </span>
+                        <strong th:text="${moim.participantCount}">0명</strong>
+                        <strong>/</strong
+                        ><span th:text="${moim.totalParticipantCount}"
+                    >전체참여자수</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

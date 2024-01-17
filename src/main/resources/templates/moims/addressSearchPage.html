@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SEOMOIM</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nanum Gothic', serif, sans-serif;
+    }
+
+    header {
+      display: flex;
+      position: fixed;
+      width: 100%;
+      height: 40px;
+      z-index: 1000;
+      top: 0;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      color: black;
+    }
+
+    header >a {
+      text-decoration: none;
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
+    }
+    header span {
+      margin: 0 auto;
+      text-decoration: none;
+      font-size: 17px;
+      color: black;
+      font-weight: 800;
+    }
+
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      margin-top: 40px;
+      padding: 20px 20px;
+    }
+
+    #search-box {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+
+    #input-box {
+      display: flex;
+      flex-direction: row;
+    }
+
+    #keyword {
+      flex: 9;
+      width: 150px;
+      border: 2px solid rgba(0, 0, 0, 0.11);
+      height: 35px;
+      font-size: 15px;
+      background-color: rgba(250, 249, 249, 0.05);
+      border-radius: 20px;
+      padding: 2px 8px;
+    }
+
+    .search-button {
+      flex: 1;
+      padding: 10px;
+      background-color: #206aea;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    li {
+      list-style-type: none;
+      margin-bottom: 10px;
+      border-bottomb: 1px solid rgba(0, 0, 0, 0.93);
+    }
+
+    #placesList {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-placeName {
+      font-size: 15px;
+    }
+
+    .info-placeAddress {
+      font-size: 13px;
+    }
+
+    .autocomplete {
+      display: inline-block;
+    }
+
+
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/search"><span><</span></a>
+  <span>읍면동 검색</span>
+</header>
+
+<div class="main-container">
+  <div id="search-box" class="autocomplete">
+    <div id="input-box">
+      <input id="keyword" type="text" placeholder="읍면동으로 검색하세요">
+      <button class="search-button">검색</button>
+    </div>
+
+    <div id="autocomplete-list"></div>
+
+    <ul id="placesList"></ul>
+  </div>
+</div>
+
+<script th:src="'//dapi.kakao.com/v2/maps/sdk.js?appkey='+ ${kakaoMapsAppKey} + '&libraries=services'"></script>
+<script th:inline="javascript">
+  function goBack() {
+    window.history.back();
+  }
+</script>
+</body>
+</html>

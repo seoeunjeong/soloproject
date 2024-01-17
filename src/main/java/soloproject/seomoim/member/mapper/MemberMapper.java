@@ -2,7 +2,9 @@ package soloproject.seomoim.member.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import soloproject.seomoim.like.LikeMoim;
+import org.mapstruct.Named;
+import soloproject.seomoim.moim.like.LikeMoim;
+import soloproject.seomoim.member.dto.MemberDto.CreateMoimsDto;
 import soloproject.seomoim.member.entity.Member;
 import soloproject.seomoim.member.dto.MemberDto;
 import soloproject.seomoim.moim.entitiy.Moim;
@@ -11,54 +13,52 @@ import soloproject.seomoim.moim.entitiy.MoimMember;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static soloproject.seomoim.member.dto.MemberDto.*;
+
+
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
-    Member memberPostDtoToMember(MemberDto.Post signupRequest);
-    Member memberUpdateDtoToMember(MemberDto.Update updateRequest);
+    Member memberSignUpDtoToMember(Signup request);
 
-    MemberDto.ResponseDto memberToMemberResponseDto(Member member);
+    Member memberUpdateDtoToMember(Update updateRequest);
 
-//    @Mapping(source = "moim.id", target = "moimId")
-//    @Mapping(source = "moim.title",target = "moimTitle")
-//    MemberDto.LikeMoimDto LikeMoimToLikeMoimResponseDto(LikeMoim likeMoim);
+    MemberDto.Update memberToMemberUpdateDto(Member member);
 
-    default List<MemberDto.LikeMoimDto> likeMoimsToLikeMoimsResponseDtos(List<LikeMoim> likeMoims) {
-    return likeMoims
-            .stream()
-            .map(likeMoim -> {
-                return MemberDto.LikeMoimDto
-                        .builder()
-                        .moimId(likeMoim.getMoim().getId())
-                        .moimTitle(likeMoim.getMoim().getTitle())
-                        .build();
-            })
-            .collect(Collectors.toList());
-    }
+    @Mapping(source = "profileImage.profileImageUrl", target = "profileImageUrl")
+    @Mapping(target = "joinMoimList", qualifiedByName = "filterJoins")
+    @Mapping(target = "likeMoimList", qualifiedByName = "filterLikeMoims")
+    ResponseDto memberToMemberResponseDto(Member member);
 
-    default List<MemberDto.MoimMemberDto> MoimMemberToMoimMemberResponseDtos(List<MoimMember> moimMembers) {
-        return moimMembers
-                .stream()
-                .map(moimMember -> {
-                    return MemberDto.MoimMemberDto
-                            .builder()
-                            .moimId(moimMember.getMoim().getId())
-                            .moimTitle(moimMember.getMoim().getTitle())
-                            .build();
-                })
+    List<CreateMoimsDto> createMoimsToCreateMoimsDto(List<Moim> createMoims);
+
+    @Mapping(source = "moim.id", target = "id")
+    @Mapping(source = "moim.title", target = "title")
+    @Mapping(source = "moim.startedAt", target = "startedAt")
+    MemberDto.MoimMemberDto moimMemberToMoimMemberDto(MoimMember moimMember);
+
+    @Mapping(source = "moim.id", target = "id")
+    @Mapping(source = "moim.title", target = "title")
+    @Mapping(source = "moim.startedAt", target = "startedAt")
+    MemberDto.LikeMoimDto likeMoimToLikeMoimDto(LikeMoim likeMoim);
+
+
+    @Named("filterJoins")
+    default List<MemberDto.MoimMemberDto> filterJoinMoims(List<MoimMember> moimMembers){
+        return moimMembers.stream()
+                .filter(MoimMember::isStatus)
+                .map(this::moimMemberToMoimMemberDto)
                 .collect(Collectors.toList());
     }
-
-    default List<MemberDto.CreateMoimsDto> MoimToCreateMoimsResponseDtos(List<Moim> moims) {
-        return moims
-                .stream()
-                .map(moim -> {
-                    return MemberDto.CreateMoimsDto
-                            .builder()
-                            .moimId(moim.getId())
-                            .moimTitle(moim.getTitle())
-                            .build();
-                })
+    @Named("filterLikeMoims")
+    default List<LikeMoimDto> filterLikeMoims(List<LikeMoim> likeMoims) {
+        return likeMoims.stream()
+                .filter(LikeMoim::isStatus)
+                .map(this::likeMoimToLikeMoimDto)
                 .collect(Collectors.toList());
     }
 
 }
+
+
+
+

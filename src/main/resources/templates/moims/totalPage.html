@@ -1,0 +1,217 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>seomoim :: 1회성 모임커뮤니티</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="/css/home.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Nanum Gothic', serif, sans-serif;
+        }
+
+        header {
+            display: flex;
+            position: fixed;
+            width: 100%;
+            height: 40px;
+            z-index: 1000;
+            top: 0;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            color: black;
+        }
+
+        header >a {
+            text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+        header span {
+            margin: 0 auto;
+            text-decoration: none;
+            font-size: 17px;
+            color: black;
+            font-weight: 800;
+        }
+
+        .total-container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+            height: 100vh;
+            overflow-y: scroll;
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1px solid #a9a9a9;
+            font-size: 15px;
+            width: 360px;
+            height: 140px;
+            background-color: #fff;
+        }
+        .total-container a{
+            text-decoration: none;
+        }
+
+        .total-container .card .participant-detail{
+            display: inline-block;
+            margin-left: auto;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <a href="/"><span><</span></a>
+    <span>전체모임</span>
+</header>
+<div class="total-container" id="moim-container">
+
+</div>
+
+<script>
+
+    let page = 1;
+    const size = 5;
+    let loading = false; // 중복 로딩 방지 플래그
+
+    fetchMoims();
+
+    window.addEventListener('scroll', function () {
+        console.log('Scroll event triggered');
+        if (isScrolledToBottom() && !loading) {
+            loading = true;
+            showLoadingIndicator();
+            fetchMoims();
+        }
+    });
+
+    function isScrolledToBottom() {
+        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    }
+
+    function showLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'block';
+    }
+
+    function hideLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'none';
+    }
+
+    function fetchMoims() {
+
+        fetch("/moims/all?page=" + page + "&size=" + size)
+            .then(response => response.json())
+            .then(data => {
+                if (data.data.length > 0) {
+                    appendDataToDOM(data.data);
+                    page++;
+                    if (page > data.pageInfo.totalPages) {
+                        console.log('더 이상 요청할 페이지가 없습니다.');
+                        loading = false;
+                        return;
+                    }
+                }
+            })
+            .catch(error => console.error('모임 조회 예외 발생:', error))
+            .finally(() => {
+                hideLoadingIndicator();
+            });
+    }
+
+    function appendDataToDOM(data) {
+        const moimContainer = document.getElementById('moim-container');
+        data.forEach(moim => {
+            const newCard = createCardElement(moim);
+            moimContainer.appendChild(newCard);
+        });
+    }
+
+
+    function createCardElement(moim) {
+        const card = document.createElement('div');
+
+        card.classList.add('card');
+
+        const dDayText = moim.dday === 0 ? 'today' : `D- ${moim.dday}일`;
+
+        const moimStatusText = moim.moimStatus ? moim.moimStatus : '상태 정보 없음';
+
+        var moimStartedAt = new Date(moim.startedAt);
+
+        var formatter = new Intl.DateTimeFormat('ko-KR', {
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
+            weekday: 'short',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+
+        var startedAt = formatter.format(moimStartedAt)
+
+        card.innerHTML = `
+    <a href="/moims/${moim.moimId}">
+        <div>
+            <p class="categry">${moim.moimCategory}</p>
+            <p class="dday" style="background-color: ${dDayText === 'today' ? 'crimson' : 'green'}; color: white; font-weight: bold">
+                ${dDayText}
+            </p>
+            <span class="status">${moimStatusText}</span>
+        </div>
+        <h3 class="card-title">${moim.title}</h3>
+        <p class="card-text">
+            <strong>장소 |</strong>
+            <span>${moim.placeAddress}</span><br/>
+            <strong>일시 |</strong>
+            <span>${startedAt}</span><br/>
+        </p>
+        <div class="participant-container">
+            <div class="participant">
+                ${moim.participants.map(person => `
+                <img src="${person.profileImageUrl ? person.profileImageUrl : '/img/unnamed.png'}" />
+                `).join('')}
+            </div>
+            <div class="participant-detail">
+                <span>참여자 </span>
+                <strong>${moim.participantCount}</strong>
+                <strong>/</strong>
+                <span>${moim.totalParticipantCount}</span>
+            </div>
+        </div>
+    </a>
+`;
+        return card;
+    }
+
+
+    let pageNavigation = card.querySelector('a');
+    pageNavigation.addEventListener('click', function () {
+        window.location.href = pageNavigation.getAttribute('href');
+    });
+
+</script>
+
+<div id="loading-indicator" class="loading-indicator" style="display: none;">
+    Loading...
+</div>
+
+</body>
+</html>

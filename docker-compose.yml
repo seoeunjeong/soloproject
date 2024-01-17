@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  seomoim-redis:
+    container_name: seomoim-redis
+    build:
+      dockerfile: Dockerfile
+      context: ./redis
+    image: seoeunjeong/seomoim-redis
+    ports:
+      - "6379:6379"
+  seomoim-database:
+    container_name: seomoim-database
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: seoeunjeong/seomoim-database
+    volumes:
+      - ./database/config:/etc/mysql/conf.d
+      - ./database/init:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=seomoim
+      - MYSQL_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - TZ= Asia/Seoul
+    ports:
+      - "3306:3306"
+  seomoim-app:
+    container_name: seomoim-app
+    build: .
+    depends_on:
+      - seomoim-database
+      - seomoim-redis
+    image: seoeunjeong/seomoim-app
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY}
+      - KAKAO_APP_KEY=${KAKAO_APP_KEY}
+      - CLOUD_BUCKET_NAME=${CLOUD_BUCKET_NAME}
+      - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+    ports:
+      - "8080:8080"
+    restart: always # depends on은 실행 순서만 컨트롤 할뿐,
+      # 컨테이너 안의 서비스가 실행가능한 상태인지까지는 확인 하지 않기 때문에
+      # DB 또는 Redis가 아직 실행가능한 상태가 아니여서 실패하는 경우 재시작 하도록 설정
