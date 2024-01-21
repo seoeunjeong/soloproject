@@ -11,11 +11,9 @@ import java.util.Collection;
 @Setter
 public class CustomUserDetails extends Member implements UserDetails {
 
-    /*todo! customAuthorityUtils 여기서 주입받는게 최선일까*/
-    private CustomAuthorityUtils customAuthorityUtils;
+    private final CustomAuthorityUtils customAuthorityUtils = new CustomAuthorityUtils();
 
-    public CustomUserDetails(Member member, CustomAuthorityUtils customAuthorityUtils) {
-        this.customAuthorityUtils = customAuthorityUtils;
+    public CustomUserDetails(Member member) {
         setId(member.getId());
         setName(member.getName());
         setAge(member.getAge());
